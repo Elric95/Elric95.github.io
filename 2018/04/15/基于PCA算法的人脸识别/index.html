@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+
+  <!-- PACE Progress Bar START -->
+  
+    <script src="https://raw.githubusercontent.com/HubSpot/pace/v1.0.2/pace.min.js"></script>
+    <link rel="stylesheet" href="https://github.com/HubSpot/pace/raw/master/themes/orange/pace-theme-flash.css">
+  
+  
+
+  <!-- PACE Progress Bar START -->
+
+  
+  <title>基于opencv的人脸识别算法 | Elric&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="机器学习C++OpenCV">
+  
+  
+  
+  
+  <meta name="description" content="摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体">
+<meta name="keywords" content="机器学习,C++,OpenCV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于OpenCV的人脸识别算法">
+<meta property="og:url" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/index.html">
+<meta property="og:site_name" content="Elric&#39;s Blog">
+<meta property="og:description" content="摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/3.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/2.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/1.png">
+<meta property="og:updated_time" content="2018-12-26T02:28:39.607Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于OpenCV的人脸识别算法">
+<meta name="twitter:description" content="摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/3.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Elric&#39;s Blog" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/hiero.css">
+  <link rel="stylesheet" href="/css/glyphs.css">
+  
+    <link rel="stylesheet" href="/css/vdonate.css">
+  
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/my.css">
+  <!-- Google Adsense -->
+  
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-0123456789ABCDEF",
+          enable_page_level_ads: true
+      });
+  </script>
+  
+</head>
+</html>
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home">
+                <img style="margin-bottom: 10px;" width="124px" height="124px" alt="Hike News" src="https://hexo.io/logo.svg">
+              </a>
+            
+          </h1>
+
+          
+            <div class="site-description">喜欢拍丶东西，并不喜欢搞科研(误)</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="originBgDiv" style="background: #fff; width: 100%;">
+
+      <div style="max-height:600px; overflow: hidden;  display: flex; display: -webkit-flex; align-items: center;">
+        <img id="originBg" width="100%" alt="" src="">
+      </div>
+
+  </div>
+
+  <script>
+  function setAboutIMG(){
+      var imgUrls = "css/images/pose.jpg,https://source.unsplash.com/collection/954550/1920x1080".split(",");
+      var random = Math.floor((Math.random() * imgUrls.length ));
+      if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+        document.getElementById("originBg").src=imgUrls[random];
+      } else {
+        document.getElementById("originBg").src='/' + imgUrls[random];
+      }
+  }
+  bgDiv=document.getElementById("originBgDiv");
+  if(location.pathname.match('about')){
+    setAboutIMG();
+    bgDiv.style.display='block';
+  }else{
+    bgDiv.style.display='none';
+  }
+  </script>
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-基于PCA算法的人脸识别" style="width: 66%; float:left;" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      基于OpenCV的人脸识别算法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/04/15/基于PCA算法的人脸识别/" class="article-date">
+	  <time datetime="2018-04-15T10:49:40.000Z" itemprop="datePublished">四月 15, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体案例实现识别本人的脸。<br> <a id="more"></a><br><strong>1.  OpenCV人脸识别原理</strong></p>
+<p>FaceRecognizer这个类目前包含三种人脸识别方法:基于PCA变换的人脸识别(EigenFaceRecognizer)，基于局部二值模式的人脸识别(LBPHFaceRecognizer)。这里只简要介绍基于PCA变换的人脸识别算法案例。</p>
+<p><strong>1.1 PCA(主成分分析)算法理论基础</strong></p>
+<p>我们所处理的图像一般可以看作是一个高维向量，如本案例中所使用的训练样本图像的像素为92*112，那么计算机就会把它抽象成一个92*112=10304维的高维向量，如此庞大的维数对于后续人脸检测识别的相关计算来说是相当困难的。因此需要找到一个合理的方法，在减少需要分析的指标同时，尽量减少原指标包含信息的损失，以达到对所收集数据进行全面分析的目的。正是由于各变量间存在一定的相关关系，因此有可能用较少的综合指标分别综合存在于各变量中的各类信息。主成分分析与因子分析就属于这类降维的方法[1]。</p>
+<ol>
+<li><strong>二维数据降维</strong></li>
+</ol>
+<p>解决问题要从易到难，对于PCA主成份分析的理解，我们先从二维数据讲起。有这么一组数据，表示一个班5个同学的语文和数学成绩。</p>
+<center>表1 成绩数据</center>
+
+<table>
+<thead>
+<tr>
+<th>学生编号</th>
+<th>语文</th>
+<th>数学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>85</td>
+<td>97</td>
+</tr>
+<tr>
+<td>2</td>
+<td>84</td>
+<td>80</td>
+</tr>
+<tr>
+<td>3</td>
+<td>86</td>
+<td>83</td>
+</tr>
+<tr>
+<td>4</td>
+<td>83</td>
+<td>74</td>
+</tr>
+<tr>
+<td>5</td>
+<td>85</td>
+<td>65</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到每个同学的语文成绩都差不多，但是数学成绩却差别很大，如果我们想要找出这个班中优秀的学生，理应是算出两科成绩的平均分然后进行评价。但是，实际上对于这个情况而言，我们只需要看数学成绩就可以了，因为数学是影响这个班成绩的最大因素，这样就将一组二维数据降维成了一组一维数据。</p>
+<p>再抽象一点，下面有一组二维数据点，将其画在笛卡尔坐标系中如下图所示：</p>
+<p>   <img src="/2018/04/15/基于PCA算法的人脸识别/3.png" alt=""></p>
+<center>图1 数据样本点</center>
+
+<p>如果我们能找到一条直线，将上面的数据点投影到这条直线上也能很好的区分这几个数据点，那么这个过程就相当于将一组二维数据集降维成一维数据集了。这个问题的关键就是找到一个向量，使得数据点在该向量上的投影的样本点尽可能地分开，那么什么数学量能够衡量一组数据时离散程度呢？答案就是方差！</p>
+<p> <img src="/2018/04/15/基于PCA算法的人脸识别/2.png" alt=""></p>
+<center>图2 二维数据降维</center>
+
+<p>那么如何计算投影后样本点的方差呢？这里给出方差的数学定义：</p>
+<p>$$<br>S = E\left( X - EX \right) = \frac{1}{m}\sum\left( {x’}_{i} - \overset{-}{x’} \right)^{2}<br>$$</p>
+<p>如果该数据集的中心点位置为原点，即$\overset{-}{x} = 0$，则有:</p>
+<p>$$<br>S = \frac{1}{m}\sum{x’}_{i}^{2}<br>$$</p>
+<p>其中<em>m</em>表示样本点的数量，${x’}_{i}$表示投影后的数据点距中心点距离，这个距离的数学表达式推导如下：</p>
+<p> <img src="/2018/04/15/基于PCA算法的人脸识别/1.png" alt=""></p>
+<center>图3 变换基向量投影距离</center>
+
+<p>如上图所示，<em>u</em>表示变换基向量，那么原数据$x_{i}$到其原点的距离为:</p>
+<p>$$<br>d = \left| x_{i} \right|cos\theta = {|x}<em>{i}|*\ \frac{x</em>{i}^{T}u}{\left| x_{i} \right|*\left| u \right|} = \frac{x_{i}^{T}u}{\left| u \right|}<br>$$</p>
+<p>若<em>u</em>为单位向量，那么方差也可表示为：</p>
+<p>$$<br>S = {\frac{1}{m}\sum{(x}<em>{i}^{T}u)}^{2} = \frac{1}{m}\sum u^{T}x</em>{i}x_{i}^{T}u = u^{T}(\frac{1}{m}\sum xx_{i}^{T})u\ \<br>$$</p>
+<p>设$X = { x_{1},x_{2},\ldots,x_{m}}$，有：</p>
+<p>$$<br>S = {\frac{1}{m}u}^{T}XX^{T}\text{u }<br>$$</p>
+<p>由于样本的个数是固定的，那么二维数据的PCA主成份分析问题就是要最大化$u^{T}XX^{T}u$，显然$XX^{T}$是一个2*2的实对称正定矩阵，而${max(u}^{T}XX^{T}u)$实际上就等于$\text{XX}^{T}$的最大特征值，证明如下：</p>
+<p>设$u = \alpha_{1}\xi_{1} + \alpha_{2}\xi_{2}$，且$\left| \left| u \right|<br>\right|<em>{2} = 1$，$\xi</em>{i}$为$XX^{T}$的单位特征向量有<br>$$<br> \begin{split}<br>||X^T u||_2^2 &amp;=&amp; u^T XX^T u=&lt;u,XX^T u&gt;\<br>&amp;=&amp;&lt;α_1 ξ_1+α_2 ξ_2,α_1 XX^T ξ_1+α_2 XX^T ξ_2&gt;\<br>&amp;=&amp;&lt;α_1 ξ_1+α_2 ξ_2,α_1 λ_1 ξ_1+α_2 λ_2 ξ_2&gt;\<br>&amp;=&amp;α_1^2 λ_1+α_2^2 λ_2\<br>&amp;≤&amp;(α_1^2+α_2^2 ) λ_1=λ_1 ||u||_2^2=λ_1<br> \end{split}<br>$$</p>
+<p>好的，对于简单的二维数据，我就可以通过计算$\text{XX}^{T}$矩阵的最大特征值得到其对应的基向量u，这个u就是使得降维后样本间方差最大的方向。总结一下，PCA算法的步骤可以归纳为：</p>
+<p>①求出二维数据样本点x和y的平均值，然后对于所有的样例都减去对应的均值。这样做的目的是要将样本的平均值位于原点，便于后续的计算；</p>
+<p>②求解$\text{XX}^{T}$矩阵的特征值和特征向量；</p>
+<p>③将特征值按照从大到小的顺序排序，选择其中最大的一个，然后将其对应的特征向量作为投影基向量；</p>
+<p>④将样本点投影到选取的特征向量上。那么投影后的数据为：</p>
+<p>$$<br>D_{1<em>m} = {u_{1</em>2}^{T}X}_{2*m}<br>$$</p>
+<p>这样就将原始样例的2维特征变成了1维，且在该方向上的投影后的样本点之间的方差最大。</p>
+<ol>
+<li><strong>高维数据降维</strong></li>
+</ol>
+<p>既然已经弄清楚了2维数据的降维，高维数据的相关处理也就不难了。这里先简要介绍一下最大方差理论：在信号处理中认为信号具有较大的方差，噪声具有较小的方差，信噪比就是信号与噪声的方差比，越大越好。因此我们认为，降维后的k维特征是将n维样本转换为k维后，每一维上的样本方差都很大，而且不同基向量之间是线性无关的。对于二维数据，可以用方差来评价其投影后的质量，那么对于高维数据呢？有没有一个数学指标可以评价投影后的数据对原始数据的信息损失量呢？有的，答案就是协方差矩阵。</p>
+<p>协方差矩阵的数学表达形式如下</p>
+<p>$$<br>C = \begin{pmatrix}<br>\text{cov}(x_{1},x_{1}) &amp; \cdots &amp; cov(x_{1},x_{k}) \<br> \vdots &amp; \ddots &amp; \vdots \<br>cov(x_{k},x_{1}) &amp; \cdots &amp; cov(x_{k},x_{k}) \<br>\end{pmatrix}<br>$$</p>
+<p>对角线上分别是投影数据在基向量上的方差，非对角线上是其协方差。协方差是衡量多个变量同时变化的变化程度。协方差绝对值越大，两者对彼此的影响越大，反之越小。其中：</p>
+<p>$$<br>\text{cov}\left( x_{1},x_{k} \right) = E(\left( x_{1} - Ex_{1} \right)(x_{k} - Ex_{k}))<br>$$</p>
+<p>设$X = \lbrack x_{1},x_{2},\ldots,x_{k}\rbrack$，$x_{i} = \left\lbrack<br>x_{i1},x_{i2},\ldots,x_{\text{in}} \right\rbrack^{T}$$，$$n &gt; 2$有：</p>
+<p>$$<br>\text{XX}^{T} = \begin{pmatrix}<br>x_{1}^{T}x_{1} &amp; \cdots &amp; x_{1}^{T}x_{k} \<br> \vdots &amp; \ddots &amp; \vdots \<br>x_{k}^{T}x_{1} &amp; \cdots &amp; x_{k}^{T}x_{k} \<br>\end{pmatrix}<br>$$</p>
+<p>不难发现$\text{cov}\left( x_{i},x_{k} \right) =<br>{\frac{1}{m}*x}<em>{i}^{T}x</em>{k}$，所以协方差矩阵也可以写成：</p>
+<p>$$<br>C = \frac{1}{m}XX^{T}<br>$$</p>
+<p>对于二维数据，PCA算法就是找到<strong>一个</strong>基向量使样本点在该方向上的方差最大，对于高维数据则是找到<strong>一组</strong>基向量使样本点在这组基向量上的协方差<strong>尽可能的大</strong>，也就是说等价于将协方差矩阵对角化：即除对角线外的其它元素化为0，并且在对角线上将元素按大小从上到下排列，这样我们就达到了优化目的，即：</p>
+<p>$$<br>\frac{1}{m}U^{T}XX^{T}U = \Lambda\<br>$$</p>
+<p>其中，U为n*k的变换单位基向量(也即投影方向)，X为n*m的原始数据(n\&lt;k)，$\Lambda$为对角阵。</p>
+<p>这也是一个实对称矩阵的对角化问题，即求解$XX^{T}$的特征值和特征向量，然后将特征向量从大到小排列，其对应的特征向量就是要降维的坐标轴。这样就能通过变换消除原有向量X的各分量间的相关性，从而有可能去掉那些带有较少信息的分量以达到降低特征维数的目的。</p>
+<p>好了，总结一下高维数据的PCA算法求解步骤：</p>
+<ol>
+<li><p>求出高维数据样本点$x_{1},\ldots,x_{m}$的平均值，然后对于所有的样例都减去对应的均值。实现中心化便于后续的计算；</p>
+</li>
+<li><p>求解$\text{XX}^{T}$矩阵的特征值和特征向量；</p>
+</li>
+</ol>
+<p>③将特征值按照从大到小的顺序排序，选择其中最大的k个，然后将其对应的特征向量作为投影基向量；</p>
+<p>④将样本点投影到选取的特征向量上。那么投影后的数据为：</p>
+<p>$$<br>D_{k<em>m} = {U_{k</em>n}^{T}X}_{n*m}<br>$$</p>
+<p>这样就将原始样例的n维特征变成了k维，且在这组基向量方向上的投影后的样本点之间的方差最大。</p>
+<p><strong>1.2 matlab实现PCA算法</strong></p>
+<p>进行PCA算法的过程如下[2]：</p>
+<ol>
+<li><p>假设有<em>c</em>个类别，每类包含<em>s</em>个样本，则n=c*s</p>
+</li>
+<li><p>对<em>X</em>计算$Y =\Phi^{T}X$<em>,</em>将Y(也称特征脸)按类别计算均值，得到<em>c</em>个长度为<em>h</em>的列向量$v_{1},\ldots,v_{2}$；</p>
+</li>
+<li><p>对于未知类别的新样本，计算$y = \Phi^{T}x$，<em>y</em>的长度为<em>h</em></p>
+</li>
+<li><p>计算距离$d\left( y,v_{i} \right),i =<br>1,\ldots,c$，取距离最小的<em>i</em>作为<em>x</em>的类标号。</p>
+</li>
+</ol>
+<p>不妨假设现有一组图像，像素为64*64，共有10张图片。将其按列排列有：$X = \lbrack<br>x_{1},x_{2},\ldots,x_{10}\rbrack$，其中$x_{i}$表示一张图片，维数为4094*1，<em>X</em>的维数为4096*10，如果我们直接对这个数据进行处理，那计算量是非常大的，所以我们就利用PCA算法来进行降维处理以减小计算量。这是别人写好的代码<a href="http://www.cnblogs.com/dupuleng/articles/4031652.html" target="_blank" rel="noopener">http://www.cnblogs.com/dupuleng/articles/4031652.html</a>，同时给出自己的一些思考：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% training  </span></span><br><span class="line">clear;</span><br><span class="line"></span><br><span class="line">clc;</span><br><span class="line"></span><br><span class="line">train_path=<span class="string">'.\\TrainDatabase\\'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">% phi存储样本，每一列对应一个样本</span></span><br><span class="line"></span><br><span class="line">phi=<span class="built_in">zeros</span>(<span class="number">64</span>\*<span class="number">64</span>,<span class="number">20</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:<span class="number">20</span></span><br><span class="line"></span><br><span class="line">path=strcat(train_path,num2str(<span class="built_in">i</span>),<span class="string">'.jpg'</span>);</span><br><span class="line"></span><br><span class="line">Image=imread(path);</span><br><span class="line"></span><br><span class="line">Image = rgb2gray(Image);<span class="comment">%彩色图像转为灰度图像</span></span><br><span class="line"></span><br><span class="line">Image=imresize(Image,[<span class="number">64</span>,<span class="number">64</span>]); <span class="comment">%样本归一到同一个尺寸</span></span><br><span class="line"></span><br><span class="line">phi(:,<span class="built_in">i</span>)=double(<span class="built_in">reshape</span>(Image,<span class="number">1</span>,[])');</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line">mean_phi=<span class="built_in">mean</span>(phi,<span class="number">2</span>); <span class="comment">%计算机平均脸</span></span><br><span class="line"></span><br><span class="line">mean_face=<span class="built_in">reshape</span>(mean_phi,<span class="number">64</span>,<span class="number">64</span>);</span><br><span class="line"></span><br><span class="line">Image_mean=mat2gray(mean_face);</span><br><span class="line"></span><br><span class="line">imwrite(Image_mean,<span class="string">'meanface.jpg'</span>,<span class="string">'jpg'</span>);</span><br><span class="line"></span><br><span class="line">Train_Number = <span class="built_in">size</span>( phi , <span class="number">2</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">%样本归一化，使每一维特征的期望为0，因为不同维度的取值范围差异很大，为方便处理，我们使其取值在同一个范围</span></span><br><span class="line"></span><br><span class="line">A = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span> : Train_Number</span><br><span class="line"></span><br><span class="line">temp = double( phi(:,<span class="built_in">i</span>)) - mean_phi;</span><br><span class="line"></span><br><span class="line">A = [ A temp ];</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% C = A\*A'</span></span><br><span class="line">是A的协方差矩阵，然而C的维度太高，直接使用C计算特征值与特征向量太耗时</span><br><span class="line"></span><br><span class="line"><span class="comment">% L= C' ，L的特征值与C的特征值相同 ，</span></span><br><span class="line">而C的特征向量可以通过L的特征向量得到，因此这里使用L</span><br><span class="line"></span><br><span class="line">L = A'\*A;</span><br><span class="line"></span><br><span class="line">[V D] = eig ( L );</span><br><span class="line"></span><br><span class="line">L_eig_vec = [];</span><br><span class="line"></span><br><span class="line">grad = sum( D ,<span class="number">2</span> );</span><br><span class="line"><span class="comment">%D为对角矩阵，每个元素为相应的特征值，为方便后续处理，这里将特征值放到一个列向量</span></span><br><span class="line"></span><br><span class="line">[ sortGrad , index ] = <span class="built_in">sort</span>( grad ,<span class="string">'descend'</span> );<span class="comment">%排序</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">temp = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line">sumValue = sum( grad );</span><br><span class="line"></span><br><span class="line"><span class="comment">%取能量值占所有特征值99%的前K的特征向量</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>( temp/sumValue \&lt;= <span class="number">0.99</span> &amp;&amp; <span class="built_in">i</span> \&lt;= <span class="number">20</span> )</span><br><span class="line"></span><br><span class="line">L_eig_vec = [ L_eig_vec V(:,index(<span class="built_in">i</span>)) ];</span><br><span class="line"></span><br><span class="line">temp = temp+sortGrad(<span class="built_in">i</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="built_in">i</span>+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">UL = A \* L_eig_vec;<span class="comment">%协方差矩阵C的特征向量，也称特征脸，每一维为一个特征脸。</span></span><br><span class="line">UL也是转换矩阵，即通过UL将样本转化到低维空间，对样本进行降维</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>: <span class="built_in">size</span>( UL , <span class="number">2</span> )</span><br><span class="line"></span><br><span class="line">Eigenface=<span class="built_in">reshape</span>(UL(:,<span class="built_in">i</span>),[<span class="number">64</span>,<span class="number">64</span>]);</span><br><span class="line"></span><br><span class="line"><span class="built_in">figure</span>(<span class="built_in">i</span>);</span><br><span class="line"></span><br><span class="line">imshow(mat2gray(Eigenface));</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>不是说应该计算$\text{AA}^{T}$得到一个4096*4096的矩阵然后计算其特征值从大到小排列吗？为什么代码中计算的$A^{T}A$而不是$\text{AA}^{T}$呢？其实$A^{T}A$所对应的特征向量左乘A就是$AA^{T}$的特征向量，这样就能将原来一个4096*4096的矩阵特征值求解问题简化为一个20*20的矩阵特征值求解问题。</p>
+<p>不妨设$A^{T}A$的特征向量为V，其特征值为D，有：</p>
+<p>$$<br>A^T A∙V=V∙D\<br>A⋅A^T A∙V=A⋅VD<br>$$<br>令𝑈=𝐴⋅𝑉<br>$$<br>\text{AA}^{T}U = UD<br>$$</p>
+<p>故当我们算出$A^{T}A$的特征向量和特征值后就可以通过左乘A矩阵得到$\text{AA}^{T}$的前20个特征向量和特征值。当然了，也可以利用SVD(矩阵的奇异值分解)来求解$\text{AA}^{T}$的特征向量和特征值。</p>
+<p><strong>二、Opencv代码实现人脸识别</strong></p>
+<p>程序功能:能够利用摄像头自主检测人脸，检测到人脸后才进入人脸识别子函数，与识别模板进行比对，通过PCA算法进行人脸识别，若识别为模板人脸，则在视频上显示姓名。</p>
+<p>程序流程：</p>
+<ol>
+<li><p>打开摄像头</p>
+</li>
+<li><p>拍摄自己的头像，作为人脸检测模型，写入磁盘</p>
+</li>
+<li><p>加载人脸检测器，加载人脸模型</p>
+</li>
+<li><p>人脸检测</p>
+</li>
+<li><p>把检测到的人脸与人脸模型里面的对比，找出这是谁的脸</p>
+</li>
+<li><p>如果人脸是自己的，显示自己的名字。</p>
+</li>
+</ol>
+<p>人脸检测的数据集的获取方法参考博客<em>OpenCV实践之路——人脸识别之一数据收集和预处理</em></p>
+<p>代码[3]：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> face;</span><br><span class="line"></span><br><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> ESC = <span class="number">27</span>;</span><br><span class="line"></span><br><span class="line">String face_cascade_name = <span class="string">"G://openCV/opencv3.2.0/opencv/sources/data/haarcascades_cuda/haarcascade_frontalface_default.xml"</span>;</span><br><span class="line">String eyes_cascade_name = <span class="string">"G://openCV/opencv3.2.0/opencv/sources/data/haarcascades_cuda/haarcascade_eye_tree_eyeglasses.xml"</span>;</span><br><span class="line">CascadeClassifier face_cascade;<span class="comment">//定义人脸分类器	</span></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用CSV文件去读图像和标签，主要使用stringstream和getline方法</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">read_csv</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; filename, <span class="built_in">vector</span>&lt;Mat&gt; &amp;images, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; labels, <span class="keyword">char</span> separator = <span class="string">';'</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">std</span>::<span class="function">ifstream <span class="title">file</span><span class="params">(filename.c_str(), ifstream::in)</span></span>;</span><br><span class="line">	<span class="keyword">if</span> (!file)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">string</span> error_message = <span class="string">"No valid input file was given, please check the given filename."</span>;</span><br><span class="line">		CV_Error(CV_StsBadArg, error_message);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">string</span> line, path, classlabel;</span><br><span class="line">	<span class="keyword">while</span> (getline(file, line))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="function"><span class="built_in">stringstream</span> <span class="title">liness</span><span class="params">(line)</span></span>;</span><br><span class="line">		getline(liness, path, separator);</span><br><span class="line">		getline(liness, classlabel);</span><br><span class="line">		<span class="keyword">if</span> (!path.empty() &amp;&amp; !classlabel.empty())</span><br><span class="line">		&#123;</span><br><span class="line">			images.push_back(imread(path, <span class="number">0</span>));</span><br><span class="line">			labels.push_back(atoi(classlabel.c_str()));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">predictVedio</span><span class="params">(Ptr&lt;FaceRecognizer&gt;&amp; model, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; labels)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function">VideoCapture <span class="title">cap</span><span class="params">(<span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Rect&gt; faces;</span><br><span class="line">	Mat frame_gray;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	Mat frame;</span><br><span class="line">	<span class="keyword">char</span> key = waitKey(<span class="number">100</span>);<span class="comment">//等待100ms,返回键盘上的字符</span></span><br><span class="line">	cap &gt;&gt; frame;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//检测人脸,检测到人脸才允许拍照</span></span><br><span class="line">	<span class="keyword">if</span> (!face_cascade.load(face_cascade_name)) &#123; <span class="built_in">printf</span>(<span class="string">"--(!)Error loading face cascade\n"</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;;<span class="comment">//读取分类器</span></span><br><span class="line">	cvtColor(frame, frame_gray, COLOR_BGR2GRAY);</span><br><span class="line">	equalizeHist(frame_gray, frame_gray);</span><br><span class="line">	face_cascade.detectMultiScale(frame_gray, faces, <span class="number">1.1</span>, <span class="number">3</span>, CV_HAAR_DO_ROUGH_SEARCH, Size(<span class="number">70</span>, <span class="number">70</span>), Size(<span class="number">100</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">	Mat faceROI;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">0</span>; j &lt; faces.size(); j++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="function">Point <span class="title">center</span><span class="params">(faces[j].x + faces[j].width / <span class="number">2</span>, faces[j].y + faces[j].height / <span class="number">2</span>)</span></span>;</span><br><span class="line">		rectangle(frame, faces[j], Scalar(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">2</span>, <span class="number">8</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">		faceROI = frame_gray(faces[j]);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">///////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">	Point text_lb;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; faces.size(); i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (faces[i].height &gt; <span class="number">0</span> &amp;&amp; faces[i].width &gt; <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			text_lb = Point(faces[i].x, faces[i].y);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (faces.size() != <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">	</span><br><span class="line">		resize(faceROI, faceROI, Size(<span class="number">92</span>, <span class="number">112</span>));</span><br><span class="line">		<span class="keyword">int</span> predictedLabel = model-&gt;predict(faceROI);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (predictedLabel == <span class="number">40</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">string</span> name = <span class="string">"Hao"</span>;</span><br><span class="line">			putText(frame, name, text_lb, FONT_HERSHEY_COMPLEX, <span class="number">1</span>, Scalar(<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;imshow(<span class="string">"frame"</span>, frame);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (key == ESC) &#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//读取CSV文件路径</span></span><br><span class="line">	<span class="built_in">string</span> fn_csv = <span class="string">"at.txt"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 2个容器来存放图像数据和对应的标签</span></span><br><span class="line">	<span class="built_in">vector</span>&lt;Mat&gt; images;</span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; labels;</span><br><span class="line">	<span class="comment">//读取数据，如果文件不合法就会出错</span></span><br><span class="line">	<span class="comment">//输入的文件名已经有了</span></span><br><span class="line">	<span class="keyword">try</span></span><br><span class="line">	&#123;</span><br><span class="line">		read_csv(fn_csv, images, labels);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (cv::Exception&amp; e)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cerr</span> &lt;&lt; <span class="string">"Error opening file \""</span> &lt;&lt; fn_csv &lt;&lt; <span class="string">"\".Reason:"</span> &lt;&lt; e.msg &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//如果没有读取到足够的图片，也退出</span></span><br><span class="line">	<span class="keyword">if</span> (images.size() &lt;= <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">string</span> error_message = <span class="string">"This demo needs at least 2 images to work. Please add more images to you data set!"</span>;</span><br><span class="line">		CV_Error(CV_StsError, error_message);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面几行创建了一个特征脸模型用于人脸识别，</span></span><br><span class="line">	<span class="comment">//通过CSV文件读取的图像和标签训练它</span></span><br><span class="line">	<span class="comment">//T这里是一个完整的PCA变换</span></span><br><span class="line">	<span class="comment">//如果你只想保留10个主成份，使用如下代码</span></span><br><span class="line">	<span class="comment">//              cv::createEigenFaceRecognizer(10);</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">//如果你还希望使用置信度阈值来初始化，使用以下语句:</span></span><br><span class="line">	<span class="comment">//              cv::createEigenFaceRecognizer(10,123.0);</span></span><br><span class="line">	<span class="comment">//如果你使用所有特征并且使用一个阈值，使用以下语句:`</span></span><br><span class="line">	<span class="comment">//              cv::createEigenFaceRecognizer(0,123.0);</span></span><br><span class="line"></span><br><span class="line">	Ptr&lt;FaceRecognizer&gt; model = createEigenFaceRecognizer();<span class="comment">//基于PCA变换的人脸识别算法</span></span><br><span class="line">	model-&gt;train(images, labels); </span><br><span class="line">	model-&gt;load(<span class="string">"MyFacePCAModel.xml"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">	  <span class="keyword">if</span> (!predictVedio(model,labels))</span><br><span class="line">	  &#123;</span><br><span class="line">	   <span class="keyword">break</span>;</span><br><span class="line">	  &#125;</span><br><span class="line">	&#125;<span class="comment">/**/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	waitKey(<span class="number">0</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参考文献<br>[1]<a href="https://blog.csdn.net/zhongkelee/article/details/44064401" target="_blank" rel="noopener">主成分分析（PCA）原理详解</a><br>[2] <a href="https://www.cnblogs.com/qw12/p/6090710.html" target="_blank" rel="noopener">PCA人脸识别</a><br>[3]<a href="https://blog.csdn.net/xingchenbingbuyu/article/details/51472330" target="_blank" rel="noopener">OpenCV实践之路——人脸识别之三识别自己的脸</a></p>
+</blockquote>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>, <a class="article-category-link" href="/categories/学习笔记/传统算法/">传统算法</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCV/">OpenCV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+
+      
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
+  btnText: '打赏支持', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/6p8gRzRlJayqe4*r0hGOFQqbICN7YsFnGkBy.usmFmQ!/m/dMAAAAAAAAAAnull&bo=NwS6BQAAAAARB7w!&rf=photolist&t=5',
+  alipayImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/CKMAEifs3y*cwPVC.fUvdXxpHWiTH4.w7VNvrGx4IV8!/m/dFQBAAAAAAAAnull&bo=hANGBQAAAAARB*Q!&rf=photolist&t=5'
+});
+</script>
+      
+            
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/21/gr10e-测评/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          【转载】歌德gr10e 测评
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/22/一个人的日本之旅—北海道、东京八日游记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">一个人的日本之旅—北海道、东京八日游记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article" style="overflow-y: scroll; max-width: 28%;">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav">无</ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2018 Elric&#39;s Blog All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+<script src="/js/my.js"></script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+
+<script src="/js/scripts.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="https://dnqof95d40fo6.cloudfront.net/atw7f8.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
