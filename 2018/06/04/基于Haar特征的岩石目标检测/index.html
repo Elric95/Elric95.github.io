@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+
+  <!-- PACE Progress Bar START -->
+  
+    <script src="https://raw.githubusercontent.com/HubSpot/pace/v1.0.2/pace.min.js"></script>
+    <link rel="stylesheet" href="https://github.com/HubSpot/pace/raw/master/themes/orange/pace-theme-flash.css">
+  
+  
+
+  <!-- PACE Progress Bar START -->
+
+  
+  <title>基于haar特征的岩石目标检测 | Elric&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="机器学习C++OpenCV">
+  
+  
+  
+  
+  <meta name="description" content="摘要：最近老板要求我做一个算法实现隧道内岩石的目标检测，通过学习，发现目前网上比较成熟的算法就是基于OpenCV中的opencv_haartraining.exe级联分类器来实现正负样本训练得到一个强分类器。通过这个强分类器来进行检测，实验发现，也许是正负样本的选取不是很好，实际的检测结果并不是很好，看后续能否在算法上进行改善。本文先简要介绍haar特征+AdaBoost级联分类器的原理，然后辅助">
+<meta name="keywords" content="机器学习,C++,OpenCV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Haar特征的岩石目标检测">
+<meta property="og:url" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/index.html">
+<meta property="og:site_name" content="Elric&#39;s Blog">
+<meta property="og:description" content="摘要：最近老板要求我做一个算法实现隧道内岩石的目标检测，通过学习，发现目前网上比较成熟的算法就是基于OpenCV中的opencv_haartraining.exe级联分类器来实现正负样本训练得到一个强分类器。通过这个强分类器来进行检测，实验发现，也许是正负样本的选取不是很好，实际的检测结果并不是很好，看后续能否在算法上进行改善。本文先简要介绍haar特征+AdaBoost级联分类器的原理，然后辅助">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/ed85f51d2b6a12c55bd4b7539cc0c941.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/9c9eafd2c88160f6754a70d196c4cc99.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/6dac96f15a3622f9e1c6c33a896b02e1.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/04a9cb1ddf63f0a2f5bca3d47d40aa6f.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/2111a4d27e539831c82e86de3035d1f8.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/92ad9cbe1760c0ba416a23363ff8e704.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/4276ac55d98352f1465c26872d5f54c4.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/c8bbd58c54b89577f6b7fe598d47be2b.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/f9c4321b36112d85ebe2a94cab3504b8.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/f63b3c2db931b5ebb90040dbb1b0578c.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/7835b9341cd99c787cb23e12cd80ef54.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/7835b9341cd99c787cb23e12cd80ef54.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/43f0abe5d648c452d80ee2897c4c0eea.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/7b751413db0ba3e76d62964b51d8f889.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/242460ad262b7e8f1307aeefbc0994e7.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/63bf95ea826fb95eca2267285053031a.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/5c7d38ee8517bae30c51c6bb950bf69e.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/e9347796bea31218246524ba65d5a22d.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/3b2bd4357693977be5f61ec79192ff62.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/8463688fa2ffae36e7eeda54cc1ea277.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/720a469b5d63655a1a66495e5c91aa0d.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/c9e8478c2cf843ee8fbe97648d14a401.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/363152db20f0077337d78e2851f08c6d.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/42cf1179ebd66e19945bf0602feebd3d.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/c859dfec51a7236a47d19990f394cee0.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/1a0269860218a89b977048df191f241e.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/d3fc7c0d1daeccb00d7550a66395e2d6.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/e6f95c4e5f752687b2a4dd6cd869ba94.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/8a60258e2f2b0e261daee33ef79682ba.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/e8caf23956a17fb0a5fcda384e8065d7.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/07111e2bf13826c5d7d1e5f2133f9621.png">
+<meta property="og:updated_time" content="2018-12-27T02:05:22.939Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Haar特征的岩石目标检测">
+<meta name="twitter:description" content="摘要：最近老板要求我做一个算法实现隧道内岩石的目标检测，通过学习，发现目前网上比较成熟的算法就是基于OpenCV中的opencv_haartraining.exe级联分类器来实现正负样本训练得到一个强分类器。通过这个强分类器来进行检测，实验发现，也许是正负样本的选取不是很好，实际的检测结果并不是很好，看后续能否在算法上进行改善。本文先简要介绍haar特征+AdaBoost级联分类器的原理，然后辅助">
+<meta name="twitter:image" content="http://yoursite.com/2018/06/04/基于Haar特征的岩石目标检测/ed85f51d2b6a12c55bd4b7539cc0c941.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Elric&#39;s Blog" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/hiero.css">
+  <link rel="stylesheet" href="/css/glyphs.css">
+  
+    <link rel="stylesheet" href="/css/vdonate.css">
+  
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/my.css">
+  <!-- Google Adsense -->
+  
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-0123456789ABCDEF",
+          enable_page_level_ads: true
+      });
+  </script>
+  
+</head>
+</html>
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home">
+                <img style="margin-bottom: 10px;" width="124px" height="124px" alt="Hike News" src="https://hexo.io/logo.svg">
+              </a>
+            
+          </h1>
+
+          
+            <div class="site-description">喜欢拍丶东西，并不喜欢搞科研(误)</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="originBgDiv" style="background: #fff; width: 100%;">
+
+      <div style="max-height:600px; overflow: hidden;  display: flex; display: -webkit-flex; align-items: center;">
+        <img id="originBg" width="100%" alt="" src="">
+      </div>
+
+  </div>
+
+  <script>
+  function setAboutIMG(){
+      var imgUrls = "css/images/pose.jpg,https://source.unsplash.com/collection/954550/1920x1080".split(",");
+      var random = Math.floor((Math.random() * imgUrls.length ));
+      if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+        document.getElementById("originBg").src=imgUrls[random];
+      } else {
+        document.getElementById("originBg").src='/' + imgUrls[random];
+      }
+  }
+  bgDiv=document.getElementById("originBgDiv");
+  if(location.pathname.match('about')){
+    setAboutIMG();
+    bgDiv.style.display='block';
+  }else{
+    bgDiv.style.display='none';
+  }
+  </script>
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-基于Haar特征的岩石目标检测" style="width: 66%; float:left;" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      基于Haar特征的岩石目标检测
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/06/04/基于Haar特征的岩石目标检测/" class="article-date">
+	  <time datetime="2018-06-04T01:08:16.000Z" itemprop="datePublished">六月 4, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>摘要：最近老板要求我做一个算法实现隧道内岩石的目标检测，通过学习，发现目前网上比较成熟的算法就是基于OpenCV中的opencv_haartraining.exe级联分类器来实现正负样本训练得到一个强分类器。通过这个强分类器来进行检测，实验发现，也许是正负样本的选取不是很好，实际的检测结果并不是很好，看后续能否在算法上进行改善。本文先简要介绍haar特征+AdaBoost级联分类器的原理，然后辅助OpenCV2.4中的pencv_createsample.exe和opencv_haartraining.exe来进行训练得到xml文件，最后利用xml文件来撰写检测程序来实现岩石检测。</p>
+<p>首先声明，这篇文章是一篇学习笔记，是作者在阅读了各位大神的博客而写出来的一片学习总结，所有内容并非完全自己的原创，如果原作者觉得本篇文章侵权，请联系我，我会及时修改内容。<br><a id="more"></a></p>
+<h2 id="Haar分类器原理"><a href="#Haar分类器原理" class="headerlink" title="Haar分类器原理"></a>Haar分类器原理</h2><p>这里有一篇博文介绍的非常好，在这边我就直接引用了。首先来简要介绍一下目标检测的背景。<a href="https://blog.csdn.net/zouxy09/article/details/7922923" target="_blank" rel="noopener">浅析人脸检测之Haar分类器方法：Haar特征、积分图、AdaBoost 、级联</a></p>
+<h3 id="目标检测算法简介"><a href="#目标检测算法简介" class="headerlink" title="目标检测算法简介"></a>目标检测算法简介</h3><p>目标检测属于计算机视觉的范畴，早期人们的主要研究方向是目标识别，即输入图像只包含待检测对象，然后根据已知检测对象来识别图像是否为检测目标，而无需考虑图像的背景问题。后来在复杂背景下的目标检测需求越来越大，目标检测也逐渐作为一个单独的研究方向发展起来。</p>
+<p>目前的目标检测方法主要有两大类：基于知识和基于统计。以人脸检测为例：</p>
+<p><strong>●基于知识的方法</strong>：主要利用先验知识将人脸看作器官特征的组合，根据眼睛、眉毛、嘴巴、鼻子等器官的特征以及相互之间的几何位置关系来检测人脸。主要方法包括：模版匹配、人脸特征、形状与边缘、纹理特性、颜色特征等。</p>
+<p><strong>●基于统计的方法</strong>：将人脸看作一个整体的模式—二维像素矩阵，从统计的观点通过大量人脸图像样本构造人脸模式空间，根据相似度量在判断人脸是否存在。主要方法包括：主成份分析与特征脸、神经网络方法、支持向量机、隐马尔可夫模型、Adaboost算法等。</p>
+<p>其中按照算法的基本原理又可以分为<em>传统的目标检测算法</em>和<em>深度学习的目标检测算法</em>。传统算法的典型代表有：Haar特征+Adaboost算法、Hog特征+Svm算法和DPM算法等；深度学习的目标检测典型代表有：RCNN系列(RCNN、spp-net、fast-rcnn和faster-rcnn等)、YOLO系列(YOLO和YOLO9000)以及SSD等。本文主要讨论Haar特征+Adaboost算法，其原理比较简单。至于其他的算法，可以为想继续研究下去的朋友们提供一个方向。</p>
+<h3 id="Haar特征分类器原理"><a href="#Haar特征分类器原理" class="headerlink" title="Haar特征分类器原理"></a>Haar特征分类器原理</h3><p>本文中介绍的Haar分类器方法，包含了Adaboost算法，稍候会对这一算法做详细介绍。其主要内容可以表示为Haar分类器=Haar-like特征+积分图方法+Adaboost级联。具体来说，可以概述为如下模式：</p>
+<ol>
+<li><p>使用Haar-like特征做检测；</p>
+</li>
+<li><p>使用积分图(Integral Image)对Haar-like特征求值进行加速；</p>
+</li>
+<li><p>使用AdaBoost算法训练区分目标与非目标的强分类器；</p>
+</li>
+<li><p>使用筛选式级联把强分类器级联到一起，提高准确率。</p>
+</li>
+</ol>
+<h4 id="Haar-like特征"><a href="#Haar-like特征" class="headerlink" title="Haar-like特征"></a>Haar-like特征</h4><p>要进行目标检测，也就是说要在一副图像中准确进行分类，就必须要给出一个评价指标，当这个评价指标达到一定的阈值时，我们就可以把它认为是目标(如人脸)。这个评价指标在Haar特征分类器中就是Haar-like特征。</p>
+<p>那么什么是特征呢？例如，假设在目标检测时我们需要有这么一个子窗口在待检测的图片窗口中不断的移位滑动缩放等操作，子窗口每到一个位置，就会计算出该区域的特征，然后用一阈值与其对比，这个阈值由训练好的级联分类器提供，一旦该特征通过所有强分类器的筛选，则判定该区域为目标。下面是viola&amp;Jones提出的Haar-like特征模版：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/ed85f51d2b6a12c55bd4b7539cc0c941.png" alt=""></p>
+<p>OpenCV中的Haar特征有一下几种</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/9c9eafd2c88160f6754a70d196c4cc99.png" alt=""></p>
+<center>图2 OpenCV中使用的Haar特征模版</center>
+
+<p>这些所谓的特征不就是一堆带条纹的矩形么，到底是干什么用的？我这样给出解释，将上面的任意一个矩形放到正样本(只包含检测目标)区域上，然后，将白色区域的像素和减去黑色区域的像素和，得到的值我们暂且称之为监测特征值；如果把这个矩形放到一个负样本(不包含检测目标)图像区域，那么计算出的特征值应该和监测特征值是不一样的，而且越不一样越好，所以这些方块的目的就是把检测特征量化，以区分检测目标和非检测目标。</p>
+<p>举个例子，对于一幅24*24分辨率的图像来说，可以通过改变特征模板的大小和位置，穷举出大量的特征来表示一幅图像。其中特征模板称为“特征原型”；特征原型在图像子窗口中扩展（平移伸缩）得到的特征称为“矩形特征”；矩形特征的值称为“特征值”。在24*24大小的图像中可以以坐标（0，0）开始宽为20高为20矩形模板计算图1中的(1)特征，也可以以坐标（0，2）开始宽为20高为20矩形模板计算特征，也可以以坐标（0，0）开始宽为22高为22矩形模板计算特征，这样矩形特征值随着类别、大小和位置的变化，使得很小的一幅很小的图像含有非常多的矩形特征[1]。一幅24*24分辨率的图像通过变换可以获得160,000个左右的特征值。</p>
+<p>那么问题是，就这么一个简单的检测方案就能实现目标检测吗？答案是不能的。那么为了提高检测精度，就必须使用一些方法来进一步改善。这个方法就是AdaBoost算法。</p>
+<h4 id="AdaBoost算法简介"><a href="#AdaBoost算法简介" class="headerlink" title="AdaBoost算法简介"></a>AdaBoost算法简介</h4><p>Adaboost是一种迭代算法，其核心思想是针对同一个训练集训练不同的分类器(弱分类器)，然后把这些弱分类器集合起来，构成一个更强的最终分类器(强分类器)[2]。下面介绍就目标检测而言，如何获取弱分类器以及强分类器。</p>
+<p>所谓弱分类器就是指一个学习算法对一组概念的识别率只比随机识别好一点的分类器；所谓强分类器是指一个学习算法对一组概率的识别率很好的分类器。弱学习算法是比较容易获得的，获得过程需要数量巨大的假设集合，这个假设集合是基于某些简单规则的组合和对样本集的性能评估而生成的，而强学习算法是不容易获得的，然而，有学者提出了弱学习和强学习等价的问题并证明了只要有足够的数据，弱学习算法就能通过集成的方式生成任意高精度的强学习方法。这一证明使得Boosting有了可靠的理论基础，Boosting算法成为了一个提升分类器精确性的一般性方法。</p>
+<ol>
+<li><strong>弱分类器的获取</strong></li>
+</ol>
+<p>弄清楚了什么弱分类器和强分类器的概念，下面就来讨论如何获取第一个弱分类器。前面已经说过了，通过比较待检测图像的矩形特征值来判断其是否是检测目标，这样我们就需要定下一个最佳的阈值来作为检测标准，当待检测图像的特征值大于这个阈值时就认为是检测目标，否则就认为不是检测目标。以24*24的图像为例[3]，其矩形特征(haar)将近有160,000个，对每一个特征都有一个最佳的阈值，通过公式计算其误差，然后再比较这160,000个误差中最小的一个就作为整个图像的最佳阈值。</p>
+<p>具体说来，给定一个训练数据集$T = {\left( x_{1},y_{1} \right),\left(<br>x_{2},y_{2} \right)\ldots(x_{N},y_{N})}$，其中实例 $x\in\chi$，而实例空间$\chi\in\mathbb{R}^n$，$y_{i}$属于标记集合{-1,+1}，Adaboost的目的就是从训练数据中学习一系列弱分类器或基本分类器，然后将这些弱分类器组合成一个强分类器。</p>
+<p>Adaboost训练弱分类器最佳阈值的算法流程如下[4]：</p>
+<ul>
+<li><p>步骤1.<br>首先，初始化训练数据的权值分布。计算每个全部训练样本的某个特征值并将其按大小排序，同时对每一个训练样本最开始时都被赋予相同的权值：1/N。</p>
+<p><img src="/2018/06/04/基于Haar特征的岩石目标检测/6dac96f15a3622f9e1c6c33a896b02e1.jpg" alt=""></p>
+</li>
+<li><p>步骤2. 进行多轮迭代，用m=1,2,…,M表示迭代的第多少轮</p>
+</li>
+</ul>
+<p>a.使用具有权值分布$D_{m}$的训练数据集学习，得到基本分类器（选取让误差率最低的阈值来设计基本分类器）：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/04a9cb1ddf63f0a2f5bca3d47d40aa6f.jpg" alt=""></p>
+<p>b.计算Gm(x)在训练数据集上的分类误差率</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/2111a4d27e539831c82e86de3035d1f8.jpg" alt=""></p>
+<p>由上述式子可知，$G_{m}(x)$在训练数据集上的误差率$e_{m}$就是被$G_{m}(x)$误分类样本的权值之和。这里说明一下，误差率按另一种表示法可以表示为：</p>
+<p>$$<br>e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}<br>$$</p>
+<p>式中，$T^{+}$表示该阈值前的全部正样本的权重和；$T^{-}$表示该阈值后的全部负样本的权重和；$S^{+}$表示该阈值前的全部负样本的权重和；$S^{-}$表示该阈值后的全部负样本的权重和。这其实代表了采用该阈值所误分类的样本概率，以括号中的前一项为例，假设我们认为大于该阈值为正样本，小于该阈值为负样本，那么这个公式表示该阈值前正样本和该阈值后负样本的权重和，那么这个误差就能代表这个阈值错误分类的样本的带权和。现在看不懂没关系，后面我会举一个粒子。先继续往下看。</p>
+<p>c.计算$G_{m}(x)$的系数，$\alpha_{m}$表示$G_{m}(x)$在最终分类器中的重要程度（目的：得到基本分类器在最终分类器中所占的权重）：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/92ad9cbe1760c0ba416a23363ff8e704.jpg" alt=""></p>
+<p>由上述式子可知，$e_{m} \leq 1/2$时，$\alpha_{m} \geq<br>0$，且$\alpha_{m}$随着$e_{m}$的减小而增大，意味着分类误差率越小的基本分类器在最终分类器中的作用越大。</p>
+<p>d. 更新训练数据集的权值分布（目的：得到样本的新的权值分布），用于下一轮迭代</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/4276ac55d98352f1465c26872d5f54c4.jpg" alt=""></p>
+<p>使得被基本分类器Gm(x)误分类样本的权值增大，而被正确分类样本的权值减小。就这样，通过这样的方式，AdaBoost方法能“重点关注”或“聚焦于”那些较难分的样本上。</p>
+<p>其中，$Z_{m}$是规范化因子，使得$D_{m + 1}$成为一个概率分布：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/c8bbd58c54b89577f6b7fe598d47be2b.jpg" alt=""></p>
+<p>通过不断的更新权重，重新训练得到新的阈值，训练T轮之后就可以得到T个弱分类器。得到T个弱分类器之后再通过级联就可以得到一个强分类器。</p>
+<p><strong>(2)强分类器的获取</strong></p>
+<p>为了得到强分类器，将各个弱分类器组合起来，其组合组合策略如下：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/f9c4321b36112d85ebe2a94cab3504b8.jpg" alt=""></p>
+<p>从而得到最终分类器，如下：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/f63b3c2db931b5ebb90040dbb1b0578c.jpg" alt=""></p>
+<p>这个最终的分类器相当于让所有弱分类器投票，再对投票结果按照弱分类器的错误率加权求和，将投票加权求和的结果与平均投票结果比较得出最终的结果。当然了，每个分类器重要程度不同，误差越高的弱分类器所占的权重越少，也就是其$\alpha_{m}$的值越小。</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/7835b9341cd99c787cb23e12cd80ef54.jpg" alt=""></p>
+<center>图3 弱分类器的形成</center>
+
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/7835b9341cd99c787cb23e12cd80ef54.jpg" alt=""></p>
+<center>图4 T个弱分类器组合形成强分类器</center>
+
+<h4 id="AdaBoost算法案例-4"><a href="#AdaBoost算法案例-4" class="headerlink" title="AdaBoost算法案例[4]"></a>AdaBoost算法案例[4]</h4><p>下面，给定下列训练样本，请用AdaBoost算法学习一个强分类器。</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg" alt=""></p>
+<p>求解过程：初始化训练数据的权值分布，令每个权值$W_{1i} = 1/N =<br>0.1$，其中，<em>N=10</em>，<em>i=1,2, …, 10</em>，然后分别对于m = 1,2,3,…等值进行迭代。</p>
+<p>拿到这10个数据的训练样本后，根据<em>X</em>和<em>Y</em>的对应关系，要把这10个数据分为两类，一类是“1”，一类是“-1”，根据数据的特点发现：“0 1 2”这3个数据对应的类是“1”，“3 4 5”这3个数据对应的类是“-1”，“6 7 8”这3个数据对应的类是“1”，9是比较孤独的，对应类“-1”。抛开孤独的9不讲，“0 1 2”、“3 4 5”、“6 7 8”这是3类不同的数据，分别对应的类是1、-1、1，直观上推测可知，可以找到对应的数据分界点，比如2.5、5.5、8.5将那几类数据分成两类。当然，这只是主观臆测，下面实际计算下这个具体过程。</p>
+<p><strong>迭代过程1</strong></p>
+<p>对于<em>m=1</em>，在权值分布为<em>D1</em>（10个数据，每个数据的权值皆初始化为0.1）的训练数据上，经过计算可得：</p>
+<p>阈值<em>v</em>取2.5时误差率为0.3（x\&lt;2.5时取1，x>2.5时取-1，则6 7 8分错，误差率为0.3），</p>
+<p>阈值<em>v</em>取5.5时误差率最低为0.4（x\&lt;5.5时取1，x>5.5时取-1，则3 4 5 6 7 8皆分错，误差率0.6大于0.5，不可取。故令x>5.5时取1，x\&lt;5.5时取-1，则0 1 2 9分错，误差率为0.4），</p>
+<p>阈值<em>v</em>取8.5时误差率为0.3（x\&lt;8.5时取1，x>8.5时取-1，则3 4 5分错，误差率为0.3）。</p>
+<p>可以看到，无论阈值<em>v</em>取2.5，还是8.5，总得分错3个样本，故可任取其中任意一个如2.5，弄成第一个基本分类器为：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/43f0abe5d648c452d80ee2897c4c0eea.jpg" alt=""></p>
+<p>上面说阈值<em>v</em>取2.5时则6 7 8分错，所以误差率为0.3，更加详细的解释是：因为样本集中</p>
+<ol>
+<li><p>0 1 2对应的类(Y)是1，因它们本身都小于2.5，所以被G1(x)分在了相应的类“1”中，分对了。</p>
+</li>
+<li><p>3 4 5本身对应的类(Y)是-1，因它们本身都大于2.5，所以被G1(x)分在了相应的类“-1”中，分对了。</p>
+</li>
+<li><p>但6 7 8本身对应类(Y)是1，却因它们本身大于2.5而被G1(x)分在了类”-1”中，所以这3个样本被分错了。</p>
+</li>
+<li><p>9本身对应的类(Y)是-1，因它本身大于2.5，所以被G1(x)分在了相应的类“-1”中，分对了。</p>
+</li>
+</ol>
+<p>从而得到G1(x)在训练数据集上的误差率(被G1(x)误分类样本“6 7 8”的权值之和)<strong>e1=P(G1(xi)≠yi) = 3*0.1 = 0.3</strong>。</p>
+<p>然后根据误差率<em>e1</em>计算<em>G1</em>的系数：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/7b751413db0ba3e76d62964b51d8f889.jpg" alt=""></p>
+<p>这个a1代表G1(x)在最终的分类函数中所占的权重，为0.4236。</p>
+<p>接着更新训练数据的权值分布，用于下一轮迭代：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/242460ad262b7e8f1307aeefbc0994e7.jpg" alt=""></p>
+<p>值得一提的是，由权值更新的公式可知，每个样本的新权值是变大还是变小，取决于它是被分错还是被分正确。</p>
+<p>即如果某个样本被分错了，则<em>yi \</em>Gm(xi)*为负，负负得正，结果使得整个式子变大（样本权值变大），否则变小。</p>
+<p>第一轮迭代后，最后得到各个数据新的权值分布<em>D2</em>=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)。由此可以看出，因为样本中是数据“6 7 8”被G1(x)分错了，所以它们的权值由之前的0.1增大到0.1666，反之，其它数据皆被分正确，所以它们的权值皆由之前的0.1减小到0.0715。<center><br>分类函数$f1(x)= a1*G1(x) = 0.4236G1(x)$。</center><br>此时，得到的第一个基本分类器sign(f1(x))在训练数据集上有3个误分类点（即6 7 8）。</p>
+<p>从上述第一轮的整个迭代过程可以看出：被误分类样本的权值之和影响误差率，误差率影响基本分类器在最终分类器中所占的权重。</p>
+<p><strong>迭代过程2</strong></p>
+<p>对于<em>m=2</em>，在权值分布为D2=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)的训练数据上，经过计算可得：</p>
+<ol>
+<li><p>阈值<em>v</em>取2.5时误差率为0.1666*3（<em>x\&lt;2.5</em>时取1，<em>x>2.5</em>时取-1，则6 7 8分错，误差率为0.1666*3）;</p>
+</li>
+<li><p>阈值<em>v</em>取5.5时误差率最低为0.0715*4（<em>x>5.5</em>时取1，<em>x\&lt;5.5</em>时取-1，则0 1 2 9分错，误差率为0.0715*3 + 0.0715）;</p>
+</li>
+<li><p>阈值<em>v</em>取8.5时误差率为0.0715*3（<em>x\&lt;8.5</em>时取1，<em>x>8.5</em>时取-1，则3 4 5分错，误差率为0.0715*3）。</p>
+</li>
+</ol>
+<p>所以，阈值<em>v</em>取8.5时误差率最低，故第二个基本分类器为：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/63bf95ea826fb95eca2267285053031a.jpg" alt=""></p>
+<p>面对的还是下述样本：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg" alt=""></p>
+<p>很明显，G2(x)把样本“3 4 5”分错了，根据D2可知它们的权值为0.0715,0.0715,0.0715，所以G2(x)在训练数据集上的误差率<em>e2=P(G2(xi)≠yi)=0.0715\</em>3=0.2143*。</p>
+<p>计算G2的系数：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/5c7d38ee8517bae30c51c6bb950bf69e.jpg" alt=""></p>
+<p>更新训练数据的权值分布：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/e9347796bea31218246524ba65d5a22d.jpg" alt=""></p>
+<p><strong>D3</strong>=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)。被分错的样本“3<br>4 5”的权值变大，其它被分对的样本的权值变小。<center><br>$f2(x)=0.4236G1(x)+0.6496G2(x)$ </center></p>
+<p>此时，得到的第二个基本分类器sign(f2(x))在训练数据集上有3个误分类点（即3 4 5）。</p>
+<p><strong>迭代过程3</strong></p>
+<p>对于<em>m</em>=3，在权值分布为<em>D</em>3=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)的训练数据上，经过计算可得：</p>
+<ol>
+<li><p>阈值<em>v</em>取2.5时误差率为0.1060*3（<em>x</em>\&lt;2.5时取1，<em>x</em>>2.5时取-1，则6 7 8分错，误差率为0.1060*3），</p>
+</li>
+<li><p>阈值<em>v</em>取5.5时误差率最低为0.0455*4（<em>x</em>>5.5时取1，<em>x</em>\&lt;5.5时取-1，则0 1 2 9分错，误差率为0.0455*3+0.0715），</p>
+</li>
+<li><p>阈值<em>v</em>取8.5时误差率为0.1667*3（<em>x</em>\&lt;8.5时取1，<em>x</em>>8.5时取-1，则3 4 5分错，误差率为0.1667*3）。</p>
+</li>
+</ol>
+<p>所以阈值<em>v</em>取5.5时误差率最低，故第三个基本分类器为：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/3b2bd4357693977be5f61ec79192ff62.png" alt=""></p>
+<p>依然还是原样本：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/ef5394261fc27b817cfa698e99bbfa21.jpg" alt=""></p>
+<p>此时，被误分类的样本是：0 1 2 9，这4个样本所对应的权值皆为0.0455，所以G3(x)在训练数据集上的误差率$e3=P(G3(xi)≠yi)=0.0455*4=0.1820$。</p>
+<p>计算G3的系数：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/8463688fa2ffae36e7eeda54cc1ea277.jpg" alt=""></p>
+<p>更新训练数据的权值分布：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/720a469b5d63655a1a66495e5c91aa0d.jpg" alt=""></p>
+<p><em>D</em>4=(0.125,0.125,0.125,0.102,0.102,0.102,0.065,0.065,0.065,0.125)。被分错的样本“0 1 2 9”的权值变大，其它被分对的样本的权值变小。</p>
+<p>$$f3(x)=0.4236G1(x)+0.6496G2(x)+0.7514G3(x)$$</p>
+<p>此时，得到的第三个基本分类器<em>sign(f3(x))</em>在训练数据集上有0个误分类点。至此，整个训练过程结束。</p>
+<p>现在，咱们来总结下3轮迭代下来，各个样本权值和误差率的变化，如下所示（其中，样本权值<em>D</em>中加了下划线的表示在上一轮中被分错的样本的新权值）：</p>
+<ol>
+<li><p>训练之前，各个样本的权值被初始化为<em>D1</em>=(0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)；</p>
+</li>
+<li><p>第一轮迭代中，样本“6 7 8”被分错，对应的误差率为$e1=P(G1(xi)≠yi)=3*0.1=0.3$，此第一个基本分类器在最终的分类器中所占的权重为$α1=0.4236$。第一轮迭代过后，样本新的权值为D2=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)；</p>
+</li>
+<li><p>第二轮迭代中，样本“3 4 5”被分错，对应的误差率为$e2=P(G2(xi)≠yi)=0.0715*3=0.2143$，此第二个基本分类器在最终的分类器中所占的权重为$α2=0.6496$。第二轮迭代过后，样本新的权值为D3=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)；</p>
+</li>
+<li><p>第三轮迭代中，样本“0 1 2 9”被分错，对应的误差率为$e3=P(G3(xi)≠yi)=0.0455*4=0.1820$，此第三个基本分类器在最终的分类器中所占的权重为$α3=0.7514$。第三轮迭代过后，样本新的权值为D4=0.125,0.125,0.125,0.102,0.102,0.102,0.065,0.065,0.065,0.125)。</p>
+</li>
+</ol>
+<p>从上述过程中可以发现，如果某些个样本被分错，它们在下一轮迭代中的权值将被增大，反之，其它被分对的样本在下一轮迭代中的权值将被减小。就这样，分错样本权值增大，分对样本权值变小，而在下一轮迭代中，总是选取让误差率最低的阈值来设计基本分类器，所以误差率<em>e</em>（所有被Gm(x)误分类样本的权值之和）不断降低。</p>
+<p>综上，将上面计算得到的<em>α1、α2、α3</em>各值代入G(x)中，$G(x)=sign[f3(x)]=sign[α1<em>G1(x)+α2</em>G2(x)+α3*G3(x)]$，得到最终的分类器为：</p>
+<p>$$G(x)=sign[f3(x)]=sign[0.4236G1(x)+0.6496G2(x)+0.7514G3(x)]$$</p>
+<h2 id="Haar特征-Adaboost特征检测"><a href="#Haar特征-Adaboost特征检测" class="headerlink" title="Haar特征+Adaboost特征检测"></a><strong>Haar特征+Adaboost特征检测</strong></h2><p>理论已经说清楚了，下面给出一个基于OpenCV的实例用于石头的目标检测，实验结果表明检测精度还有待提高，可能是正负样本的选择上有所问题，但本文旨在提供学习方法，基本上目标检测的基本流程大致如此。使用Haar+Adaboost算法目标检测分为三个步骤[5]：</p>
+<p>1、 样本的创建和标记</p>
+<p>2、 训练分类器</p>
+<p>3、 利用训练好的分类器进行目标检测。</p>
+<h3 id="样本的创建和标记"><a href="#样本的创建和标记" class="headerlink" title="样本的创建和标记"></a>样本的创建和标记</h3><p>自己做样本是一个非常痛苦和麻烦的事，最好还是去自己去网上找些公开的数据集，然而向岩石检测这种样本就比较少，所以我还是自己在网上收集了一些图片，包括126张正样本以及501张负样本。如图所示：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/c9e8478c2cf843ee8fbe97648d14a401.png" alt=""></p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/363152db20f0077337d78e2851f08c6d.png" alt=""><center></center></p>
+<p>正样本</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/42cf1179ebd66e19945bf0602feebd3d.png" alt=""><center><br>负样本</center></p>
+<p>注意在做训练集的时候要把图片转换成灰度图像，并将其按顺序重命名。这里我用了OpenCV中的函数来实现上述功能：首先在文件夹中新建一个批处理脚本获取该文件夹中所有的图像名称，方法参考<a href="https://jingyan.baidu.com/article/3aed632e3917c870108091d1.html" target="_blank" rel="noopener">如何快速获取文件夹内所有文件名称列表</a>。然后打开VS输入如下代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGENUM 126</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Mat src;</span><br><span class="line">	<span class="built_in">string</span> ImgName;</span><br><span class="line">	<span class="keyword">char</span> OutName[<span class="number">126</span>];  <span class="comment">//图像个数</span></span><br><span class="line">	<span class="function">ifstream <span class="title">fin</span><span class="params">(<span class="string">"handsList.txt"</span>)</span></span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> framenum = <span class="number">0</span>; framenum &lt; IMAGENUM&amp;&amp;getline(fin,ImgName);framenum+=<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"处理："</span> &lt;&lt; ImgName &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		ImgName = <span class="string">"D:\\学习\\研究生相关\\智能喷浆台车\\image\\正样本\\修改后\\"</span> + ImgName;  <span class="comment">//定义图像文件的绝对路径</span></span><br><span class="line">		src = imread(ImgName);   <span class="comment">//读取文件</span></span><br><span class="line"></span><br><span class="line">		<span class="built_in">sprintf</span>(OutName, <span class="string">"D:\\学习\\研究生相关\\智能喷浆台车\\image\\正样本\\修改后\\bmp\\%d.bmp"</span>, framenum);   </span><br><span class="line"></span><br><span class="line">		<span class="comment">//cvtColor(src, src, CV_BGR2GRAY);   //转换成灰度图像</span></span><br><span class="line">		<span class="comment">//resize(src, src, Size(25, 50));   //重新定义图像尺寸</span></span><br><span class="line">		imwrite(OutName, src);   <span class="comment">//重新输出</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中handsList.txt为你存储的所有图像文件名的文件，放在项目文件夹下，由于里面只存储了文件的名称，你图像文件的绝对路径加到文件名之前就可以了，然后再将其转换成灰度图像再重命名输出就OK了。</p>
+<p>得到了训练样本集之后，就可以对样本进行标记了。正样本，即包含检测对象的图片，使用图像标记工具，网上搜一下有很多的，格式就是，图片名+目标个数+目标的矩形框定位（左上角坐标和矩形长宽）。这里用的是objectmarker标记工具，下载地址见链接：<a href="https://pan.baidu.com/s/1V7Ly4qSvVg15RRfZUYeIKA" target="_blank" rel="noopener">https://pan.baidu.com/s/1V7Ly4qSvVg15RRfZUYeIKA</a><br>密码：7j48，至于软件的用法网上有介绍我就不再详细展开了。制作好的正样本情况记录是这样的：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/c859dfec51a7236a47d19990f394cee0.png" alt=""></p>
+<h3 id="训练分类器"><a href="#训练分类器" class="headerlink" title="训练分类器"></a>训练分类器</h3><p>已经把目标的情况记录了放在txt文件里，打开cmd窗口，输入createsamples.exe -info positive/info.txt -vec data/vector.vec -num 500 -w 24-h 24。当然你也可以使用.bat文件运行。这句话的-num后面的500表示正样本图片的数目，后面的-w和-h说的是图片resize成的大小，根据实际情况修改。注意这是OpenCV2.x版本才有的内置程序，3.0及以上版本没有。其路径在：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/1a0269860218a89b977048df191f241e.png" alt=""></p>
+<p>运行完会生成vector.vec文件，这个就是向量描述文件了。你不用打开看它的内容，其实打开也没用，因为是乱码的，需要专门的软件。后面会用到。</p>
+<p>做好这个其实就成功了一大半了，制作正样本很麻烦的。下面看看怎么制作负样本。很简单，准备图片（不包含岩石的图像）501张，多点也可以。</p>
+<p>负样本的制作</p>
+<p>然后在当前路径下在cmd窗口运行dir /b *.bmp &gt;neg_name.txt就会生成一个neg_name.txt文件，里面包含当前路径下的所有bmp文件的文件名。也可以用批处理脚本实现，见下图：</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/d3fc7c0d1daeccb00d7550a66395e2d6.png" alt=""></p>
+<p>好了，正负样本制作完成，可以开始训练了。我们使用opencv自带的opencv_haartraining.exe文件（opencv安装目录的bin目录下面有该文件）进行训练。</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/e6f95c4e5f752687b2a4dd6cd869ba94.png" alt=""></p>
+<p>参数看起来很多，有点复杂。不用管它，网上查一下就明白了，很多参数都有默认值。我训练时的命令为opencv_haartraining.exe-data data/cascade -vec data/vector.vec -bg negative/neg_name.txt -npos 126-nneg 501 -nstages 20 -mem 4000 -w 24 -h 24</p>
+<p>意思依次为可执行文件名，训练好的xml分类器文件保存地址，正样本描述文件vec文件，负样本的文件名，正负样本的数量，nstages为训练轮数，mem为分配内存MB，图像resize的大小。</p>
+<p>训练截图</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/8a60258e2f2b0e261daee33ef79682ba.jpg" alt=""></p>
+<p>经过漫长的等待训练完成得到xml分类器文件，然后使用opencv的接口即可进行车辆检测了，我是使用detectMultiScale这个函数检测的，就跟人脸检测一样的，然后输出矩形框。我直接贴出检测部分的源代码，其他部分都是直接使用opencv自带的。其实这个也算~~</p>
+<h3 id="利用训练好的分类器进行目标检测"><a href="#利用训练好的分类器进行目标检测" class="headerlink" title="利用训练好的分类器进行目标检测"></a>利用训练好的分类器进行目标检测</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">string</span> xmlPath = <span class="string">"cascade.xml"</span>;<span class="comment">//训练好的分类器xml文件</span></span><br><span class="line">	CascadeClassifier ccf;<span class="comment">//创建分类器对象</span></span><br><span class="line">	Mat img;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!ccf.load(xmlPath))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"不能加载指定的xml文件"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	namedWindow(<span class="string">"rock"</span>);</span><br><span class="line">	<span class="keyword">bool</span> stop = <span class="literal">false</span>;</span><br><span class="line">	<span class="comment">//获取检测图像</span></span><br><span class="line">	<span class="comment">//img = imread("测试.jpg");</span></span><br><span class="line">	img = imread(<span class="string">"7.bmp"</span>);</span><br><span class="line">	<span class="built_in">vector</span>&lt;Rect&gt; rocks; <span class="comment">// 创建一个容器保存检测出来的岩石</span></span><br><span class="line">	Mat gray;</span><br><span class="line">	<span class="comment">//转换成灰度图像，因为harr特征从灰度图像中提取</span></span><br><span class="line">	cvtColor(img, gray, CV_BGR2GRAY);</span><br><span class="line">	ccf.detectMultiScale(gray, rocks, <span class="number">1.1</span>, <span class="number">3</span>, CASCADE_DO_CANNY_PRUNING, Size(<span class="number">50</span>, <span class="number">50</span>), Size(<span class="number">1800</span>, <span class="number">1800</span>));<span class="comment">//检测岩石</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">auto</span> &amp;iter : rocks)</span><br><span class="line">	&#123;</span><br><span class="line">		rectangle(img, iter, Scalar(<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">2</span>, <span class="number">8</span>);<span class="comment">//画出矩形</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//for (vector&lt;Rect&gt;::const_iterator iter = rocks.begin(); iter != rocks.end(); iter++)</span></span><br><span class="line">	<span class="comment">//&#123;</span></span><br><span class="line">	<span class="comment">//	rectangle(img, *iter, Scalar(0, 0, 255), 2, 8);//画出矩形</span></span><br><span class="line">	<span class="comment">//&#125;</span></span><br><span class="line"></span><br><span class="line">	imshow(<span class="string">"rock"</span>, img);</span><br><span class="line"></span><br><span class="line">	waitKey(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试效果截图：可以看到对于简单场景的测试，检测效果很一般，对于复杂点的场景检测效果就更差了。这个时候或许要进一步研究学习上面提到的深度学习算法了。</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/e8caf23956a17fb0a5fcda384e8065d7.png" alt=""></p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/07111e2bf13826c5d7d1e5f2133f9621.png" alt=""></p>
+<p>[1]<a href="https://blog.csdn.net/lanxuecc/article/details/52222369" target="_blank" rel="noopener">机器学习之Haar特征</a></p>
+<p>[2] <a href="https://blog.csdn.net/liulina603/article/details/8632934" target="_blank" rel="noopener">Adaboost分类器 haar特征整理</a></p>
+<p>[3] <a href="https://www.zhihu.com/question/54642277" target="_blank" rel="noopener">关于AdaBoost算法训练弱分类器？</a></p>
+<p>[4]<a href="https://blog.csdn.net/mousever/article/details/52038198" target="_blank" rel="noopener">adaboost原理（包含权重详细解释）</a></p>
+<p>[5]<a href="https://blog.csdn.net/baolinq/article/details/78579317" target="_blank" rel="noopener">目标检测之一（传统算法和深度学习的源码学习）</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>, <a class="article-category-link" href="/categories/学习笔记/传统算法/">传统算法</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCV/">OpenCV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+
+      
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
+  btnText: '打赏支持', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/6p8gRzRlJayqe4*r0hGOFQqbICN7YsFnGkBy.usmFmQ!/m/dMAAAAAAAAAAnull&bo=NwS6BQAAAAARB7w!&rf=photolist&t=5',
+  alipayImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/CKMAEifs3y*cwPVC.fUvdXxpHWiTH4.w7VNvrGx4IV8!/m/dFQBAAAAAAAAnull&bo=hANGBQAAAAARB*Q!&rf=photolist&t=5'
+});
+</script>
+      
+            
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Tensorflow-gpu在windows系统下的安装及使用(使用Pycharm IDE)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/04/15/基于PCA算法的人脸识别/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">基于OpenCV的人脸识别算法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article" style="overflow-y: scroll; max-width: 28%;">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Haar分类器原理"><span class="nav-number">1.</span> <span class="nav-text">Haar分类器原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测算法简介"><span class="nav-number">1.1.</span> <span class="nav-text">目标检测算法简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Haar特征分类器原理"><span class="nav-number">1.2.</span> <span class="nav-text">Haar特征分类器原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Haar-like特征"><span class="nav-number">1.2.1.</span> <span class="nav-text">Haar-like特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AdaBoost算法简介"><span class="nav-number">1.2.2.</span> <span class="nav-text">AdaBoost算法简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AdaBoost算法案例-4"><span class="nav-number">1.2.3.</span> <span class="nav-text">AdaBoost算法案例[4]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Haar特征-Adaboost特征检测"><span class="nav-number">2.</span> <span class="nav-text">Haar特征+Adaboost特征检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#样本的创建和标记"><span class="nav-number">2.1.</span> <span class="nav-text">样本的创建和标记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练分类器"><span class="nav-number">2.2.</span> <span class="nav-text">训练分类器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用训练好的分类器进行目标检测"><span class="nav-number">2.3.</span> <span class="nav-text">利用训练好的分类器进行目标检测</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2018 Elric&#39;s Blog All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+<script src="/js/my.js"></script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+
+<script src="/js/scripts.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="https://dnqof95d40fo6.cloudfront.net/atw7f8.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
