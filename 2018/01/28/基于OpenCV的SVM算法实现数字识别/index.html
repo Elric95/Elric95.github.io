@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+
+  <!-- PACE Progress Bar START -->
+  
+    <script src="https://raw.githubusercontent.com/HubSpot/pace/v1.0.2/pace.min.js"></script>
+    <link rel="stylesheet" href="https://github.com/HubSpot/pace/raw/master/themes/orange/pace-theme-flash.css">
+  
+  
+
+  <!-- PACE Progress Bar START -->
+
+  
+  <title>基于opencv的svm算法实现数字识别 | Elric&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="机器学习C++OpenCV">
+  
+  
+  
+  
+  <meta name="description" content="摘要：最近一段时间在学习基于SVM算法的数字识别程序，在最开始的学习过程中虽然能利用OpenCV3.0提供的库直接实现手写数字分类，但却并未对SVM算法本身进行深入的理解。在学习SVM算法原理时发现网上关于SVM相关文章有很多，但很多都太偏数学计算，对我这种工科生而言理解起来有一定难度，故这里将本人的学习过程写出来与大家分享，权当抛砖引玉。文章研究基于OpenCV3.0的SVM算法实现数字识别，可">
+<meta name="keywords" content="机器学习,C++,OpenCV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于OpenCV的SVM算法实现数字识别">
+<meta property="og:url" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/index.html">
+<meta property="og:site_name" content="Elric&#39;s Blog">
+<meta property="og:description" content="摘要：最近一段时间在学习基于SVM算法的数字识别程序，在最开始的学习过程中虽然能利用OpenCV3.0提供的库直接实现手写数字分类，但却并未对SVM算法本身进行深入的理解。在学习SVM算法原理时发现网上关于SVM相关文章有很多，但很多都太偏数学计算，对我这种工科生而言理解起来有一定难度，故这里将本人的学习过程写出来与大家分享，权当抛砖引玉。文章研究基于OpenCV3.0的SVM算法实现数字识别，可">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/c6d8d437419c9311ecd2d419df84e3c0.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/81734329530aa8cb9932b6de6240ff87.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/96a56485d6472f61ae4b02eabc1a0616.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/10bb4a1be3453c9ceb41651819229be0.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/0bea8cb38f33846577acd4ae209bdf5e.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/a31be420fb1367a50aec5a617acf72a4.png">
+<meta property="og:updated_time" content="2018-12-28T07:17:03.702Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于OpenCV的SVM算法实现数字识别">
+<meta name="twitter:description" content="摘要：最近一段时间在学习基于SVM算法的数字识别程序，在最开始的学习过程中虽然能利用OpenCV3.0提供的库直接实现手写数字分类，但却并未对SVM算法本身进行深入的理解。在学习SVM算法原理时发现网上关于SVM相关文章有很多，但很多都太偏数学计算，对我这种工科生而言理解起来有一定难度，故这里将本人的学习过程写出来与大家分享，权当抛砖引玉。文章研究基于OpenCV3.0的SVM算法实现数字识别，可">
+<meta name="twitter:image" content="http://yoursite.com/2018/01/28/基于OpenCV的SVM算法实现数字识别/c6d8d437419c9311ecd2d419df84e3c0.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Elric&#39;s Blog" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/hiero.css">
+  <link rel="stylesheet" href="/css/glyphs.css">
+  
+    <link rel="stylesheet" href="/css/vdonate.css">
+  
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/my.css">
+  <!-- Google Adsense -->
+  
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-0123456789ABCDEF",
+          enable_page_level_ads: true
+      });
+  </script>
+  
+</head>
+</html>
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home">
+                <img style="margin-bottom: 10px;" width="124px" height="124px" alt="Hike News" src="https://hexo.io/logo.svg">
+              </a>
+            
+          </h1>
+
+          
+            <div class="site-description">喜欢拍丶东西，并不喜欢搞科研(误)</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="originBgDiv" style="background: #fff; width: 100%;">
+
+      <div style="max-height:600px; overflow: hidden;  display: flex; display: -webkit-flex; align-items: center;">
+        <img id="originBg" width="100%" alt="" src="">
+      </div>
+
+  </div>
+
+  <script>
+  function setAboutIMG(){
+      var imgUrls = "css/images/pose.jpg,https://source.unsplash.com/collection/954550/1920x1080".split(",");
+      var random = Math.floor((Math.random() * imgUrls.length ));
+      if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+        document.getElementById("originBg").src=imgUrls[random];
+      } else {
+        document.getElementById("originBg").src='/' + imgUrls[random];
+      }
+  }
+  bgDiv=document.getElementById("originBgDiv");
+  if(location.pathname.match('about')){
+    setAboutIMG();
+    bgDiv.style.display='block';
+  }else{
+    bgDiv.style.display='none';
+  }
+  </script>
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-基于OpenCV的SVM算法实现数字识别" style="width: 66%; float:left;" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      基于OpenCV的SVM算法实现数字识别
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2018/01/28/基于OpenCV的SVM算法实现数字识别/" class="article-date">
+	  <time datetime="2018-01-28T00:51:02.000Z" itemprop="datePublished">一月 28, 2018</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>摘要：最近一段时间在学习基于SVM算法的数字识别程序，在最开始的学习过程中虽然能利用OpenCV<br>3.0提供的库直接实现手写数字分类，但却并未对SVM算法本身进行深入的理解。在学习SVM算法原理时发现网上关于SVM相关文章有很多，但很多都太偏数学计算，对我这种工科生而言理解起来有一定难度，故这里将本人的学习过程写出来与大家分享，权当抛砖引玉。文章研究基于OpenCV3.0的SVM算法实现数字识别，可分为三个部分，第一部分为KKT算法和拉格朗日对偶法介绍；第二部分为分析SVM算法原理并利用SMO算法求解最优超平面；第三部分给出基于OpenCV3.0的C++源代码，实现简单的基于机器学习的数字识别程序。</p>
+<p>首先声明，这篇文章是一篇学习笔记，是作者在阅读了各位大神的博客而写出来的一片学习总结，所有内容并非完全自己的原创，如果原作者觉得本篇文章侵权，请联系我，我会及时修改内容。<br><a id="more"></a></p>
+<h2 id="SVM算法的理论基础"><a href="#SVM算法的理论基础" class="headerlink" title="SVM算法的理论基础"></a>SVM算法的理论基础</h2><h3 id="拉格朗日乘子法及KKT条件介绍"><a href="#拉格朗日乘子法及KKT条件介绍" class="headerlink" title="拉格朗日乘子法及KKT条件介绍"></a>拉格朗日乘子法及KKT条件介绍</h3><h4 id="拉格朗日乘子法"><a href="#拉格朗日乘子法" class="headerlink" title="拉格朗日乘子法"></a>拉格朗日乘子法</h4><p>初次接触SVM算法，肯定会遇到拉格朗日乘子这么一个名词，而网络上很多的文章一开始就说得太抽象，对初学者十分不友好，其实对于拉格朗日乘子法，大家在大一学习高等数学时就有接触过，只不过SVM算法所应用的拉格朗日乘子法更高级罢了，让我们先从简单的只带等式约束条件的拉格朗日乘子法讲起。</p>
+<p>想必大家应该都在高等数学中学到过利用朗格朗日算法求解带等式约束条件的多元函数极值问题，这里给出利用拉格朗日乘子法求解带等式约束条件的例子：</p>
+<p>设$f\left( x_{1},x_{2},x_{3} \right) = 2x_{1}^{2} + 3x_{2}^{2} +<br>7x_{3}^{2}$，求$f(x_{1},x_{2},x_{3})$在满足约束条件：</p>
+<p>$$<br>\left{ \begin{matrix}<br>2x_{1} + x_{2} = 1 \<br>2x_{2} + {3x}_{3} = 2 \<br>\end{matrix} \right.\<br>$$</p>
+<p>下的最小值。</p>
+<p>那么可以构造拉格朗日函数</p>
+<p>$$<br>L\left( x_{1},x_{2},x_{3},\beta_{1},\beta_{2} \right) =<br>{2x}<em>{1}^{2} + 3x</em>{2}^{2} + 7x_{3}^{2} + \beta_{1}\left( 2x_{1} + x_{2} - 1 \right) + \beta_{2}(2x_{2} + 3x_{3} - 2)<br>$$</p>
+<p>然后令$L$分别对$x_{1},x_{2},x_{3},\beta_{1},\beta_{2}$求偏导得0，如下：</p>
+<p>$$<br>\frac{\partial L}{x_{1}} = 4x_{1} + 2\beta_{1} = 0 \Rightarrow x_{1} = - 0.5\beta_{1}<br>$$</p>
+<p>$$<br>\frac{\partial L}{x_{2}} = 6x_{2} + \beta_{1} + 2\beta_{2} = 0 \Rightarrow x_{2} = \frac{- \beta_{1} + 2\beta_{2}}{6}<br>$$</p>
+<p>$$<br>\frac{\partial L}{x_{3}} = 14x_{3} + 3\beta_{3} = 0 \Rightarrow x_{3} = - \frac{3\beta_{2}}{14}<br>$$</p>
+<p>$$<br>\frac{\partial L}{\beta_{1}} = 2x_{1} + x_{2} - 1 = 0<br>$$</p>
+<p>$$<br>\frac{\partial L}{\beta_{2}} = 2x_{2} + 3x_{3} - 2 = 0<br>$$</p>
+<p>显然，五个未知数五个方程，故方程组是可解的，解得$\beta_{1} = -<br>0.39$,$\beta_{2} = -<br>1.63$，这样在回代回去就可以求得$x$的值了。但是此时求得值的并不一定是函数$f$的最小值，若此优化问题是凸优化问题就可以保证利用拉格朗日乘子法求出的多元函数极值就是原函数的最值。所谓凸优化问题是指求取最小值的目标函数为凸函数的一类优化问题，具体的相关理论可以参考博客：<a href="http://blog.csdn.net/dajiabudongdao/article/details/52462942" target="_blank" rel="noopener">http://blog.csdn.net/dajiabudongdao/article/details/52462942</a></p>
+<p>好了，我们已经弄清楚带等式条件下的多元函数的凸最优化问题，那么如果是带不等式约束条件下的最优问题怎么解决呢？下面将引入KKT条件来解决这个问题。</p>
+<h4 id="KKT条件"><a href="#KKT条件" class="headerlink" title="KKT条件"></a>KKT条件</h4><p>对于一般的优化问题均可以写成以下的形式：</p>
+<p>$$<br>\left{ \begin{matrix}<br> \min_{\substack{x}}{f\left( x \right)} \<br>\text{s.t. }g_{i}\left( x \right) &amp;\leq&amp; 0 \<br>\text{}h_{i}\left( x \right) &amp;=&amp; 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>其中$g_{i}\left( x \right),h_{i}(x)$分别代表不等式约束和等式约束。</p>
+<p>构造带不等式约束条件的拉格朗日函数(若不做特别说明,$x$均代表向量)：</p>
+<p>$$L\left( x,\alpha,\beta \right) = f\left( x \right) +<br>\Sigma\alpha_{i}g_{i}\left( x \right) + \Sigma\beta_{i}h_{i}(x)  \tag{1}$$ </p>
+<p>那么对应的KKT条件可以描述为：<br>$$<br>\left{ \begin{matrix}<br>\frac{\partial L}{\partial x} &amp;=&amp; 0 \<br>h_{i}\left( x\right) &amp;=&amp; 0 \<br>\Sigma\alpha_{i}g_{i}\left( x \right) &amp;=&amp; 0,\alpha_{i} \geq 0 \<br>\end{matrix} \right.\<br>\tag{2}<br>$$ </p>
+<p><strong>KKT条件非常重要，是整个SVM算法的核心</strong>。可以证明，最优解必定满足KKT条件，注意KKT条件只是最优解的必要条件，只有当函数是凸函数的情况下，KKT条件才是最优解的充要条件。<strong><em>而常见的线性规划、二次规划、二次约束二次规划等优化问题都是凸优化问题</em></strong>。KKT条件的前两个式子都还比较好理解，重点是第三个式子不好理解，既然$\alpha_{i}\geq 0,g_{i}\left( x \right) \leq 0$,又要满足$\Sigma\alpha_{i}g_{i}\left( x\right) = 0$，也就是说$\Sigma\alpha_{i}g_{i}\left( x\right)$的每一项都必须为0，即要么$\alpha_{i} = 0$,要么$g_{i}\left( x \right)=0$,为什么最优解要满足这么一个苛刻的条件呢？这里看到过一种比较好的解释，我简要介绍一下：<br>对于不等式约束条件下，首先将不等式约束条件转化为等式约束条件，然后再利用等式约束条件下的方法进行求解最优解。具体而言，先看一个一元函数的例子：</p>
+<p>$$<br>\text{minf}\left( x \right)<br>$$</p>
+<p>$$<br>\text{s.t. }g_{1}\left( x \right) = a - x \leq 0<br>$$</p>
+<p>$$<br>g_{2}\left( x \right) = x - b \leq 0<br>$$</p>
+<p>对于约束$g_{1}$和$g_{2}$，我们引入两个松弛变量$a_{1}^{2},b_{1}^{2}$，使得：</p>
+<p>$h_{1}\left( x,a_{1} \right) = g_{1}\left( x \right) + a_{1}^{2} =<br>0$和$h_{2}\left( x,a_{1} \right) = g_{2}\left( x \right) + b_{1}^{2} =<br>0$。由此我们将不等式约束转化为了等式约束，并得到拉格朗日函数</p>
+<p>$$<br>L\left( x,a_{1},b_{1},\beta_{1},\beta_{2} \right) = f\left( x \right) + \alpha_{1}\left( a - x + a_{1}^{2} \right) + \alpha_{2}(x - b + b_{1}^{2})<br>$$</p>
+<p>再按照等式约束优化问题(极值必要条件)对其求解，联立方程</p>
+<p>$$<br>\left{<br>\begin{matrix}<br>\frac{\partial L}{\partial x} = \frac{\partial f}{\partial x} + \alpha_{1}\frac{dg_{1}}{\text{dx}} +<br>\alpha_{2}\frac{dg_{2}}{\text{dx}} = \frac{\text{df}}{\text{dx}} - \alpha_{1} +<br>\alpha_{2} = 0 \<br>\frac{\partial L}{\partial\alpha_{1}} = g_{1} + a_{1}^{2} =<br>0,\frac{\partial L}{\partial{\beta\alpha}<em>{2}} = g</em>{2} + b_{1}^{2} = 0\  \<br>\frac{\partial L}{\partial a_{1}} = 2\alpha_{1}a_{1} = 0,\frac{\partial<br>L}{\partial b_{1}} = 2\alpha_{2}b_{1} = 0 \ \alpha_{1} \geq 0,\alpha_{2} \geq 0\<br>\end{matrix}<br>\right.\ \tag{3}<br>$$ </p>
+<p>(注：这里的$\alpha_{1} \geq 0,\alpha_{2} \geq0$也是一个非常重要的条件，可以根据梯度的相关性质来证明，具体可见<a href="https://zhuanlan.zhihu.com/p/26514613" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26514613</a>)</p>
+<p>下面来求解上述方程组</p>
+<p>对于$\alpha_{1}a_{1} = 0$，我们有两种情况</p>
+<p>情形1：$\alpha_{1} = 0,a_{1} \neq 0$</p>
+<p>此时由于乘子$\alpha_{1} =0$，因此$g_{1}$与其相乘为零，<strong>可以理解为约束</strong>$\mathbf{g}<em>{\mathbf{1}}$ <strong>不起作用，且有</strong> $\mathbf{g}</em>{\mathbf{1}}\left(\mathbf{x} \right)\mathbf{= a - x &lt; 0}$</p>
+<p>情形2：$\alpha_{1} \geq 0,a_{1} = 0$</p>
+<p>此时$g_{1}\left( x \right) = a - x = 0$且$\alpha_{1} &gt;0$，<strong>可以理解为约束</strong>$\mathbf{g}<em>{\mathbf{1}}$<strong>起作用，且有</strong>$\mathbf{g}</em>{\mathbf{1}}\left(<br>\mathbf{x} \right)\mathbf{= 0}$.</p>
+<p><strong>合并情形1和情形2得：</strong>$\mathbf{\alpha}<em>{\mathbf{1}}\mathbf{g}</em>{\mathbf{1}}\mathbf{=0}$<strong>，且在约束起作用时</strong>$\mathbf{\alpha}<em>{\mathbf{1}}\mathbf{&gt;0,}\mathbf{g}</em>{\mathbf{1}}\left( \mathbf{x} \right)\mathbf{=0}$<strong>;约束不起作用时</strong>$\mathbf{\alpha}<em>{\mathbf{1}}\mathbf{=0,}\mathbf{g}</em>{\mathbf{1}}\left( \mathbf{x} \right)\mathbf{&lt; 0}$<strong>.</strong></p>
+<p>同样地，分析$\alpha_{2}b_{1} =0$，可得出约束$g_{2}$起作用和不起作用的情形，并分析得到$\alpha_{2}g_{2} =0$.</p>
+<p>由此，消去③中的$a_{1},a_{2}$即可得到带不等式的约束条件下的方程组，即：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\frac{\text{df}}{\text{dx}} + \alpha_{1}\frac{dg_{1}}{\text{dx}} + \alpha_{2}\frac{dg_{2}}{\text{dx}} = 0, \<br>\alpha_{1}g_{1}\left( x \right) = 0,\alpha_{2}g_{2}\left( x \right) = 0, \<br>\alpha_{1} \geq 0,\alpha_{2} \geq 0. \<br>\end{matrix} \right.\<br>$$</p>
+<p>这是一元一次的情形，类似地，对于多元多次不等式约束问题</p>
+<p>$$<br>\min{f\left( x \right)}<br>$$</p>
+<p>$$<br>\text{s.t.}g_{i}\left( x \right) \leq 0(i = 1,2,\ldots,N)<br>$$</p>
+<p>我们有</p>
+<p>$$<br>\left{ \begin{matrix}<br>\frac{\partial f\left( x^{<em>} \right)}{\partial x_{i}} + \sum_{j = 1}^{N}{\alpha_{j}\frac{dg_{j}\left( x^{</em>} \right)}{dx_{i}} = 0(i = 1,2,\ldots,n)} \<br>\alpha_{i}g_{i}\left( x^{*} \right) = 0(i = 1,2,\ldots,N) \<br>\alpha_{i} \geq 0(i = 1,2,\ldots,N) \<br>\end{matrix} \right.\<br>$$</p>
+<p>上式就是不等式约束问题的<strong>KKT(Karush-Kuhn-Tucker)条件</strong>。$\mathbf{\alpha}<em>{\mathbf{i}}$<strong>称为KKT乘子，且约束起作用时</strong>$\mathbf{\alpha}</em>{\mathbf{i}}\mathbf{\geq<br>0,}\mathbf{g}<em>{\mathbf{i}}\left( \mathbf{x} \right)\mathbf{=<br>0}$<strong>;约束不起作用时</strong>$\mathbf{\alpha}</em>{\mathbf{i}}\mathbf{=<br>0,}\mathbf{g}_{\mathbf{i}}\left( \mathbf{x} \right)\mathbf{&lt; 0}$<strong>.</strong></p>
+<h3 id="拉格朗日对偶"><a href="#拉格朗日对偶" class="headerlink" title="拉格朗日对偶"></a>拉格朗日对偶</h3><p>通过上面的推导，我们已经得到了KKT条件，然而有时候对于原问题而言，求解是困难的，所以我们可以将原问题转化为对偶问题之后再对其进行最优化求解。下面给出构造拉格朗日对偶问题的步骤，参考博客<a href="http://www.cnblogs.com/dreamvibe/p/4349886.html" target="_blank" rel="noopener">http://www.cnblogs.com/dreamvibe/p/4349886.html</a>：</p>
+<p>同上，构造带不等式约束条件的拉格朗日方程为:</p>
+<p>$$<br>L\left( x,\alpha,\beta \right) = f\left( x \right) + \Sigma\alpha_{i}g_{i}\left( x \right) + \Sigma\beta_{i}h_{i}(x)<br>$$</p>
+<p>其中$\alpha_{i},\beta_{i}$为拉格朗日乘数，且$\alpha_{i} \geq0,\beta$为任意常数。</p>
+<p>定义函数：</p>
+<p>$$<br>\theta_{p}\left( x \right) = \max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{L(x,\alpha,\beta)}<br>$$</p>
+<p>表示$L(x,\alpha,\beta)$在以$\alpha,\beta$为变量下的最大值，是只与$x$有关的函数。</p>
+<p>容易发现：</p>
+<p>$$<br>\theta_{p}\left( x \right) =<br>\left{<br>\begin{matrix}<br>f\left( x \right),\text{}g_{i}\left( x \right) \leq 0,h_{i}\left( x \right) = 0\  \<br>+\infty,\ \ g_{i}\left( x \right) &gt; 0||h_{i}\left( x \right) \neq 0 \<br>\end{matrix}<br>\right.\<br>$$</p>
+<p>这样就可以认为$\theta_{p}(x)$是对原优化问题中的约束条件进行了吸收，将原来的优化问题变成了无约束优化问题，即原来的优化问题可以写成：</p>
+<p>$$ \min_{\substack{x}}{\theta_{p}\left( x \right) =<br>\min_{\substack{x}}\max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{L(x,\alpha,\beta)}} \tag{4}$$ </p>
+<p>现在，称(4)为<strong>原问题</strong>，这和最初的有约束条件问题是等价的。</p>
+<p>这里先告诉大家对偶问题有很好的形式（向量内积形式），可以为SVM很方便的引入核函数。将(4)中min和max交换一下顺序便可以得到其<strong>对偶问题</strong>:</p>
+<p>$$\max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{\theta_{D}\left( \alpha,\beta \right) =<br>\max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}\min_{\substack{x}}{L(x,\alpha,\beta)}}\tag{5}$$ </p>
+<p>其中：</p>
+<p>$$<br>\theta_{D}\left( \alpha,\beta \right) =\min_{\substack{x}}{L(x,\alpha,\beta)}<br>$$</p>
+<p>不妨记$p^{<em>}$为原问题(4)的最优解，对应最优解的最优变量取值为$x^{</em>}$,则$p^{<em>}= f\left( x^{</em>} \right) = \min_{\substack{x}}{\theta_{p}(x)}$;</p>
+<p>记$d^{<em>}$为对偶问题(5)的最优解，对应最优解的最优变量取值为$\alpha^{</em>},\beta^{<em>}$,则$$d^{</em>}= \theta_{D}\left( \alpha^{<em>},\beta^{</em>} \right) =\max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{\theta_{D}(\alpha,\beta)}$$.</p>
+<p>那么这个对偶问题(5)和原问题(4)之间有什么关系呢？是不是这个对偶问题的最优解就是原问题(5)的最优解呢？下面来说明$d^{<em>}\leq p^{</em>}$。</p>
+<p>对于任意的$\alpha_{i},\beta_{i};a_{i} \geq 0$,有</p>
+<p>$$<br>\begin{split}<br>d &amp;= \theta_{D}\left( \alpha,\beta \right) = \min_{\substack{x}}{L\left( x,\alpha,\beta \right) \leq L\left( x^{<em>},\alpha,\beta \right)}\<br>&amp;= f\left( x^{</em>} \right) + \sum_{i}\alpha_{i}g_{i}\left( x^{<em>} \right) + \sum_{i}\beta_{i}h_{i}\left( x^{</em>} \right)\<br>&amp;\leq f\left( x^{<em>} \right) = p^{</em>}<br>\end{split}<br>$$</p>
+<p>上式中，对于第一个不等式是容易理解的，因为这是通过$\min_{\substack{x}}{L\left(x,\alpha,\beta\right)}$的定义直接得到的；对于第二个不等式，也是容易理解的，因为$x^{<em>}$是一个可行解，所以必定满足约束条件$g_{i}\left(x^{</em>} \right) \leq 0,$ $h_{i}\left( x^{<em>} \right) =0$,即$\sum_{i}\alpha_{i}g_{i}\left( x^{</em>} \right) \leq 0,\<br>\sum_{i}\beta_{i}h_{i}\left( x^{*} \right) = 0$.</p>
+<p>通过上面的推导我们已经得到任意的$d \leq p^{<em>}$,那么也可以得到$d^{</em>} =\max_{(\substack{\alpha , \beta ;\alpha_i \geq 0)}}d \leq p^{<em>}$,这样就得到了一个原问题(4)的最优解$p^{</em>}$的一个下确界$d^{<em>}$，也就是其对偶问题的最优解。幸运的是，当优化问题是凸优化问题时，$d^{</em>}= p^{*}$。</p>
+<p>还有一点值得说明的是，KKT条件是原问题与对偶问题等价的必要条件，也就是若$d^{<em>} =<br>p^{</em>} \Rightarrow x^{*}$满足KKT条件。具体证明可以看我之前提到的那篇博文。</p>
+<p>好了，总结一下，面已经简要介绍了带有不等式约束条件下的多元函数优化问题的求法，即凸函数的最优解必定满足<strong>KKT条件</strong>，然后再利用<strong>拉格朗日对偶</strong>法，可以再将凸优化问题转换成其对偶问题来求解。这就是求解凸优化问题的一个大致思路，接下来要讨论的SVM算法就是基于这样一个步骤来求解其最优解的。用式子来表示上面做的工作就是：</p>
+<p>带不等式约束条件的拉格朗日函数为：</p>
+<p>$$<br>L\left( x,\alpha,\beta \right) = f\left( x \right) + \Sigma\alpha_{i}g_{i}\left( x \right) + \Sigma\beta_{i}h_{i}(x)<br>$$</p>
+<p>KKT条件：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\frac{\partial L}{\partial x^{<em>}} = 0 \<br>h_{i}\left( x^{</em>} \right) = 0 \<br>\Sigma\alpha_{i}g_{i}\left( x^{*} \right) = 0,\alpha_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>拉格朗日对偶：</p>
+<p>$$<br>\min_{\substack{x}}{\max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{L(x,\alpha,\beta)}} \geq \max_{\substack{\alpha , \beta ;\alpha_i \geq 0}}{\min_{\substack{x}}{L(x,\alpha,\beta)}}<br>$$</p>
+<p>这三个公式是我们之前讨论的核心，也是之后SVM算法的理论基础。好了，话不多说，让我们揭开SVM算法的神秘面纱吧！</p>
+<h2 id="SVM算法原理及分析"><a href="#SVM算法原理及分析" class="headerlink" title="SVM算法原理及分析"></a>SVM算法原理及分析</h2><h3 id="SVM算法简介"><a href="#SVM算法简介" class="headerlink" title="SVM算法简介"></a>SVM算法简介</h3><p>说了半天SVM算法，也没说SVM算法到底是个什么东西。简单来说SVM算法就是一个二分类器(当然，通过某种算法也可以解决多分类问题)。什么是二分类器呢？就是给定一堆样本数据，这个数据中包含0或1两种类型，然后分类器根据这个样本来预测新的数据是属于0类或者1类。SVM算法就是这样一个分类器，它在解决小样本、非线性及高维模式识别中表现出许多特有的优势，并能够推广应用到函数拟合等其他机器学习问题中。</p>
+<h4 id="线性可分模型"><a href="#线性可分模型" class="headerlink" title="线性可分模型"></a>线性可分模型</h4><p>对于最简单二维线性可分模型，如下图所示，其中符号叉代表一类，符号圈表示另一类。怎么样设计一种算法来区分这两类呢？</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/c6d8d437419c9311ecd2d419df84e3c0.png" alt=""><center><br>图1 简单二维线性可分模型</center></p>
+<p>想到在这个二维的数据空间中找到一个超平面(hyper plane)，其一般表示是$\omega^{T}x + b =0$(特别值得注意的是<strong>式中的$\mathbf{x}$表示的是一个$\mathbf{n}$维列向量</strong>，如果是二维数据，超平面就是一条直线),能够将两类样本分开。那么上图中的三种颜色代表的三个超平面哪个是最优的呢，这就是我们要考虑的问题。</p>
+<p>一个比较好的超平面能够是<strong>离超平面比较近的点有更大的间距</strong>。也就是说我们不考虑所有的点都必须远离超平面，我们关心的是求得的超平面能够让所有点中离它最近的点具有最大间距。既然如此我们就想办法求解点到分界面的距离吧：</p>
+<p>设分界面可以表示为$\omega^{T}x + b =0$，同样先从简单的二维情况说起，这样分界面就是一条直线，写成：</p>
+<p>$$<br>\omega_{1}x_{1} + \omega_{2}x_{2} + b = 0<br>$$</p>
+<p>点到直线的距离公式是高中知识，这里直接给出：</p>
+<p>$$<br>d_{i} = \frac{|\omega_{1}x_i^{(i)}+\omega_2x_2^{(i)}+b|}{\sqrt{\omega_{1}^{2}+\omega_{2}^{2}}}<br>$$</p>
+<p>推广到多维的情形，可以表示为</p>
+<p>$$<br>d_{i} = \frac{y_{i}(\omega^{T}x_{i} + b)}{\left| \left| \omega \right| \right|}<br>$$</p>
+<p>式中，$\omega$是一个列向量,$\left| \left| \omega \right|\right|$表示向量的二范数，定义为$\left| \left| \omega \right| \right| =\sqrt{\omega^{T}\omega}$,$y_{i}$的值为-1或+1，作用是保证$(\omega^{T}x_{i} +<br>b)$的值为正。</p>
+<p>那么距离分界面最近的点就可以表示为</p>
+<p>$$<br>d = \min_{\substack{i}}d_{i}<br>$$</p>
+<p>之前已经讨论过我们的目的就是要使得它最近的样本尽可能的离它远，这样的分类平面才能将两类样本分的更开，保证了分类器更好的泛化性。这样的分类超平面几何上大概是与两类样本的“边界”平行，穿过两类样本最中间的那条线，如图2所示。</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/81734329530aa8cb9932b6de6240ff87.png" alt=""><center><br>图2 最优超平面</center></p>
+<p>将刚刚讨论的要求抽象为数学语言。首先，分类器必须对所有数据正确分类，也就是说所有样本点到分界面的距离至少是$d$，其次是这个距离要最大化，这样就可以表示为以下优化问题：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(\omega ,b ,d)}} d \<br>\text{s.t. }\frac{1}{\left| \left| \omega \right| \right|}y_{i}\left( \omega^{T}x_{i} + b \right) \geq d \<br>\end{matrix} \right.\<br>$$</p>
+<p>根据$d$和$d_{i}$的关系，上式也可以改写为：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(\omega ,b ,\overset{\hat{}}{\gamma})}}\frac{\overset{\hat{}}{\gamma}}{\left| \left| \omega \right| \right|} \<br>\text{s.t. }y_{i}\left( wx_{i} + b \right) \geq \overset{\hat{}}{\gamma} \<br>\end{matrix} \right.\<br>$$</p>
+<p>式中$$\overset{\hat{}}{\gamma} = \min_{\substack{x}}{y_{i}\left( w^{T}x_{i} + b<br>\right)}$$，称为函数的最小函数距离。</p>
+<p>下面可以将上式进一步简化</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(\omega ,b ,\overset{\hat{}}{\gamma})}}\frac{1}{\left| \left| \omega \right| \right|} \<br>\text{s.t.  }y_{i}\left( wx_{i} + b \right) \geq 1 \<br>\end{matrix} \right.\<br>$$</p>
+<p>为什么可以简化成这种形式呢？我在一开始的时候看了很多资料，全部都是一笔带过，始终弄不明白为了“求的方便”就将$\overset{\hat{}}{\gamma}=1$去求解了，后来在<a href="http://blog.csdn.net/v_july_v/article/details/7624837" target="_blank" rel="noopener">http://blog.csdn.net/v_july_v/article/details/7624837</a>的评论区找到了令人满意的答案。下面给出解释：</p>
+<p>上面提到分界面是不是可以定义为$w^{T}x + b =0$,同样地，我在前面加一个比例系数是不是不影响超平面的方程，改写成下面的形式还是同样的超平面$kw^{T}x+ kb =0$，其中$k$为任意常数，也就是说<strong>超平面只与向量和截距有关</strong>,$\mathbf{w}$<strong>和</strong>$\mathbf{b}$<strong>的值有无穷多个</strong>。分别讨论分界面改写前和改写后的情况：</p>
+<p>分界面改写前,假设最小函数距离在$x_{m}$处取得：</p>
+<p>超平面$w^{T}x + b = 0 \Rightarrow$最小函数间隔$\overset{\hat{}}{\gamma} =y_{m}(w^{T}x_{m} + b) \Rightarrow$约束条件${\overset{\hat{}}{\gamma}}<em>{i} =<br>y</em>{i}\left( w^{T}x_{i} + b \right) \geq \overset{\hat{}}{\gamma}<br>\Rightarrow$数据点到分界面距离$d = \frac{\overset{\hat{}}{\gamma}}{\left|\left| \omega \right| \right|}$</p>
+<p>分界面改写后,最小函数距离仍在$x_{m}$处取得：</p>
+<p>超平面$kw^{T}x + kb = 0 \Rightarrow$最小函数间隔$\overset{\hat{}}{\gamma’} = y_{m}k(w^{T}x_{m} + b) \Rightarrow$约束条件${\overset{\hat{}}{\gamma}’}<em>{i} =<br>y</em>{i}k\left( w^{T}x_{i} + b \right) \geq \overset{\hat{}}{\gamma’} \Rightarrow{\overset{\hat{}}{\gamma}}<em>{i} = y</em>{i}\left( w^{T}x_{i} + b \right) \geq\overset{\hat{}}{\gamma}$数据点到分界面距离$d =\frac{\overset{\hat{}}{\gamma}}{k\left| \left| \omega \right| \right|}$</p>
+<p>综合比较以上两种情况发现，两式中约束条件，目标函数均没有变化，且是同一个超平面，但是函数间隔却变成了K倍，也就是说任意伸缩函数间隔，对目标问题求解没有影响。这样不妨令$\overset{\hat{}}{\gamma}<br>= 1$，方便以下的求解。</p>
+<p>好了，解释完这些。SVM数学模型就已经清楚了，即：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(x)}}\frac{1}{\left| \left| \omega \right| \right|} \<br>\text{s.t.  }y_{i}\left( w^{T}x_{i} + b \right) \geq 1 \<br>\end{matrix} \right.\<br>$$</p>
+<p>做一个简单的变形，上式也等价于：</p>
+<p>$$\left{ \begin{matrix}<br>\min_{(\omega,b)}\frac{1}{2}\left| \left| \omega \right|\right|^{2} \ s.t.\ \ 1 - y_{i}\left( w^{T}x_{i} + b \right) \leq 0 \<br>\end{matrix}<br>\right.\ \tag{1}<br>$$ </p>
+<p>SVM问题就是去求解上式的优化问题，而且不难发现它还是个凸优化问题，求解很方便。但是我们并不直接求解这个问题，而是转而求解它的对偶问题。</p>
+<p>那么，我们可以用第一章讨论的相关理论来求这个凸优化问题。</p>
+<p>首先构造(1)的拉格朗日函数：</p>
+<p>$$<br>L\left( \omega,b,\alpha \right) = \frac{1}{2}\omega^{T}\omega + \sum\alpha_{i}(1 - y_{i}(\omega^{T}x_{i} + b))<br>$$</p>
+<p>$$= \frac{1}{2}\omega^{T}\omega - \sum\alpha_{i}y_{i}\left( \omega^{T}x_{i} + b<br>\right) + \sum\alpha_{i} \tag{2}$$ </p>
+<p>将原问题转化为对偶问题：</p>
+<p>令$$\theta_{D}\left( \alpha \right) =<br>\min_{\omega,b}L(\omega,b,\alpha)$$，则(1)的对偶问题可以写成</p>
+<p>$$<br>\max_{\substack{\alpha}}{\min_{\substack{\omega,b}}{L\left( \omega,b,\alpha \right) =\max_{\substack{\alpha}}{\theta_{D}(\alpha)}}}<br>$$</p>
+<p>先求$\theta_{D}$，令(2)分别对$\omega,b$求导得0，</p>
+<p>$$\frac{\partial L}{\partial\omega} = \omega - \sum\alpha_{i}y_{i}x_{i} = 0<br>\Rightarrow \omega = \sum\alpha_{i}y_{i}x_{i} \tag{3}$$ </p>
+<p>$$\frac{\partial L}{\partial b} = \sum\alpha_{i}y_{i} = 0 \tag{4}$$ </p>
+<p>这里说明一下，$\frac{\partial L}{\partial\omega} = \frac{\partial\left\lbrack<br>\frac{1}{2}\left( \omega_{1}^{2} + \omega_{2}^{2} + \ldots + \omega_{n}^{2}<br>\right) + \sum\alpha_{i}\left( 1 - y_{i}\left( \omega^{T}x_{i} + b \right)<br>\right) \right\rbrack}{\partial\omega} = \omega - \sum\alpha_{i}y_{i}x_{i}$</p>
+<p>将(3)和(4)代入拉格朗日函数(2)可以得到</p>
+<p>$$<br>\theta_{D}\left( \alpha \right) = \frac{1}{2}(\sum_{i = 1}^{N}{\alpha_{i}y_{i}x_{i})}^{T}(\sum_{i = 1}^{N}{\alpha_{i}y_{i}x_{i}) - \sum_{i = 1}^{N}{\alpha_{i}y_{i}\left( \sum_{j = 1}^{N}{\alpha_{j}y_{j}x_{j}^{T}x_{i} + b} \right) + \sum_{i = 1}^{N}\alpha_{i}}}<br>$$</p>
+<p>$$<br>= \frac{1}{2}\left( \sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}x_{i}^{T}x_{j}} \right) - \sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}x_{j}^{T}x_{i}} - b\sum_{i = 1}^{N}{\alpha_{i}y_{i}} + \sum_{i = 1}^{N}\alpha_{i}<br>$$</p>
+<p>$$<br>= \sum_{i = 1}^{N}{\alpha_{i} - \frac{1}{2}\sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}K(x_{i},x_{j})}}<br>$$</p>
+<p>式中$K(x_{i},x_{j})$表示两向量的内积。加上约束条件，对偶问题就可以写成：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(\alpha)}}{\theta_{D}\left( \alpha \right) = \max_{\substack{(\alpha)}}{\sum_{i = 1}^{N}{\alpha_{i} - \frac{1}{2}\sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}K(x_{i},x_{j})}}}} \<br>\text{s.t.  }\alpha_{i} \geq 0,\sum\alpha_{i}y_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>通过上式可以确定$\alpha$的值，然后再根据公式$\omega =<br>\sum\alpha_{i}{y_{i}x}_{i}$就可以确定$\omega$，得到了$\omega$还不够，确定分界面还需要确定$b$的值，这里先不求$b$，后面会给出求解方法。</p>
+<h4 id="2-1-2线性不可分模型"><a href="#2-1-2线性不可分模型" class="headerlink" title="2.1.2线性不可分模型"></a>2.1.2线性不可分模型</h4><p>上面讨论的问题都是线性可分的模型，然而在实际处理的数据中总会遇到一些干扰，比如噪声，那么如果遇到线性不可分模型应该怎么办呢？</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/96a56485d6472f61ae4b02eabc1a0616.png" alt=""><center><br>图3 噪声的影响</center></p>
+<p>用黑圈圈起来的那个蓝点是一个噪点，它偏离了自己原本所应该在的那个半空间，如果直接忽略掉它的话，原来的分隔超平面还是挺好的，但是由于这个噪点的出现，导致分隔超平面不得不被挤歪了，变成途中黑色虚线所示（这只是一个示意图，并没有严格计算精确坐标），同时间隙也相应变小了。当然，更严重的情况是，如果这个噪点再往右上移动一些距离的话，我们将无法构造出能将数据分开的超平面来。</p>
+<p>下面引入松弛因子来解决离群点或噪声点问题。</p>
+<p>也就是说我们放松要求，不要求那么苛刻了，对于一些样本点它到分界面的距离可以原来的最小距离还要小点，甚至可以为负数。对每个数据都引入松弛变量$\epsilon_{i} &gt; 0$。用数学公式表达就是：</p>
+<p>$$<br>{1 - y_{i}(w}^{T}x_{i} + b) \leq \epsilon_{i}<br>$$</p>
+<p>当然了，这个松弛变量也不能太大，否则对任意的超平面都会满足约束条件了,这样的话分类器效果就会很差。所以优化问题中也必须要考虑最小化松弛因子。优化问题可以重新写成：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\min_{\substack{(\omega,b,\epsilon)}}{\frac{1}{2}\omega^{T}\omega + C\sum\epsilon_{i}} \<br>s.t.\ \ 1 - \epsilon_{i} - y_{i}\left( \omega^{T}x_{i} + b \right) \leq 0,\epsilon_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>其中$C$表示惩罚因子，用于控制目标函数中两项(“寻找最小间隙最大的超平面”和“保证数据点偏差量最小”)之间的权重。</p>
+<p>再重新写成拉格朗日函数：</p>
+<p>$$<br>L\left( \omega,b,\epsilon,\alpha,r \right) = \frac{1}{2}\omega^{T}\omega + \sum\alpha_{i}\left( {1 - \epsilon_{i} - y}<em>{i}\left( \omega^{T}x</em>{i} + b \right) \right) + C\sum\epsilon_{i} - \sum r_{i}\epsilon_{i}<br>$$</p>
+<p>其中$\alpha_{i} \geq 0,r_{i} \geq 0$</p>
+<p>同样将其转化为对偶问题,令$\theta_{D}\left( \alpha,r \right) =<br>\min_{\substack{(\omega,b,\epsilon)}}{L(\omega,b,\epsilon,\alpha,r)}$，其对偶问题为：</p>
+<p>$$<br>\max_{\substack{\alpha,r}}{\min_{\substack{\omega,b,\epsilon}}{L(\omega,b,\epsilon,\alpha,r)}}<br>$$</p>
+<p>还是先求$\theta_{D}\left( \alpha,r \right)$，</p>
+<p>令$\frac{\partial L}{\partial\omega} = 0 \Rightarrow \omega =<br>\sum\alpha_{i}y_{i}x_{i}$,</p>
+<p>$\frac{\partial L}{\partial b} = 0 \Rightarrow \sum\alpha_{i}y_{i} = 0$,</p>
+<p>$\frac{\partial L}{\partial\epsilon} = 0 \Rightarrow C - \alpha_{i} - r_{i} =<br>0$。</p>
+<p>由于$\alpha_{i} \geq 0,$且$r_{i} \geq 0$,所以更进一步有$0 \leq \alpha_{i}\leq C$</p>
+<p>将上述结果回代回对偶问题，可得到：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\max_{\substack{(x)}}{\sum\alpha_{i} - \frac{1}{2}(\sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}K(x_{i},x_{j})})} \<br>s.t.\ \ 0 \leq \alpha_{i} \leq C,\sum\alpha_{i}y_{i} = 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>与线性可分模型进行比较，目标优化问题与没有加入松弛变量时一模一样，唯一的变化就是约束条件$0\leq \alpha_{i} \leq C$。</p>
+<p>这是一个二次规划(QP)问题，可以用一般的二次规划方法来求解，不过代价比较大，可以引入SMO算法来进行求解。</p>
+<h3 id="SMO算法"><a href="#SMO算法" class="headerlink" title="SMO算法"></a>SMO算法</h3><p>上面已经得到了原问题的对偶问题的数学形式为：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\min_{\substack{(\alpha)}}{\frac{1}{2}(\sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}K(x_{i},x_{j})} - \sum\alpha_{i})} \<br>s.t.\ \ 0 \leq \alpha_{i} \leq C,\sum\alpha_{i}y_{i} = 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>那么怎么去求这一组$\alpha$呢？其中$n$个$\alpha_{i}$都是未知的，将$\theta_{D}(\alpha)$对$\alpha$求导令得零，再结合KKT条件中的$\alpha_{i}g_{i}\left(x \right) =0$理论上是可解的，然而当数据点比较多时，这种方法解起来是十分困难的。还记得之前提过的KKT条件吗？这里可以运用迭代的思想，假设已经得到了一组$\alpha_{i}(i=1,2,\ldots,n)$,当然这并不是最优解的$\alpha$，如果能将这组$\alpha$不断优化，最后到所有的$\alpha$均满足KKT条件，是不是就找到了这组超平面了呢？原来的KKT条件如下：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\frac{\partial L}{\partial x^{<em>}} = 0 \<br>h_{i}\left( x^{</em>} \right) = 0 \<br>\Sigma\alpha_{i}g_{i}\left( x^{*} \right) = 0,\alpha_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>显然，目前已经满足了前两个条件，现将第三个条件变成一种与$\alpha$有关的形式,即$\alpha$应满足：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\alpha_{i} = 0 \Leftrightarrow y_{i}u_{i} \geq 1\ \ \ \ \ \ (样本在两分隔面外部) \<br>{0 &lt; \alpha}<em>{i} &lt; C \Leftrightarrow y</em>{i}u_{i} = 1\ \ \ \ \ \ (样本在两分隔面上) \<br>\alpha_{i} = C \Leftrightarrow y_{i}u_{i} \leq 1\ \ \ \ \ \ (样本在两分隔面内部) \<br>\end{matrix} \right.\<br>$$</p>
+<p>式中$u_{i} = \omega^{T}x_{i} + b$为系统输出，</p>
+<p>为什么会这样呢？这里做一个简单的推导：(参考博客<a href="http://blog.csdn.net/lc013/article/details/55195523" target="_blank" rel="noopener">http://blog.csdn.net/lc013/article/details/55195523</a>)</p>
+<p>之前已经得到对偶优化问题的应该满足的约束条件是：</p>
+<p>$$<br>\left{ \begin{matrix}<br>1 - \epsilon_{i} - y_{i}\left( \omega^{T}x_{i} + b \right) \leq 0 \<br>\epsilon_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>最优解应满足的KKT条件：</p>
+<p>$$<br>\left{ \begin{matrix}<br>\alpha_{i}\left( 1 - \epsilon_{i} - y_{i}\left( \omega^{T}x_{i} + b \right) \right) = 0 \<br>r_{i}\epsilon_{i} = 0 \<br>C - \alpha_{i} - r_{i} = 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>其中${0 \leq \alpha}<em>{i} \leq C,r</em>{i} \geq 0$。那么可以分三种情况讨论：</p>
+<p>①$$\alpha_{i} = 0 \Rightarrow r_{i} = C - \alpha_{i} = C \neq 0 \Rightarrow<br>\epsilon_{i} = 0 \Rightarrow y_{i}u_{i} \geq 1$$;</p>
+<p>②$$0 &lt; \alpha_{i} &lt; C \Rightarrow \left{ \begin{matrix} 0 &lt; r_{i} &lt; C<br>\Rightarrow \epsilon_{i} = 0 \ y_{i}u_{i} - 1 = 0 \ \end{matrix} \right.\<br>\Rightarrow y_{i}u_{i} = 1$$</p>
+<p>③$$\alpha_{i} = C \Rightarrow \left{ \begin{matrix} r_{i} = C - \alpha_{i} = 0<br>\Rightarrow \epsilon_{i} \geq 0 \ 1 - \epsilon_{i} - y_{i}u_{i} = 0 \<br>\end{matrix} \right.\  \Rightarrow y_{i}u_{i} \leq 1$$<br>得到了$\alpha_{i}$应满足的KKT条件，假设找到了一个违反KKT条件最严重的$\alpha_{1}$,另一个乘子则由约束条件$\sum\alpha_{i}y_{i}=0$来确定，然后将$\theta_{D}(\alpha)$展开成只包含$\alpha_{1},\alpha_{2}$的形式，如下：</p>
+<p>$$<br>\theta_{D}\left( \alpha \right) = \frac{1}{2}K_{11}\alpha_{1}^{2} + \frac{1}{2}K_{22}\alpha_{2}^{2} + sK_{12}\alpha_{1}\alpha_{2} + y_{1}\alpha_{1}v_{1}<br>$$</p>
+<p>$$+ y_{2}\alpha_{2}v_{2} - \alpha_{1} - \alpha_{2} + \theta_{\text{constant}}  \tag{5}$$</p>
+<p>式中：$K_{\text{ij}} = K\left( x_{i},x_{j} \right),s = y_{1}y_{2},$</p>
+<p>$$<br>v_{i} = \sum_{j = 3}^{N}{y_{j}\alpha_{i}K_{\text{ij}} = u_{i} - b - y_{1}\alpha_{1}K_{1i} - y_{2}\alpha_{2}K_{2i}}<br>$$</p>
+<p>$$<br>\alpha_{1}^{\text{old}}y_{1} + a_{2}^{\text{old}}y_{2} = \alpha_{1}^{\text{new}}y_{1} + \alpha_{2}^{\text{new}}y_{2} = \delta = - \sum_{i = 3}^{N}{\alpha_{i}y_{i}}<br>$$</p>
+<p>$$\alpha_{1}^{\text{old}} + a_{2}^{\text{old}}s = \alpha_{1}^{\text{new}} +<br>\alpha_{2}^{\text{new}}s = \zeta \tag{6}$$ </p>
+<p>既然$n$个未知数不好解，而两个未知数是好解的，现在只将$\alpha_{1},\alpha_{2}$视为变量，其他$\alpha_{i}(i<br>\geq3)$视为常量，同时将(5)中的$\alpha_{1}$用$\alpha_{2}$来表示(也可令(5)分别对$\alpha_{1},\alpha_{2}$求导)：</p>
+<p>$$<br>\theta_{D}\left( \alpha_{2} \right) = \frac{1}{2}K_{11}\left( \zeta - s\alpha_{2} \right)^{2} + \frac{1}{2}K_{22}\alpha_{2}^{2} + sK_{12}\left( \zeta - s\alpha_{2} \right)\alpha_{2}<br>$$</p>
+<p>$${+ y}<em>{1}\left( \zeta - s\alpha</em>{2} \right)v_{1} + y_{2}\alpha_{2}v_{2} -<br>\left( \zeta - s\alpha_{2} \right) - \alpha_{2} + \theta_{\text{constant}}  \tag{7}$$</p>
+<p>将(7)对$\alpha_{2}$求导令得零：</p>
+<p>$$<br>\frac{d\theta_{D}\left( \alpha_{2} \right)}{d\alpha_{2}} = 0 \Rightarrow \<br>\alpha_{2}\left( K_{11} + K_{22} - 2K_{12} \right) = s\left( K_{11} - K_{12} \right)\zeta + y_{2}\left( v_{1} - v_{2} \right) + 1 - s<br>$$</p>
+<p>将$\zeta = (\alpha_{1}^{\text{old}} + \text{sα}<em>{2}^{\text{old}})$$,$$v</em>{i} =<br>u_{i} - b - y_{1}\alpha_{1}^{\text{old}}K_{1i} -<br>y_{2}\alpha_{2}^{\text{old}}K_{2i}$代入上式，得：</p>
+<p>$$<br>\alpha_{2}^{\text{new}}\left( K_{11} - 2K_{12} + K_{22} \right) = \alpha_{2}^{\text{old}}\left( K_{11} - 2K_{12} + K_{22} \right) + y_{2}(u_{1} - u_{2} + y_{2} - y_{1})<br>$$</p>
+<p>令$\eta = \left( K_{11} - 2K_{12} + K_{22} \right),\text{E}<em>{i} = u</em>{i} -y_{i}$表示预测值和真实值之差，那么上式又可以表示为：</p>
+<p>$$<br>\alpha_{2}^{\text{new}} = \alpha_{2}^{\text{old}} + \frac{y_{2}\left( E_{2} - E_{1} \right)}{\eta}<br>$$</p>
+<p>那么又根据$\alpha_{1}^{\text{new}} + \text{sα}<em>{2}^{\text{new}} =<br>\alpha</em>{1}^{\text{old}} + \text{sα}<em>{2}^{\text{old}} =<br>\zeta$,可以求得$\alpha</em>{1}^{\text{new}} = \zeta - s\alpha_{2}^{\text{new}}$。</p>
+<p>通过上面的方法，我们就更新了两个SVM乘子，$\alpha_{1},\alpha_{2}$然后再通过公式$\omega = \sum\alpha_{i}y_{i}x_{i}$,就可以更新这个超平面。但是利用SMO算法得到的解是未经剪辑过的解，它不一定满足$0<br>\leq \alpha_{i} \leq C$的条件，所以进一步讨论$\alpha_{i}$的取值范围。</p>
+<p>假设$\alpha_{2}^{\text{new}}$的上下边界分别为H和L，那么有：</p>
+<p>$$<br>L \leq \alpha_{2}^{\text{new}} \leq H<br>$$</p>
+<p>接下来，综合$0 \leq \alpha_{i} \leq C{y_{1}\alpha}<em>{1}^{\text{new}} +<br>{y</em>{2}\alpha}<em>{2}^{\text{new}} = {y</em>{1}\alpha}<em>{1}^{\text{old}} +y</em>{2}\alpha_{2}^{\text{old}}$两个条件来求取$\alpha_{2}^{\text{new}}$的取值范围。</p>
+<p>①当$y_{1} \neq y_{2}$时：</p>
+<p>根据${y_{1}\alpha}<em>{1}^{\text{new}} + {y</em>{2}\alpha}<em>{2}^{\text{new}} =<br>{y</em>{1}\alpha}<em>{1}^{\text{old}} + y</em>{2}\alpha_{2}^{\text{old}} = \zeta$可得$\alpha_{1}^{\text{new}} - \alpha_{2}^{\text{new}} = \zeta$,所以有$L =\max\left( 0, - \zeta \right),H = min(C,C - \zeta)$</p>
+<p>②当$y_{1}{= y}_{2}$时：</p>
+<p>根据${y_{1}\alpha}<em>{1}^{\text{new}} + {y</em>{2}\alpha}<em>{2}^{\text{new}} = {y</em>{1}\alpha}<em>{1}^{\text{old}} + y</em>{2}\alpha_{2}^{\text{old}} = \zeta$可得$\alpha_{1}^{\text{new}} + \alpha_{2}^{\text{new}} = \zeta$,所以有$L =\max\left( 0,\zeta - C \right),H = min(C,\zeta)$</p>
+<p>综合①②和$\alpha_{2}^{\text{new}}$的表达式，可以给出$\alpha_{2}^{\text{new}}$的值：</p>
+<p>$$<br>\alpha_{2}^{new,clipped}\left{ \begin{matrix}<br>\text{H      if }\quad  \alpha_{2}^{\text{new}} \geq H; \<br>\alpha_{2}^{\text{new}}\quad if\quad   L &lt; \alpha_{2}^{\text{new}} &lt; H \<br>\text{L      if  } \quad \alpha_{2}^{\text{new}} \leq L \<br>\end{matrix} \right.\<br>$$</p>
+<p>$$<br>\alpha_{1}^{\text{new}} = \zeta - s\alpha_{2}^{new,\text{clipped}}<br>$$</p>
+<p>那么如何选择乘子$\alpha_{1}$和$\alpha_{2}$呢？</p>
+<ul>
+<li><p>对于$\alpha_{1}$，即第一个乘子，可以通过不满足KKT的条件来找；</p>
+</li>
+<li><p>而对于第二个乘子$\alpha_{2}$可以寻找满足条件:$\max{|E_{i} -E_{j}|}$的乘子。</p>
+</li>
+</ul>
+<p>通过SMO算法已经更新得到了$\omega$，那么$b$怎么办呢？很简单，又是利用KKT条件，从上面的推导可知，如果$\alpha_{i}$满足$0&lt; \alpha_{i} &lt; 1$，则数据点是支持向量，约束条件满足$y_{i}u_{i}\left( x \right)= 1$,那么</p>
+<p>$$<br>y_{j}\left( \omega^{T}x + b \right) = 1<br>$$</p>
+<p>当输入是$x_{1}$时，把$\omega$的表达式代入，就可以得到$b$的表达式，这里不再推导了，有兴趣的读者可以自行尝试，直接给出结论：</p>
+<p>$$<br>\left{ \begin{matrix}<br>b_{1} = E_{1} + y_{1}\left( \alpha_{1}^{\text{new}} - \alpha_{1}^{\text{old}} \right)K_{11} + y_{2}\left( \alpha_{2}^{new,clipped} - \alpha_{2}^{\text{old}} \right)K_{12} + b \<br>b_{2} = E_{2} + y_{1}\left( \alpha_{1}^{\text{new}} - \alpha_{1}^{\text{old}} \right)K_{12} + y_{2}\left( \alpha_{2}^{new,clipped} - \alpha_{2}^{\text{old}} \right)K_{22} + b \<br>\end{matrix} \right.\<br>$$</p>
+<p>当$0 &lt; \alpha_{1} &lt; 1,0 &lt; \alpha_{2} &lt; 1$时，$b_{1} =<br>b_{2}$，当$\alpha_{1},\alpha_{2}$不满足上述条件时，取$b_{1}$和$b_{2}$的中间值，即：</p>
+<p>$$<br>b = \left{ \begin{matrix}<br>b_{1}\quad\text{  if  }\quad0 &lt; \alpha_{1} &lt; 1 \<br>b_{2}\quad\text{  if  }\quad0 &lt; \alpha_{1} &lt; 1 \<br>\frac{b_{1} + b_{2}}{2}\quad\text{ otherwise} \<br>\end{matrix} \right.\<br>$$</p>
+<p>最后，不断更新$\alpha_{i}$的值，直到所有的$\alpha_{i}$都满足KKT条件，也就找到最优的超平面。至此，简单的，线性的，带有松弛条件（可以容错的）的整个SVM算法就介绍完了，总结一下就是：</p>
+<p>SVM算法的目的是要找到一个超平面使得样本数据中离这个超平面最近的几何距离最大；然后建立这个优化问题的数学模型并转化其对偶问题；最后利用SMO算法求解这个优化问题。</p>
+<p><strong>2.3非线性分类原理</strong></p>
+<p>前面我们讨论的模型都是线性模型，那么当我们遇到一个样本，它根本就不存在一个超平面能将二类分开怎么办呢？如下图所示：</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/10bb4a1be3453c9ceb41651819229be0.png" alt=""></p>
+<p>在原来的二维平面中，找不到一个超平面能将两类正确的分开，但是如果将其映射到三维平面上去，这个超平面就找到了。也就是说，单纯的SVM是不能处理非线性问题的，说白了只能处理线性问题，这样的算法应用面很窄，那么我们要怎么去处理非线性样本呢？在样本上做的文章，把非线性样本变成线性样本，再去把变化后的线性样本拿去分类，就达到了把非线性样本分开的目的，所以SVM处理非线性问题的本质还是将其转化为线性问题。</p>
+<p>比如一个二维样本点是用坐标$(x_{1},x_{2})$表示的,它有一个类标签，假设为1，那么取映射$\Phi\left(<br>x \right) =(x_{1}^{2},\sqrt{2}x_{1},x_{2}^{2})$。这样每个点都映射到三维坐标空间中去了。</p>
+<p>根据上面的讨论，SVM最终形式是以下优化问题：</p>
+<p>$$<br>\left{ \begin{matrix}<br>max_{\substack{(\alpha)}}{\theta_{D}\left( \alpha \right) = max_{\substack{(\alpha)}}{\sum_{i = 1}^{N}{\alpha_{i} - \frac{1}{2}\sum_{i = 1,j = 1}^{N}{\alpha_{i}y_{i}\alpha_{j}y_{j}K(x_{i},x_{j})}}}} \<br>\text{s.t.  }\alpha_{i} \geq 0,\sum\alpha_{i}y_{i} \geq 0 \<br>\end{matrix} \right.\<br>$$</p>
+<p>而且最终的超平面可以写成:</p>
+<p>$$<br>\omega^{T}x + b = \sum_{i}^{}{\alpha_{i}y_{i}K\left( x_{i},x \right) + b}<br>$$</p>
+<p>二维的映射关系或许可以人为求取，但在多维情形下，寻求映射关系就会十分复杂。不妨现将原问题中的$m$维列向量用$n$维列向量映射$\Phi(x)$代替，优化问题中的内积$K\left(<br>x_{i},x_{j} \right),K(x_{i},x)$也改写成$K\left( \Phi(x_{i}),{\Phi(x}<em>{j})\right),K(\Phi(x</em>{i}),\Phi(x))$，观察发现，在SVM的优化问题中，我们并不需要找到映射关系$\Phi(x)$是怎样的，最终参与计算的是映射后的内积$K\left(\Phi(x_{i}),{\Phi(x}_{j})\right)$，如果我们能找到一个函数能够使得在$m$维下的函数值等于其在高维映射后的向量内积，就可以大大简化计算。这个函数又叫核函数，定义为：</p>
+<p>$$<br>K\left( x,y \right) = &lt; \Phi\left( x \right),\Phi(y) &gt;<br>$$</p>
+<p>比如上面那个例子，$$\Phi\left( x \right) =<br>(x_{1}^{2},\sqrt{2}x_{1},x_{2}^{2})$$，那么：</p>
+<p>$$<br>&lt; \Phi\left( x \right),\Phi\left( y \right) &gt; = \left( x_{1}^{2},\sqrt{2}x_{1},x_{2}^{2} \right)\left( x_{1}^{2},\sqrt{2}x_{1},x_{2}^{2} \right)^{T}<br>$$</p>
+<p>$$<br>= x_{1}^{4} + 2x_{1} + x_{2}^{4}<br>$$</p>
+<p>那么，我们就可以定义对应的核函数为：</p>
+<p>$$<br>K(x_{1},x_{2}) = x_{1}^{4} + 2x_{1} + x_{2}^{4}<br>$$</p>
+<p>这和映射到三维再计算内积的结果是一样的，但是现在直接计算$K(x_{1},x_{2}) =x_{1}^{4} + 2x_{1} +x_{2}^{4}$使得我们不需要关注映射本身，而且计算是在原来的二维空间进行的。当样本维度增加时，这样带来的计算优势是不言而喻的。<strong>这就是核函数的主要作用，它隐藏映射本身而直接在低维空间计算高维空间向量的内积，显著降低计算复杂度。</strong></p>
+<p>然而，当样本维度较高时，设计一个核函数并非易事。幸运的是，一些前辈们已经帮我们设计好了许多核函数，所以我们现在不需要根据映射去设计对应的精确的核函数，而是反过来选取设计好的核函数来尽可能满足我们的映射，保证映射后数据尽可能的线性可分。</p>
+<p>常见的核函数有高斯核(RBF)，多项式核，感知核等等。</p>
+<p>至此，关于SVM算法的整体理论知识就讲完了，当然，SVM不仅可以用于二分类问题，也可以用于处理多类分类问题，具体的步骤参考<a href="http://blog.csdn.net/lc013/article/details/55195523" target="_blank" rel="noopener">http://blog.csdn.net/lc013/article/details/55195523</a>，这里就不在赘述了。以上就我对SVM算法的一些见解，肯定会有一些理解不周到的地方，希望各位批评指正。(很荣幸能生在网络时代，使得学习成本变得异常低廉，有了博客、论坛和知网，每个人都有可能实现自己的梦想！)</p>
+<p><strong>2018/1/26<br>于中南大学中铝科技大楼</strong></p>
+<h2 id="基于SVM算法实现手写数字识别"><a href="#基于SVM算法实现手写数字识别" class="headerlink" title="基于SVM算法实现手写数字识别"></a>基于SVM算法实现手写数字识别</h2><p>作为一个工科生，而非数学专业的学生，我们研究一个算法，是要将它用于实际领域的。下面给出基于OpenCV3.0的SVM算法手写数字识别程序源码(参考<a href="http://blog.csdn.net/firefight/article/details/6452188" target="_blank" rel="noopener">http://blog.csdn.net/firefight/article/details/6452188</a>)程序略有改动。</p>
+<p>本部分将基于OpenCV实现简单的数字识别，待识别图像如下图所示，通过以下几个步骤实现图像中的数字的自动识别。</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/0bea8cb38f33846577acd4ae209bdf5e.jpg" alt=""></p>
+<p>1.使用OpenCV训练手写数字识别分类器；</p>
+<p>2.图像预处理及图像分割；</p>
+<p>3.应用分类器进行识别。</p>
+<p>3.1<strong>使用OpenCV训练手写数字识别分类器</strong></p>
+<p>所谓学习分类器就是根据训练样本，选取模型训练产生数字分类器，这里采用上文提到的SVM算法。</p>
+<p>训练集使用MNIST，这个MNIST数据库是一个手写数字的数据库，它提供了六万的训练集和一万的测试集。它的图片是被规范处理过的，是一张被放在中间部位的28px*28px的灰度图。总共包含4个文件，每一个文件头部几个字节都记录着这些图片的信息，然后才是储存的图片信息，关于文件信息的具体描述可以参考下面这个网站：<a href="https://www.jianshu.com/p/4195577585e6" target="_blank" rel="noopener">https://www.jianshu.com/p/4195577585e6</a></p>
+<p>下面是利用OpenCV<br>3.2.0的SVM相关API学习MNIST样本库产生样本函数的主要代码：(值得注意的是MNIST库中的图像是黑底白字的)</p>
+<p>svm.h头文件</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;tchar.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv/cv.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv/highgui.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NumTrainData</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	NumTrainData()</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">memset</span>(data, <span class="number">0</span>, <span class="keyword">sizeof</span>(data));<span class="comment">//Sets buffers to a specified character. Init the data</span></span><br><span class="line">		result = <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">float</span> data[<span class="number">64</span>];</span><br><span class="line">	<span class="keyword">int</span> result;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="built_in">vector</span>&lt;NumTrainData&gt; buffer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ReadTrainData</span><span class="params">(<span class="keyword">int</span> maxCount)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">newSvmStudy</span><span class="params">(<span class="built_in">vector</span>&lt;NumTrainData&gt;&amp; trainData)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">JpgPredict</span><span class="params">(Mat src)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>svm.cpp文件</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"svm.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"opencv2/opencv.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv::ml;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SHOW_PROCESS 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ON_STUDY 0</span></span><br><span class="line"><span class="keyword">int</span> featureLen = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swapBuffer</span><span class="params">(<span class="keyword">char</span> *buf)</span><span class="comment">//0123-&gt;3210</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> temp;</span><br><span class="line">	temp = *(buf);</span><br><span class="line">	*buf = *(buf + <span class="number">3</span>);</span><br><span class="line">	*(buf + <span class="number">3</span>) = temp;</span><br><span class="line"></span><br><span class="line">	temp = *(buf + <span class="number">1</span>);</span><br><span class="line">	*(buf + <span class="number">1</span>) = *(buf + <span class="number">2</span>);</span><br><span class="line">	*(buf + <span class="number">2</span>) = temp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取ROI区域</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">GetROI</span><span class="params">(Mat&amp; src, Mat&amp; dst)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> left, right, top, bottom;</span><br><span class="line">	left = src.cols;</span><br><span class="line">	right = <span class="number">0</span>;</span><br><span class="line">	top = src.rows;</span><br><span class="line">	bottom = <span class="number">0</span>;<span class="comment">//右下角为原点</span></span><br><span class="line"></span><br><span class="line">			   <span class="comment">//Get valid area</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; src.rows; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; src.cols; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (src.at&lt;uchar&gt;(i, j) &gt; <span class="number">0</span>)<span class="comment">//获取src中i,j点的像素值，为灰度图像，值为0-255</span></span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">if</span> (j &lt; left) left = j;</span><br><span class="line">				<span class="keyword">if</span> (j &gt; right) right = j;</span><br><span class="line">				<span class="keyword">if</span> (i &lt; top) top = i;</span><br><span class="line">				<span class="keyword">if</span> (i &gt; bottom) bottom = i;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;<span class="comment">//将原点置于含有像素点的方框的左上角</span></span><br><span class="line"></span><br><span class="line">	 <span class="comment">//Point center;</span></span><br><span class="line">	 <span class="comment">//center.x=(left+right)/2;</span></span><br><span class="line">	 <span class="comment">//center.y=(top+bottom)/2;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> width = right - left;</span><br><span class="line">	<span class="keyword">int</span> height = bottom - top;</span><br><span class="line">	<span class="keyword">int</span> len = (width &lt; height) ? height : width;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//create a squre</span></span><br><span class="line">	dst = Mat::zeros(len, len, CV_8UC1);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Copy valid data to squre center</span></span><br><span class="line">	<span class="function">Rect <span class="title">dstRect</span><span class="params">((len - width) / <span class="number">2</span>, (len - height) / <span class="number">2</span>, width, height)</span></span>;</span><br><span class="line">	<span class="function">Rect <span class="title">srcRect</span><span class="params">(left, top, width, height)</span></span>;</span><br><span class="line">	Mat dstROI = dst(dstRect);</span><br><span class="line">	Mat srcROI = src(srcRect);</span><br><span class="line">	srcROI.copyTo(dstROI);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ReadTrainData</span><span class="params">(<span class="keyword">int</span> maxCount)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Open image and label file</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> fileName[] = <span class="string">"res//train-images.idx3-ubyte"</span>;<span class="comment">//图像信息，以二进制方式存储  28*28</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> LabelFileName[] = <span class="string">"res//train-labels.idx1-ubyte"</span>;<span class="comment">//标签信息，以二进制方式存储</span></span><br><span class="line"></span><br><span class="line">																<span class="comment">//ofstream是从内存到硬盘，ifstream是从硬盘到内存,读取标准样本库</span></span><br><span class="line">	<span class="function">ifstream <span class="title">lab_ifs</span><span class="params">(LabelFileName, ios_base::binary)</span></span>;</span><br><span class="line">	<span class="function">ifstream <span class="title">ifs</span><span class="params">(fileName, ios_base::binary)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ifs.fail() == <span class="literal">true</span>)<span class="comment">//读取文件失败</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (lab_ifs.fail() == <span class="literal">true</span>)<span class="comment">//读取文件失败</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Read train data number and image rows/clos</span></span><br><span class="line">	<span class="keyword">char</span> magicNum[<span class="number">4</span>], ccount[<span class="number">4</span>], crows[<span class="number">4</span>], ccols[<span class="number">4</span>];</span><br><span class="line">	ifs.read(magicNum, <span class="keyword">sizeof</span>(magicNum));<span class="comment">//Read block of data</span></span><br><span class="line">	ifs.read(ccount, <span class="keyword">sizeof</span>(ccount));</span><br><span class="line">	ifs.read(crows, <span class="keyword">sizeof</span>(crows));</span><br><span class="line">	ifs.read(ccols, <span class="keyword">sizeof</span>(ccols));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> count, rows, cols;</span><br><span class="line">	swapBuffer(ccount);<span class="comment">//Copies bytes between buffers.</span></span><br><span class="line">	swapBuffer(crows);</span><br><span class="line">	swapBuffer(ccols);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;count, ccount, <span class="keyword">sizeof</span>(count));<span class="comment">//Copies bytes between buffers.</span></span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;rows, crows, <span class="keyword">sizeof</span>(rows));</span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;cols, ccols, <span class="keyword">sizeof</span>(cols));</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Just skip label header</span></span><br><span class="line">	lab_ifs.read(magicNum, <span class="keyword">sizeof</span>(magicNum));</span><br><span class="line">	lab_ifs.read(ccount, <span class="keyword">sizeof</span>(ccount));</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Create source and show image matrix</span></span><br><span class="line">	Mat src = Mat::zeros(rows, cols, CV_8UC1);<span class="comment">//28*28 piex single channel image</span></span><br><span class="line">	Mat temp = Mat::zeros(<span class="number">8</span>, <span class="number">8</span>, CV_8UC1);</span><br><span class="line">	Mat img, dst;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">char</span> label = <span class="number">0</span>;</span><br><span class="line">	<span class="function">Scalar <span class="title">templateColor</span><span class="params">(<span class="number">255</span>, <span class="number">0</span>, <span class="number">255</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">	NumTrainData rtd;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//int loop=1000;</span></span><br><span class="line">	<span class="keyword">int</span> total = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (!ifs.eof())<span class="comment">//Indicates if the end of a stream has been reached.</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (total &gt;= count)<span class="comment">//total train data number</span></span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		total++;</span><br><span class="line">		<span class="comment">//cout &lt;&lt; total &lt;&lt; endl;</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">//Read label</span></span><br><span class="line">		lab_ifs.read(&amp;label, <span class="number">1</span>);<span class="comment">//读取标签，1个字节</span></span><br><span class="line">		label = label + <span class="string">'0'</span>;<span class="comment">//转换为ASCII码中的罗马数字</span></span><br><span class="line"></span><br><span class="line">							<span class="comment">//Read source data</span></span><br><span class="line">		ifs.read((<span class="keyword">char</span>*)src.data, rows*cols);<span class="comment">//读取训练图像数据;每个像素被转成了0-255,0代表着白色，255代表着黑色。</span></span><br><span class="line">		GetROI(src, dst);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span>(SHOW_PROCESS)</span></span><br><span class="line">		<span class="comment">//Too small to watch</span></span><br><span class="line">		img = Mat::zeros(dst.rows * <span class="number">10</span>, dst.cols * <span class="number">10</span>, CV_8UC1);</span><br><span class="line">		resize(dst, img, img.size());</span><br><span class="line"></span><br><span class="line">		<span class="built_in">stringstream</span> ss;</span><br><span class="line">		ss &lt;&lt; <span class="string">"Number"</span> &lt;&lt; label;</span><br><span class="line">		<span class="built_in">string</span> text = ss.str();</span><br><span class="line"></span><br><span class="line">		putText(img, text, Point(<span class="number">10</span>, <span class="number">50</span>), FONT_HERSHEY_SIMPLEX, <span class="number">1.0</span>, <span class="keyword">template</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">		rtd.result = label;</span><br><span class="line">		resize(dst, temp, temp.size());<span class="comment">//将dst缩放成一个8*8的temp矩阵</span></span><br><span class="line">									   <span class="comment">//tehreshold(temp,temp,10,1,CT_THRESH_BINARY);</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">8</span>; j++)</span><br><span class="line">			&#123;</span><br><span class="line">				rtd.data[i * <span class="number">8</span> + j] = temp.at&lt;uchar&gt;(i, j);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		buffer.push_back(rtd);</span><br><span class="line"></span><br><span class="line">		<span class="comment">//if(waitKey(0)==27)//ESC to quit</span></span><br><span class="line">		<span class="comment">//break;</span></span><br><span class="line"></span><br><span class="line">		maxCount--;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (maxCount == <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">//cout &lt;&lt; "maxcount=" &lt;&lt; maxCount &lt;&lt; endl;</span></span><br><span class="line">			system(<span class="string">"pause"</span>);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//buffer中存储了maxcount个8*8的矩阵和它所具有的标签</span></span><br><span class="line">	ifs.close();</span><br><span class="line">	lab_ifs.close();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">newSvmStudy</span><span class="params">(<span class="built_in">vector</span>&lt;NumTrainData&gt;&amp; trainData)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> testCount = trainData.size();<span class="comment">//60000</span></span><br><span class="line"></span><br><span class="line">	Mat m = Mat::zeros(<span class="number">1</span>, featureLen, CV_32FC1);</span><br><span class="line">	Mat data = Mat::zeros(testCount, featureLen, CV_32FC1);</span><br><span class="line">	Mat res = Mat::zeros(testCount, <span class="number">1</span>, CV_32SC1);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		NumTrainData td = trainData.at(i);</span><br><span class="line">		<span class="built_in">memcpy</span>(m.data, td.data, featureLen * <span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line">		normalize(m, m);</span><br><span class="line">		<span class="built_in">memcpy</span>(data.data + i*featureLen * <span class="keyword">sizeof</span>(<span class="keyword">float</span>), m.data, featureLen * <span class="keyword">sizeof</span>(<span class="keyword">float</span>));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		res.at&lt;<span class="keyword">int</span>&gt;(i, <span class="number">0</span>) = td.result;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//res.at&lt;unsigned int&gt;(i, 0) = td.result;//存储标签</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">////////////////////START RT TRAINNING///////////////</span></span><br><span class="line">	<span class="comment">//设置SVM参数</span></span><br><span class="line">	Ptr&lt;SVM&gt; svm = SVM::create();</span><br><span class="line">	svm-&gt;setType(SVM::C_SVC);<span class="comment">//用于多类分类</span></span><br><span class="line">	svm-&gt;setKernel(SVM::RBF);<span class="comment">//采用高斯核函数</span></span><br><span class="line">	svm-&gt;setTermCriteria(cv::TermCriteria(CV_TERMCRIT_EPS, <span class="number">1000</span>, FLT_EPSILON));</span><br><span class="line">	svm-&gt;setDegree(<span class="number">10.0</span>);<span class="comment">//高斯核的参数设置</span></span><br><span class="line">	svm-&gt;setGamma(<span class="number">8.0</span>);</span><br><span class="line">	svm-&gt;setCoef0(<span class="number">1.0</span>);</span><br><span class="line">	svm-&gt;setC(<span class="number">10.0</span>);</span><br><span class="line">	svm-&gt;setNu(<span class="number">0.5</span>);</span><br><span class="line">	svm-&gt;setP(<span class="number">0.1</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//训练</span></span><br><span class="line">	Ptr&lt;TrainData&gt; tData = TrainData::create(data, ROW_SAMPLE, res);</span><br><span class="line">	svm-&gt;train(tData);</span><br><span class="line">	svm-&gt;save(<span class="string">"res\\SVM_DATA.xml"</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//预测数据</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">JpgPredict</span><span class="params">(Mat src)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Ptr&lt;SVM&gt; svm = Algorithm::load&lt;ml::SVM&gt;(<span class="string">"res\\SVM_DATA.xml"</span>);</span><br><span class="line">	svm-&gt;load(<span class="string">"res\\SVM_DATA.xml"</span>);</span><br><span class="line"></span><br><span class="line">	threshold(src, src, <span class="number">230</span>, <span class="number">250</span>, CV_THRESH_BINARY);</span><br><span class="line">	Mat temp = Mat::zeros(<span class="number">8</span>, <span class="number">8</span>, CV_8UC1);</span><br><span class="line">	Mat m = Mat::zeros(<span class="number">1</span>, featureLen, CV_32FC1);</span><br><span class="line"></span><br><span class="line">	Mat element = getStructuringElement(MORPH_RECT, Size(<span class="number">2</span>, <span class="number">2</span>));</span><br><span class="line">	dilate(src, src, element);</span><br><span class="line"></span><br><span class="line">	imshow(<span class="string">"1"</span>, src);</span><br><span class="line">	waitKey(<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">	resize(src, temp, temp.size());</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">8</span>; j++)</span><br><span class="line">		&#123;</span><br><span class="line">			m.at&lt;<span class="keyword">float</span>&gt;(<span class="number">0</span>, j + i * <span class="number">8</span>) = temp.at&lt;uchar&gt;(i, j);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	normalize(m, m);<span class="comment">// 该函数归一化输入数组使它的范数或者数值范围在一定的范围内。</span></span><br><span class="line">	<span class="keyword">char</span> ret = (<span class="keyword">char</span>)svm-&gt;predict(m);<span class="comment">//如果值为true而且是一个2类问题则返回判决函数值，否则返回类标签</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>3.2 图像预处理及图像分割</strong></p>
+<p>前面通过学习产生了分类器，但我们输入图像中的数字并不能直接作为测试输入。图像中的数字笔画有时并不规整，还可能相互重叠。因为本文例子为了简化用的是屏幕截图，所以位置形变校正，色彩亮度校正等等都省去了，但仍需要一些简单处理。下面先对输入图像进行一把简单的预处理，主要目的是将图像转成二值图，这样便于我们下一步分割和识别。这样做还有个好处，就是把其余的噪声也顺带去掉了。</p>
+<p>接下来，就可以对图像进行分割了。由于我们的分类器只能对数字一个一个地识别，所以首先要把每个数字分割出来。基本思想是先用findContours()函数把基本轮廓找出来，然后通过简单验证以确认是否为数字的轮廓。对于那些通过验证的轮廓，接下去会用boundingRect()找出它们的包围盒。</p>
+<p>Process.h文件</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"svm.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"opencv2/opencv.hpp"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Coordinate</span>     //坐标类</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">double</span> x, y;    <span class="comment">//轮廓位置</span></span><br><span class="line">	<span class="keyword">int</span> order;      <span class="comment">//轮廓向量contours中的第几个</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">bool</span> <span class="keyword">operator</span>&lt;(Coordinate &amp;m)   <span class="comment">//运算符重载，在sort()排序函数中使用</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (x &lt; m.x)</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ImageProcess</span><span class="params">(Mat &amp;srcImage)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ImageFindRectangle</span><span class="params">(Mat &amp;srcImage)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Process.cpp文件</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Process.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line">Coordinate con[<span class="number">100</span>] = &#123; <span class="number">0</span> &#125;; <span class="comment">//存放分割好的矩阵的中心坐标</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;Point&gt;&gt; contours;<span class="comment">//定义一个存放边缘矩阵的容器</span></span><br><span class="line"><span class="built_in">vector</span>&lt;Vec4i&gt; hierarchy;  <span class="comment">//定义一个存放树节点的前后关系的容器</span></span><br><span class="line">Rect rect[<span class="number">100</span>];            <span class="comment">//定义一个存放分割好图像的矩阵，注意数据溢出关系</span></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">0</span>;<span class="comment">//全局变量</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ImageFindRectangle</span><span class="params">(Mat &amp;srcImage)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//使用contours迭代器遍历每一个轮廓，找到并画出包围这个轮廓的最小矩阵</span></span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;Point&gt;&gt;::iterator It;</span><br><span class="line">	<span class="keyword">for</span> (It = contours.begin(); It &lt; contours.end(); It++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//画出可包围数字的最小矩形</span></span><br><span class="line">		Point2f vertex[<span class="number">4</span>];</span><br><span class="line">		rect[i] = boundingRect(*It);  <span class="comment">//计算轮廓的垂直边界最小矩形，矩形是与图像上下边界平行的</span></span><br><span class="line">									  <span class="comment">//矩形左上角的点</span></span><br><span class="line">		vertex[<span class="number">0</span>] = rect[i].tl();</span><br><span class="line">		<span class="comment">//矩形左下角的点</span></span><br><span class="line">		vertex[<span class="number">1</span>].x = (<span class="keyword">float</span>)rect[i].tl().x, vertex[<span class="number">1</span>].y = (<span class="keyword">float</span>)rect[i].br().y;</span><br><span class="line">		<span class="comment">//矩形右下角的点</span></span><br><span class="line">		vertex[<span class="number">2</span>] = rect[i].br();</span><br><span class="line">		<span class="comment">//矩形右上方的点</span></span><br><span class="line">		vertex[<span class="number">3</span>].x = (<span class="keyword">float</span>)rect[i].br().x, vertex[<span class="number">3</span>].y = (<span class="keyword">float</span>)rect[i].tl().y;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">4</span>; j++)</span><br><span class="line">			line(srcImage, vertex[j], vertex[(j + <span class="number">1</span>) % <span class="number">4</span>], Scalar(<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		con[i].x = (vertex[<span class="number">0</span>].x + vertex[<span class="number">1</span>].x + vertex[<span class="number">2</span>].x + vertex[<span class="number">3</span>].x) / <span class="number">4.0</span>;</span><br><span class="line">		<span class="comment">//根据中心点判断图图像的位置</span></span><br><span class="line">		con[i].y = (vertex[<span class="number">0</span>].y + vertex[<span class="number">1</span>].y + vertex[<span class="number">2</span>].y + vertex[<span class="number">3</span>].y) / <span class="number">4.0</span>;</span><br><span class="line">		con[i].order = i;</span><br><span class="line"></span><br><span class="line">		i++;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	sort(con, con + i);  <span class="comment">//将con按升序排列</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ImageProcess</span><span class="params">(Mat &amp;srcImage)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Mat Image = Mat::zeros(srcImage.size(), CV_8U);</span><br><span class="line">	Mat grayImage = Mat::zeros(srcImage.size(), CV_8U);</span><br><span class="line">	<span class="comment">//图像预处理</span></span><br><span class="line">	cvtColor(srcImage, srcImage, COLOR_BGR2GRAY);   <span class="comment">//转化为灰度图像</span></span><br><span class="line">	threshold(srcImage, srcImage, <span class="number">230</span>, <span class="number">255</span>, CV_THRESH_BINARY);<span class="comment">//阈值化</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//寻找图像边缘</span></span><br><span class="line">	findContours(srcImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);<span class="comment">//寻找图像边缘；函数用法参数见笔记</span></span><br><span class="line">	Mat dstImage = Mat::zeros(Image.size(), CV_8U);</span><br><span class="line">	</span><br><span class="line">	drawContours(dstImage, contours, <span class="number">-1</span>, Scalar(<span class="number">255</span>, <span class="number">0</span>, <span class="number">255</span>));<span class="comment">//在dstImage图像中画出边缘</span></span><br><span class="line">	<span class="comment">//进行分割</span></span><br><span class="line">	ImageFindRectangle(dstImage);</span><br><span class="line">	<span class="comment">//存储分割矩阵</span></span><br><span class="line">	Mat num[<span class="number">11</span>];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> k;</span><br><span class="line">		k = con[j].order;</span><br><span class="line">		srcImage(rect[k]).copyTo(num[j]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"i="</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt; res;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">	&#123;</span><br><span class="line">		res.push_back(JpgPredict(num[j]));</span><br><span class="line">		<span class="comment">//cout &lt;&lt; JpgPredict(num[j]) &lt;&lt; endl;</span></span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"Predicted number is:"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp;number : res)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt;number;</span><br><span class="line">	<span class="comment">//	system("pause");</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>3.3 应用分类器进行识别</strong></p>
+<p>Main.cpp函数</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"svm.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Process.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">vector</span>&lt;NumTrainData&gt; buffer;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ON_STUDY 0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ON_PROCESS 1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> ON_STUDY</span></span><br><span class="line">	<span class="keyword">int</span> maxCount = <span class="number">30000</span>;</span><br><span class="line">	ReadTrainData(maxCount);</span><br><span class="line">	newSvmStudy(buffer);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> ON_PROCESS</span></span><br><span class="line">	Mat img = imread(<span class="string">"Sample3.jpg"</span>);</span><br><span class="line"></span><br><span class="line">	ImageProcess(img);</span><br><span class="line">	waitKey(<span class="number">0</span>);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>识别结果如下：</p>
+<p><img src="/2018/01/28/基于OpenCV的SVM算法实现数字识别/a31be420fb1367a50aec5a617acf72a4.png" alt=""></p>
+<p>结果检测，SVM算法可以较好的识别手写数字，但是在编写代码的过程中发现一个问题，那就是这个算法对“1”数字的识别精度非常差，可能10张图中只能正确识别一次，不知道有没有大神能够给出一些建议？</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>, <a class="article-category-link" href="/categories/学习笔记/传统算法/">传统算法</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCV/">OpenCV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+
+      
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
+  btnText: '打赏支持', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/6p8gRzRlJayqe4*r0hGOFQqbICN7YsFnGkBy.usmFmQ!/m/dMAAAAAAAAAAnull&bo=NwS6BQAAAAARB7w!&rf=photolist&t=5',
+  alipayImage: 'http://a1.qpic.cn/psb?/V10MX3P83VuP8E/CKMAEifs3y*cwPVC.fUvdXxpHWiTH4.w7VNvrGx4IV8!/m/dFQBAAAAAAAAnull&bo=hANGBQAAAAARB*Q!&rf=photolist&t=5'
+});
+</script>
+      
+            
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/22/一个人的日本之旅—北海道、东京八日游记/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          一个人的日本之旅—北海道、东京八日游记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/01/食梦者-以梦为马，不负韶华/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">食梦者--以梦为马，不负韶华</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article" style="overflow-y: scroll; max-width: 28%;">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM算法的理论基础"><span class="nav-number">1.</span> <span class="nav-text">SVM算法的理论基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#拉格朗日乘子法及KKT条件介绍"><span class="nav-number">1.1.</span> <span class="nav-text">拉格朗日乘子法及KKT条件介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#拉格朗日乘子法"><span class="nav-number">1.1.1.</span> <span class="nav-text">拉格朗日乘子法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#KKT条件"><span class="nav-number">1.1.2.</span> <span class="nav-text">KKT条件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拉格朗日对偶"><span class="nav-number">1.2.</span> <span class="nav-text">拉格朗日对偶</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM算法原理及分析"><span class="nav-number">2.</span> <span class="nav-text">SVM算法原理及分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SVM算法简介"><span class="nav-number">2.1.</span> <span class="nav-text">SVM算法简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线性可分模型"><span class="nav-number">2.1.1.</span> <span class="nav-text">线性可分模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2线性不可分模型"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2线性不可分模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SMO算法"><span class="nav-number">2.2.</span> <span class="nav-text">SMO算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于SVM算法实现手写数字识别"><span class="nav-number">3.</span> <span class="nav-text">基于SVM算法实现手写数字识别</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2018 Elric&#39;s Blog All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+<script src="/js/my.js"></script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+
+<script src="/js/scripts.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="https://dnqof95d40fo6.cloudfront.net/atw7f8.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
