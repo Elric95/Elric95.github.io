@@ -37,9 +37,9 @@
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/32543e98f1dbe42bd8c0597b3b97c642.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/1d06e89115307cde96c4b1d9e0d6c6ed.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/af579759eed89107432df13750c4b9e8.png">
-<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png">
-<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png">
-<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/3.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/d5fdec9bde25e3f6ce81debd0d0b67aa.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/192d019f4d5bdadcf9ca81811a145b55.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/185e943294cf08ab084f4c906ac6737f.png">
@@ -64,7 +64,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/194f70b81462e48175aa98df8eb104a6.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/4a898a4fdbf6fc54117e8998039c9f2d.png">
 <meta property="og:image" content="http://yoursite.com/2019/01/14/经典神经网络的介绍及应用/f5c77694c550ec92466c0336af7c30ef.png">
-<meta property="og:updated_time" content="2019-01-14T03:17:30.996Z">
+<meta property="og:updated_time" content="2019-01-14T08:34:38.869Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="经典神经网络的介绍及应用">
 <meta name="twitter:description" content="摘要：人工智能、深度学习、机器视觉等概念如今充斥我们生活的整个社会，小到小区内的车牌自动识别系统，大到火星探测车的实现都离不开深度学习的应用。读研究生之后一直在学习障碍物的目标识别算法，也走了很多弯路，从传统的基于图像特征的检测算法到现在最新的基于深度学习的目标检测算法，学习过程中也遇到了很多困难，所以也想写一篇学习笔记，涵盖从传统的BP神经网络模型到卷积神经网络分类模型再到现在state-of-">
@@ -237,9 +237,9 @@ var themeMenus = {};
     <div class="article-entry" itemprop="articleBody">
       
         <p>摘要：人工智能、深度学习、机器视觉等概念如今充斥我们生活的整个社会，小到小区内的车牌自动识别系统，大到火星探测车的实现都离不开深度学习的应用。读研究生之后一直在学习障碍物的目标识别算法，也走了很多弯路，从传统的基于图像特征的检测算法到现在最新的基于深度学习的目标检测算法，学习过程中也遇到了很多困难，所以也想写一篇学习笔记，涵盖从传统的BP神经网络模型到卷积神经网络分类模型再到现在state-of-art的Faster-RCNN,SSD, YOLO v3等目标检测算法的介绍，也算是自己最近时间的一个学习总结。<br> <a id="more"></a></p>
-<h2 id="一、神经网络简介"><a href="#一、神经网络简介" class="headerlink" title=" 一、神经网络简介"></a> 一、神经网络简介</h2><p>首先，我们要明确图像分割、目标检测以及图像分类是计算机视觉领域的三大主要任务。传统的神经网络算法以及卷积神经网络算法都是针对图像分类而提出的解决方案，目标检测算法我们后面会提到，本篇主要针对神经网络模型进行介绍。</p>
-<h3 id="1-1-BP神经网络原理"><a href="#1-1-BP神经网络原理" class="headerlink" title="1.1 BP神经网络原理"></a>1.1 BP神经网络原理</h3><p>动物学家通过对化石的研究发现，早在5亿4千万年前，经历了一次物种大爆炸——在短短一千万年间有成千上万种新物种产生。而也正是5亿4千万年前，生物首次进化出了视觉系统，是否这是一种巧合呢？也许这是生物学家的事情，但是，视觉在人类的生活当中扮演了不可或缺的角色，有研究表明人类的交谈中有将近70%的信息是通过视觉来获取的。神经网络模型正是计算机视觉的基础，通过神经网络模型，我们赋予计算一种通过图像识别物体信息的能力。许多先进的视觉检测算法本质上都是由BP神经网络模型演化而来的，其都具有BP神经网络模型的一些特征，如激活函数、损失函数以及各种不同的优化方法等。因此，为了入门深度学习和计算机视觉，让我们先从BP神经网络讲起。</p>
-<h4 id="1-1-1-BP神经网络结构"><a href="#1-1-1-BP神经网络结构" class="headerlink" title="1.1.1 BP神经网络结构"></a>1.1.1 BP神经网络结构</h4><p>BP(back<br>propagation)神经网络又称后向传播神经网络，是1986年由Rumelhart和McClelland为首的科学家提出的概念，是一种按照误差逆向传播算法训练的多层前馈神经网络，在数学上<strong>其本质就是一种用来寻找一组最优参数来拟合测试集中的输入输出数据方法</strong>，并且使其拥有一定的泛化能力。举个例子：我有如下的一组数据集</p>
+<h2 id="神经网络简介"><a href="#神经网络简介" class="headerlink" title="神经网络简介"></a>神经网络简介</h2><p>首先，我们要明确图像分割、目标检测以及图像分类是计算机视觉领域的三大主要任务。传统的神经网络算法以及卷积神经网络算法都是针对图像分类而提出的解决方案，目标检测算法我们后面会提到，本篇主要针对神经网络模型进行介绍。</p>
+<h3 id="BP神经网络原理"><a href="#BP神经网络原理" class="headerlink" title="BP神经网络原理"></a>BP神经网络原理</h3><p>动物学家通过对化石的研究发现，早在5亿4千万年前，经历了一次物种大爆炸——在短短一千万年间有成千上万种新物种产生。而也正是5亿4千万年前，生物首次进化出了视觉系统，是否这是一种巧合呢？也许这是生物学家的事情，但是，视觉在人类的生活当中扮演了不可或缺的角色，有研究表明人类的交谈中有将近70%的信息是通过视觉来获取的。神经网络模型正是计算机视觉的基础，通过神经网络模型，我们赋予计算一种通过图像识别物体信息的能力。许多先进的视觉检测算法本质上都是由BP神经网络模型演化而来的，其都具有BP神经网络模型的一些特征，如激活函数、损失函数以及各种不同的优化方法等。因此，为了入门深度学习和计算机视觉，让我们先从BP神经网络讲起。</p>
+<h4 id="BP神经网络结构"><a href="#BP神经网络结构" class="headerlink" title="BP神经网络结构"></a>BP神经网络结构</h4><p>BP(back<br>propagation)神经网络又称后向传播神经网络，是1986年由Rumelhart和McClelland为首的科学家提出的概念，是一种按照误差逆向传播算法训练的多层前馈神经网络，在数学上<strong>其本质就是一种用来寻找一组最优参数来拟合测试集中的输入输出数据方法</strong>，并且使其拥有一定的泛化能力。举个例子：我有如下的一组数据集</p>
 <div class="table-container">
 <table>
 <thead>
@@ -279,8 +279,8 @@ var themeMenus = {};
 <script type="math/tex; mode=display">\mathbf{a}^{\left\lbrack \mathbf{1} \right\rbrack} =
 f(\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack}\mathbf{X
 +}\mathbf{b}^{\left\lbrack \mathbf{1} \right\rbrack}) \tag{1}</script><p>其中$\mathbf{X} = \begin{bmatrix} \mathbf{x}_{\mathbf{1}} \\<br>\mathbf{x}_{\mathbf{2}} \\ \mathbf{x}_{\mathbf{3}} \\<br>\end{bmatrix}$，$\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack} =<br>\begin{bmatrix} \mathbf{W}_{\mathbf{11}}^{\left\lbrack \mathbf{1} \right\rbrack}<br>&amp; \mathbf{W}_{\mathbf{12}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{13}}^{\left\lbrack \mathbf{1} \right\rbrack} \\<br>\mathbf{W}_{\mathbf{21}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{22}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{23}}^{\left\lbrack \mathbf{1} \right\rbrack} \\<br>\end{bmatrix}$，$\mathbf{a}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} a_{1}^{\left\lbrack 1 \right\rbrack} \\<br>a_{2}^{\left\lbrack 1 \right\rbrack} \\<br>\end{bmatrix}$，$\mathbf{b}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} b_{1}^{\left\lbrack 1 \right\rbrack} \\<br>b_{2}^{\left\lbrack 1 \right\rbrack} \\<br>\end{bmatrix}$。通常我们会对输入数据进行扁平化处理，使输入$\mathbf{x}_{\mathbf{1}}$是$n<br>\times 1$的向量，那么$\mathbf{W}_{\mathbf{11}}^{\left\lbrack \mathbf{1}<br>\right\rbrack}$就应该是$1 \times<br>n$的向量，这样才能保证向量能够相乘。$b_{i}^{\left\lbrack 1<br>\right\rbrack}$是一个标量，其个数等于本层神经元的个数。同样地，我们可以按照这样的方法一直计算到输出层，其实也就是简单的矩阵乘法，只不过在神经层输出之前加了个激活函数而已。<strong>这就是神经网络的前向传播过程。</strong></p>
-<h4 id="1-1-2-损失函数及优化器"><a href="#1-1-2-损失函数及优化器" class="headerlink" title="1.1.2 损失函数及优化器"></a>1.1.2 损失函数及优化器</h4><p>我们已经弄明白了神经网络的前向传播过程，就是给定一组权值，偏置值矩阵然后按照一定的路径计算得到最后的输出值。但是这一组权值和偏置值要怎么选择才能得到最优的解呢？也就是说怎样才能得到一组权值和偏置值，使其能够很好的拟合训练集数据，并且使其具有一定的泛化能力呢？这就是本节损失函数和优化器要做的事了。</p>
-<h5 id="1-1-2-1-损失函数"><a href="#1-1-2-1-损失函数" class="headerlink" title="1.1.2.1 损失函数"></a>1.1.2.1 损失函数</h5><p>首先，我们要评价一个神经网络结构的好坏，就必须要设定一个评价准则，这个评价准则应该能较好地评价神经网络能不能很好地拟合训练集的数据。常见的损失函数有MSE均方误差损失函数、hinge损失函数以及交叉熵损失函数等。</p>
+<h4 id="损失函数及优化器"><a href="#损失函数及优化器" class="headerlink" title="损失函数及优化器"></a>损失函数及优化器</h4><p>我们已经弄明白了神经网络的前向传播过程，就是给定一组权值，偏置值矩阵然后按照一定的路径计算得到最后的输出值。但是这一组权值和偏置值要怎么选择才能得到最优的解呢？也就是说怎样才能得到一组权值和偏置值，使其能够很好的拟合训练集数据，并且使其具有一定的泛化能力呢？这就是本节损失函数和优化器要做的事了。</p>
+<h5 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h5><p>首先，我们要评价一个神经网络结构的好坏，就必须要设定一个评价准则，这个评价准则应该能较好地评价神经网络能不能很好地拟合训练集的数据。常见的损失函数有MSE均方误差损失函数、hinge损失函数以及交叉熵损失函数等。</p>
 <p><strong>1.hinge损失函数</strong></p>
 <p>损失函数是评价当前分类器好坏的标准，一般而言，若当前分类器的损失很大时我们认为分类效果不好。举个例子：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/42daefe800efee43889b741da90767fa.png" alt=""></p>
@@ -315,7 +315,7 @@ L_{i} = - logP\left( Y = y_{i} \middle| X = x_{i} \right) = - log(\frac{e^{s_{k}
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/1d06e89115307cde96c4b1d9e0d6c6ed.png" alt=""></p>
 <center>图4 hinge loss和cross-entropy loss的计算过程</center>
 
-<h5 id="1-1-2-2-优化器"><a href="#1-1-2-2-优化器" class="headerlink" title="1.1.2.2 优化器"></a>1.1.2.2 优化器</h5><p>反向传播神经网络(BP神经网络)之所以叫做反向传播神经网络就是因为其在神经网络模型的结构中引入了反馈回路，使得能够自动朝最优化方向更新权值，这也是神经网络模型从理论走向应用方面最重要的一步。</p>
+<h5 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h5><p>反向传播神经网络(BP神经网络)之所以叫做反向传播神经网络就是因为其在神经网络模型的结构中引入了反馈回路，使得能够自动朝最优化方向更新权值，这也是神经网络模型从理论走向应用方面最重要的一步。</p>
 <script type="math/tex; mode=display">
 L = \frac{1}{N}\ \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})}</script><p>显然，模型的损失是权值W的函数，那么如何才能改变权值的值使得损失函数变小呢？答案就是梯度。梯度是高等数学中的概念，并不是很难理解，其本质是一个向量（矢量），表示某一函数在该点处的方向导数沿着该方向取得最大值，即函数在该点处沿着该方向（此梯度的方向）变化最快，变化率最大（为该梯度的模）。<strong>也就是说我们求出式(2)的梯度，然后再将权值W按照一定的学习率找梯度方向进行调整，就能达到调整权值以减小loss的目的，也就是我们需要求得的参数是</strong>$\mathbf{\nabla}_{\mathbf{W}}\mathbf{L}$。那么梯度又要怎么求呢？</p>
 <p>我们知道，在数学上梯度的计算方式为：</p>
@@ -340,13 +340,13 @@ L = \frac{1}{N}\ \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})}</script><p>�
 {W^{\left\lbrack 2 \right\rbrack}}^{'} = W^{\left\lbrack 2 \right\rbrack} - \nabla_{W^{\left\lbrack 2 \right\rbrack}}L = - \lbrack 0.74,0.74\rbrack</script><p>偏置值的更新也是同理，这样更新权值的方法我们叫做梯度下降法。目前基本上所有的优化方法都是基于梯度下降法(GD)的。下面对一些常用的优化方法进行介绍：</p>
 <p><strong>1.随机梯度下降法(SGD)</strong></p>
 <p>先对一些参数符号给出定义：W—要训练的参数；J(W)—代价函数；$\nabla_{W}J(W)$—代价函数的梯度；$\eta$—学习率。</p>
-<p><img src="/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png" alt=""></p>
+<p><img src="/2019/01/14/经典神经网络的介绍及应用/1.png" alt=""></p>
 <p>梯度下降法在更新每一个参数时，都需要所有的训练样本（由代价函数决定的），所以训练过程会随着样本数量的加大而变得异常的缓慢。在SGD中，每次迭代可以只用<strong>一个</strong>训练数据来更新参数，如果样本量很大的情况（例如几十万），那么可能只用其中几万条或者几千条的样本，就已经将参数迭代到最优解了。但是，SGD伴随的一个问题是噪音较GD要多，使得SGD并不是每次迭代都向着整体最优化方向。</p>
 <p><strong>2. Momentum</strong></p>
-<p><img src="/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png" alt=""></p>
+<p><img src="/2019/01/14/经典神经网络的介绍及应用/2.png" alt=""></p>
 <p>当前权值的改变会受到上一次权值改变的影响，类似于小球向下滚动的时候带上了惯性。这样可以加快小球的向下的速度。</p>
 <p><strong>3. NAG（加速梯度下降法）</strong></p>
-<p><img src="/2019/01/14/经典神经网络的介绍及应用/9028506bb6169f2ee3c4b355a36c99be.png" alt=""></p>
+<p><img src="/2019/01/14/经典神经网络的介绍及应用/3.png" alt=""></p>
 <p>在Momentun中小球会盲目地跟从下坡的梯度，容易发生错误，所以我们需要一个更聪明的小球，这个小球提前知道它要去哪里，它还要知道走到坡底的时候速度慢下来而不是又冲上另一个坡。γvt−1会用来修改W的值，计算W−γvt−1可以表示小球下一个位置大概在哪里。从而我们可以提前计算下一个位置的梯度，然后使用到当前位置。</p>
 <p><strong>4.Adagrad</strong></p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/d5fdec9bde25e3f6ce81debd0d0b67aa.png" alt=""></p>
@@ -365,7 +365,7 @@ L = \frac{1}{N}\ \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})}</script><p>�
 <center>图5 不同优化方式的对比</center>
 
 <p>有这么多优化方法，那么是不是说后面的优化方法就一定比前面的好呢？是否可以抛弃SGD、Momentum等早些时期的优化算法呢？其实不是的，当我们拿到一个任务时，我们可以先构建其框架，选定其中的一个优化方法，比如Adam，然后当框架构建好了再尝试不同的优化方法来进行对比，选择其中效果最好的一种作为该网络的优化器。</p>
-<h4 id="1-1-3-激活函数的原理及作用"><a href="#1-1-3-激活函数的原理及作用" class="headerlink" title="1.1.3 激活函数的原理及作用"></a>1.1.3 激活函数的原理及作用</h4><p>之前一直在说激活函数，到底激活函数是什么东西？我们为什么要在神经元输出的时候加一个激活函数呢？其实，<strong>激活函数的作用就是为了解决线性不可分问题</strong>。如果我们没有激活函数，通过上节我们介绍的神经网络结构，那么整个神经网络的输出就是一堆的线性组合的结果，也就是说隐藏层没有起到作用，<strong>整个神经网络经过简化之后可以变成就只有一个中间层</strong>。做个简单推导，从图2中可以知道：</p>
+<h4 id="激活函数的原理及作用"><a href="#激活函数的原理及作用" class="headerlink" title="激活函数的原理及作用"></a>激活函数的原理及作用</h4><p>之前一直在说激活函数，到底激活函数是什么东西？我们为什么要在神经元输出的时候加一个激活函数呢？其实，<strong>激活函数的作用就是为了解决线性不可分问题</strong>。如果我们没有激活函数，通过上节我们介绍的神经网络结构，那么整个神经网络的输出就是一堆的线性组合的结果，也就是说隐藏层没有起到作用，<strong>整个神经网络经过简化之后可以变成就只有一个中间层</strong>。做个简单推导，从图2中可以知道：</p>
 <script type="math/tex; mode=display">
 a_{1} = W^{\left\lbrack 1 \right\rbrack}X + b^{\left\lbrack 1 \right\rbrack}</script><script type="math/tex; mode=display">
 a_{2} = W^{\left\lbrack 2 \right\rbrack}a_{1} + b^{\left\lbrack 2 \right\rbrack}</script><p>那么：</p>
@@ -397,7 +397,7 @@ a_{2} = W^{\left\lbrack 2 \right\rbrack}\left( W^{\left\lbrack 1 \right\rbrack}X
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/63db2ed2bae3c783f11aee3cb8ab9d76.png" alt=""></p>
 <p>Maxout是一个非线性函数，它不再使用$f(w^{T}x +b)$函数形式来表示权重和数据的内积，是综合了ReLU和Leaky ReLU激活函数的方法。ReLU和Leaky ReLU都是这个公式的特殊情况（比如ReLU就是当$w_{1} = 0,b_{1} = 0$的时候）。Maxout激活函数线性操作不会饱和，而且不存在“坏死”的神经元。然而和ReLU对比，它每个神经元的参数数量增加了一倍，这就导致整体参数的数量激增。</p>
 <p>介绍了这么多激活函数，我们在实际使用时应该怎么选用激活函数呢？一种说法是：<strong>优先选用ReLU激活函数</strong>，但是选<strong>用ReLU激活函数时，学习率不要设置的太大</strong>。当效果不好时，<strong>可以尝试Leaky ReLU/Maxout/ELU激活函数</strong>。<strong>可以使用tanh激活函数，尽量不要使用Sigmoid激活函数</strong>。</p>
-<h3 id="1-2-训练神经网络中的常见问题"><a href="#1-2-训练神经网络中的常见问题" class="headerlink" title="1.2 训练神经网络中的常见问题"></a>1.2 训练神经网络中的常见问题</h3><h4 id="1-2-1-梯度消失和梯度爆炸"><a href="#1-2-1-梯度消失和梯度爆炸" class="headerlink" title="1.2.1 梯度消失和梯度爆炸"></a>1.2.1 梯度消失和梯度爆炸</h4><p>梯度消失和梯度爆炸其实是一种情况，<strong>当神经网络深度很深或者激活函数选择不当时就容易出现梯度消失和梯度爆炸的问题</strong>。举个例子，下图是一个四层的BP神经网络：</p>
+<h3 id="训练神经网络中的常见问题"><a href="#训练神经网络中的常见问题" class="headerlink" title="训练神经网络中的常见问题"></a>训练神经网络中的常见问题</h3><h4 id="梯度消失和梯度爆炸"><a href="#梯度消失和梯度爆炸" class="headerlink" title="梯度消失和梯度爆炸"></a>梯度消失和梯度爆炸</h4><p>梯度消失和梯度爆炸其实是一种情况，<strong>当神经网络深度很深或者激活函数选择不当时就容易出现梯度消失和梯度爆炸的问题</strong>。举个例子，下图是一个四层的BP神经网络：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/bf760bb6d64fb9efbb8d0487853d6ad4.png" alt=""></p>
 <p>根据我们之前说的，如果我们要更新输入层的权值，先求其梯度，有：</p>
 <script type="math/tex; mode=display">
@@ -408,7 +408,7 @@ a_{2} = W^{\left\lbrack 2 \right\rbrack}\left( W^{\left\lbrack 1 \right\rbrack}X
 \end{split}</script><p>其中$f_{n}$表示第n-1层经激活函数的输出，$f_{n} = f(w_{n} \times f_{n - 1} +b_{n})$，所以$\frac{\partial f_{n}}{\partial f_{n -<br>1}}$就是激活函数的导数，可以看到，当激活函数的导数小于1时，梯度最后一项$x_{i}$前面的系数就是一个小于1的小数的连乘，相当于是一个指数的增益，最终导致梯度变得很小，也就是<strong>梯度消失</strong>。同样地，当激活函数的导数大于1时，梯度的数值就会呈指数的上升，也就是<strong>梯度爆炸</strong>。</p>
 <p>此外，之前我们也提过部分损失函数如Sigmoid和tanh激活函数具有饱和区，这也是产生梯度消失的原因之一。还有，如果<strong>初始化权值很大</strong>，w大到乘以激活函数的导数都大于1，那么连乘后，可能会导致求导的结果很大，<strong>也会形成梯度爆炸</strong>。其实，在实际情况中，<strong>梯度消失要比梯度爆炸更容易出现</strong>。</p>
 <p>知道了产生梯度消失和梯度爆炸的原因之后再简单介绍一下如何避免产生梯度消失和梯度爆炸的方法：①既然梯度消失和激活函数有关，所以应该选择合适的激活函数如ReLU激活函数及其变体来代替Sigmoid激活函数；②减少网络层深度；③使用更合理的网络结构，如Resnet网络，RNN网络等；④合理的初始化权值等。</p>
-<h4 id="1-2-2-过拟合"><a href="#1-2-2-过拟合" class="headerlink" title="1.2.2 过拟合"></a>1.2.2 过拟合</h4><p>我们在进行神经网络训练之前，通常将数据集分为三个部分，<strong>训练集(train)、测试集(test)以及验证集(validation)</strong>。训练集是指用于模型拟合的数据样本。验证集是模型训练过程中单独留出的样本集，它可以用于调整模型的超参数和用于对模型的能力进行初步评估，所谓超参数就是不会随训练过程而改变的参数，如学习率，迭代次数以及层数等。测试集用来评估模最终模型的泛化能力。但不能作为调参、选择特征等算法相关的选择的依据。过拟合是指为了得到与训练集完全匹配的参数而使训练过程变得过度严格。过拟合的具体表现就是最终模型在训练集上效果很好，但是在测试集上效果很差，也就是所说的<strong>模型泛化能力弱</strong>。如下图：显然整个网络的损失是不断下降的，然而，从右图中可以看到，训练集上的精度在不断上升但是在验证集上的精度却上升缓慢，而<strong>我们并不在意模型在训练集上的表现，我们真正在意的是模型能不能很好地去拟合未知的数据</strong>，这就是过拟合的具体表现形式。</p>
+<h4 id="过拟合"><a href="#过拟合" class="headerlink" title="过拟合"></a>过拟合</h4><p>我们在进行神经网络训练之前，通常将数据集分为三个部分，<strong>训练集(train)、测试集(test)以及验证集(validation)</strong>。训练集是指用于模型拟合的数据样本。验证集是模型训练过程中单独留出的样本集，它可以用于调整模型的超参数和用于对模型的能力进行初步评估，所谓超参数就是不会随训练过程而改变的参数，如学习率，迭代次数以及层数等。测试集用来评估模最终模型的泛化能力。但不能作为调参、选择特征等算法相关的选择的依据。过拟合是指为了得到与训练集完全匹配的参数而使训练过程变得过度严格。过拟合的具体表现就是最终模型在训练集上效果很好，但是在测试集上效果很差，也就是所说的<strong>模型泛化能力弱</strong>。如下图：显然整个网络的损失是不断下降的，然而，从右图中可以看到，训练集上的精度在不断上升但是在验证集上的精度却上升缓慢，而<strong>我们并不在意模型在训练集上的表现，我们真正在意的是模型能不能很好地去拟合未知的数据</strong>，这就是过拟合的具体表现形式。</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/91c10a94a8fbbf04fff9b43fc43b4332.png" alt=""></p>
 <p>产生过拟合根本原因是特征维度过多，模型假设过于复杂，参数过多，训练数据过少，噪声过多，导致拟合的函数完美的预测训练集，但对新数据的测试集预测结果差。解决过拟合的方法有：增加训练集样本、Batch Normalization方法以及正则化等。</p>
 <p><strong>1.增加训练样本</strong></p>
@@ -447,7 +447,7 @@ C = C_{0} + \frac{\lambda}{2n}\sum\omega^{2}</script><p>其中C0代表原始的�
 <center>图6 Dropout方法</center>
 
 <p>Dropout方法是在训练阶段，在每次前向传播的过程中随机的将某些神经元置为0，dropping率是一个超参数，我们通常将其设置为0.5。之前说过产生过拟合的重要原因之一是要训练的参数过多，通过Dropout方法可以简单方便地减少参数量；在测试阶段再将每一个神经元的权重参数乘以概率p。</p>
-<h4 id="1-2-3-参数初始化"><a href="#1-2-3-参数初始化" class="headerlink" title="1.2.3 参数初始化"></a>1.2.3 参数初始化</h4><p>权值参数初始化也是构建神经网络模型中很重要的一步，如果权值初始化数值不合适会产生很多问题，常见的权值初始化方法有：常量初始化（constant）、高斯分布初始化（gaussian）、positive_unitball初始化、均匀分布初始化（uniform）、xavier初始化、msra初始化、双线性初始化（bilinear）等。下面举几个权值初始化不合适的例子：</p>
+<h4 id="参数初始化"><a href="#参数初始化" class="headerlink" title="参数初始化"></a>参数初始化</h4><p>权值参数初始化也是构建神经网络模型中很重要的一步，如果权值初始化数值不合适会产生很多问题，常见的权值初始化方法有：常量初始化（constant）、高斯分布初始化（gaussian）、positive_unitball初始化、均匀分布初始化（uniform）、xavier初始化、msra初始化、双线性初始化（bilinear）等。下面举几个权值初始化不合适的例子：</p>
 <p><strong>1.将均值为0，标准差为0.01的正态分布作为权值初始值(初始化值很小)</strong></p>
 <p>这样的权值初始化策略对浅层网络或许还行，但是对深层网络却会出现一些问题。比如我们有一个10层，每层有500个神经元的神经网络模型，并使用<strong>tanh函数</strong>作为激活函数。采用上述初始化策略来初始化每层的权值，每层得到的输出如下：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/bd323e027b6fca30fcab15dbe57bbff3.png" alt=""></p>
@@ -457,7 +457,7 @@ C = C_{0} + \frac{\lambda}{2n}\sum\omega^{2}</script><p>其中C0代表原始的�
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/5a77592899b212d90632d5edf8ddee96.png" alt=""></p>
 <p>所以，<strong>过大或过小初始化权值策略都不合理</strong>，需要一个恰当的标准差来初始化参数，比如可以用Xavier初始化方法来进行权值初试化等(我没了解过)。目前还没有一种通用的方法来进行参数的初始化，有兴趣的读者可以看下面的论文：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/194f70b81462e48175aa98df8eb104a6.png" alt=""></p>
-<h2 id="二、基于神经网络模型的手写数字识别"><a href="#二、基于神经网络模型的手写数字识别" class="headerlink" title="二、基于神经网络模型的手写数字识别"></a>二、基于神经网络模型的手写数字识别</h2><p>讲了这么多，终于把BP神经网络的理论部分讲完了，这是目前深度学习网络的基础，包括后面会讲到的卷积神经网络、循环神经网络、目标检测神经网络都是以BP神经网络为框架的，只有深刻理解了BP神经网路的原理才能更好地进行后面部分的学习。下面给一个BP神经网络应用的例子，对MNIST手写数字数据集进行训练并使其达到98%以上的精度。编程语言使用python，框架采用Tensorflow(Tensorflow的安装我有在之前的博文中介绍，不会的可以去看看)。</p>
+<h2 id="基于神经网络模型的手写数字识别"><a href="#基于神经网络模型的手写数字识别" class="headerlink" title="基于神经网络模型的手写数字识别"></a>基于神经网络模型的手写数字识别</h2><p>讲了这么多，终于把BP神经网络的理论部分讲完了，这是目前深度学习网络的基础，包括后面会讲到的卷积神经网络、循环神经网络、目标检测神经网络都是以BP神经网络为框架的，只有深刻理解了BP神经网路的原理才能更好地进行后面部分的学习。下面给一个BP神经网络应用的例子，对MNIST手写数字数据集进行训练并使其达到98%以上的精度。编程语言使用python，框架采用Tensorflow(Tensorflow的安装我有在之前的博文中介绍，不会的可以去看看)。</p>
 <p>MNIST是一个非常有名的手写体数字识别数据集，在很多资料中，这个数据集都会被用作深度学习的入门样例。此数据集中，共有60000个训练样本，其中55000个用于训练，另外5000个用于验证，还有10000个测试样本。下面来搭建我们的神经网络：</p>
 <p>如下图，我们构建了一个三层的神经网络模型，训练集有60000个28*28像素大小的手写数字图像，第一层有500个节点，第二层有300个节点，最后一层是输出层，采用一个softmax分类器输出10个数字对应的标签。激活函数采用tanh激活函数，为了防止过拟合，使用Dropout方法，dropping率为0.8，使用交叉熵损失函数，使用Adam方法来进行参数优化，权值初始值符合标准差为0.1，均值为0的标准正态分布，并且学习率会随着迭代的进行而降低(这样做是为了防止震荡)，总共循环51个epoch后完成网络训练。</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/4a898a4fdbf6fc54117e8998039c9f2d.png" alt=""></p>
@@ -542,7 +542,7 @@ var a = new Donate({
     <div id="toc" class="toc-article" style="overflow-y: scroll; max-width: 28%;">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、神经网络简介"><span class="nav-number">1.</span> <span class="nav-text"> 一、神经网络简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-BP神经网络原理"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 BP神经网络原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-1-BP神经网络结构"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 BP神经网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-2-损失函数及优化器"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1.2 损失函数及优化器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-2-1-损失函数"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">1.1.2.1 损失函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-2-2-优化器"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">1.1.2.2 优化器</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-3-激活函数的原理及作用"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.1.3 激活函数的原理及作用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-训练神经网络中的常见问题"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 训练神经网络中的常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-梯度消失和梯度爆炸"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1 梯度消失和梯度爆炸</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-过拟合"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2 过拟合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-3-参数初始化"><span class="nav-number">1.2.3.</span> <span class="nav-text">1.2.3 参数初始化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、基于神经网络模型的手写数字识别"><span class="nav-number">2.</span> <span class="nav-text">二、基于神经网络模型的手写数字识别</span></a></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#神经网络简介"><span class="nav-number">1.</span> <span class="nav-text">神经网络简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BP神经网络原理"><span class="nav-number">1.1.</span> <span class="nav-text">BP神经网络原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#BP神经网络结构"><span class="nav-number">1.1.1.</span> <span class="nav-text">BP神经网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#损失函数及优化器"><span class="nav-number">1.1.2.</span> <span class="nav-text">损失函数及优化器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#损失函数"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">损失函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优化器"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">优化器</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#激活函数的原理及作用"><span class="nav-number">1.1.3.</span> <span class="nav-text">激活函数的原理及作用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练神经网络中的常见问题"><span class="nav-number">1.2.</span> <span class="nav-text">训练神经网络中的常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#梯度消失和梯度爆炸"><span class="nav-number">1.2.1.</span> <span class="nav-text">梯度消失和梯度爆炸</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过拟合"><span class="nav-number">1.2.2.</span> <span class="nav-text">过拟合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参数初始化"><span class="nav-number">1.2.3.</span> <span class="nav-text">参数初始化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于神经网络模型的手写数字识别"><span class="nav-number">2.</span> <span class="nav-text">基于神经网络模型的手写数字识别</span></a></li></ol>
     
     </div>
   </aside>
