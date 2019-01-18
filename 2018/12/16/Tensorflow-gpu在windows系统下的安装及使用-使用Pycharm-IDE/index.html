@@ -237,20 +237,20 @@ var themeMenus = {};
 <p>可以看到本机GTX1060-6G显卡对应的是CUDA9.0版本。这个很重要，因为之前安装Quadro<br>M4000系列显卡时对应的CUDA8.0版本，我装的是CUDA9.0所以一直安装不成功。</p>
 <p>可以看到我的电脑对应的是CUDA9.0+cuDNN7.0+Tensorflow-gpu1.5.0-1.10.0。<em>CUDA9.0的安装地址</em>。CUDA的安装也是一直下一步即可，安装完成后会自动将CUDA的相关文件加入系统环境变量，如下图。</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/374c5db431ea367e95072fb72862adb0.png" alt=""></p>
-<p><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN7.0的安装地址</a>。在安装cuDNN的时候需要注册一个NVIDIA的账号才能下载，下载完成后得到是一个压缩包，解压到相应的目录下，在系统环境变量中加入…\\cuda\\bin，如下图：</p>
+<p><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN7.0的安装地址</a>。在安装cuDNN的时候需要注册一个NVIDIA的账号才能下载，下载完成后得到是一个压缩包，解压到相应的目录下，在系统环境变量中加入…\cuda\bin，如下图：</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/662acddccc592e3e0ba1d571c3c15bac.png" alt=""></p>
 <p>至此，tensorflow的准备工作已经结束了，你需要在环境变量中再检查一下是否有Anaconda、CUDA以及cuDNN的相关配置。</p>
 <p>3.Tensorflow-gpu的安装</p>
 <p>①首先在命令行窗口中查看Anaconda是否正确安装。win+R输入cmd打开命令行窗口，输入conda<br>–version查看Anaconda是否正确安装。如果如下图所示则说明Anaconda安装成功。</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/a3d086b70346f59a88bd0db4d58e9712.png" alt=""></p>
-<p>②创建python虚拟环境。在命令行窗口中输入conda create —name tensorflow-gpu<br>python=3.6。这句的意思是创建一个名为tensorflow-gpu的python虚拟环境，python编译版本为3.6，其中包含了tensorflow必须的一些依赖包，因而不用再额外安装。（请注意python版本和你所需要安装的tensorflow对应关系，部分如下表所示）</p>
+<p>②创建python虚拟环境。在命令行窗口中输入conda create –name tensorflow-gpu<br>python=3.6。这句的意思是创建一个名为tensorflow-gpu的python虚拟环境，python编译版本为3.6，其中包含了tensorflow必须的一些依赖包，因而不用再额外安装。（请注意python版本和你所需要安装的tensorflow对应关系，部分如下表所示）</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/4fe6a461a6fa0ea00778db69efbf75df.png" alt=""></p>
 <p>安装过程如下，按y即可。</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/67eaf29dc8d411c9fac77f824e9521bf.png" alt=""></p>
 <p>等待安装完成，在anaconda的安装目录下的envs文件中出现一个tensorflow-gpu的子文件夹，我们将在这个虚拟环境中完成tensorflow的安装。(如果找不到anaconda的安装目录可以在环境变量中找到。)</p>
 <p>③tensorflow-gpu安装。激活tensorflow-gpu虚拟环境，在命令窗口中输入activate<br>tensorflow-gpu(很重要！)，通过pip查看已安装的包，输入pip list，如下图：</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/8bbe33877576a81afdf74d0b83e1d00e.png" alt=""></p>
-<p>将pip更新到最新版本，输入：python -m pip install —upgrade pip</p>
+<p>将pip更新到最新版本，输入：python -m pip install –upgrade pip</p>
 <p>接下来就是安装tensorflow-gpu了，输入pip install<br>tensorflow-gpu，默认安装最新版本，如果需要安装其他版本，输入pip install<br>tensorflow-gpu==1.xx.xx。会提上安装相应的依赖项，按y，等待安装完成。</p>
 <p>④查看tensorflow-gpu是否安装成功，继续在tensorflow-gpu环境下，输入pip<br>list查看已安装的包，如下，安装成功！</p>
 <p><img src="/2018/12/16/Tensorflow-gpu在windows系统下的安装及使用-使用Pycharm-IDE/903bed5a89b540fdc8b5dff235f3341d.png" alt=""></p>
@@ -286,8 +286,8 @@ var a = new Donate({
   title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
   btnText: '打赏支持', // 可选参数，打赏按钮文字
   el: document.getElementById('donation_div'),
-  wechatImage: 'http://mail.163.com/js6/s?func=mbox:getMessageData&sid=iBizvLuhONVHpPsaRvhhkRtDCmgYirav&mid=20:1tbiFAA4zlaDy8G+DgABsM&part=3',
-  alipayImage: 'http://mail.163.com/js6/s?func=mbox:getMessageData&sid=iBizvLuhONVHpPsaRvhhkRtDCmgYirav&mid=20:1tbiFAA4zlaDy8G+DgABsM&part=4'
+  wechatImage: 'http://img1.ph.126.net/ltZ_qzp9lus8heKkrVg7iw==/6597384226984847554.jpg',
+  alipayImage: 'http://img2.ph.126.net/lmP2ymrq-Aoe8P4fAWxd3A==/1691664610131577673.jpg'
 });
 </script>
       

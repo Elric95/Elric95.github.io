@@ -241,7 +241,7 @@ var themeMenus = {};
 <h3 id="目标检测算法简介"><a href="#目标检测算法简介" class="headerlink" title="目标检测算法简介"></a>目标检测算法简介</h3><p>目标检测属于计算机视觉的范畴，早期人们的主要研究方向是目标识别，即输入图像只包含待检测对象，然后根据已知检测对象来识别图像是否为检测目标，而无需考虑图像的背景问题。后来在复杂背景下的目标检测需求越来越大，目标检测也逐渐作为一个单独的研究方向发展起来。</p>
 <p>目前的目标检测方法主要有两大类：基于知识和基于统计。以人脸检测为例：</p>
 <p><strong>●基于知识的方法</strong>：主要利用先验知识将人脸看作器官特征的组合，根据眼睛、眉毛、嘴巴、鼻子等器官的特征以及相互之间的几何位置关系来检测人脸。主要方法包括：模版匹配、人脸特征、形状与边缘、纹理特性、颜色特征等。</p>
-<p><strong>●基于统计的方法</strong>：将人脸看作一个整体的模式—-二维像素矩阵，从统计的观点通过大量人脸图像样本构造人脸模式空间，根据相似度量在判断人脸是否存在。主要方法包括：主成份分析与特征脸、神经网络方法、支持向量机、隐马尔可夫模型、Adaboost算法等。</p>
+<p><strong>●基于统计的方法</strong>：将人脸看作一个整体的模式—二维像素矩阵，从统计的观点通过大量人脸图像样本构造人脸模式空间，根据相似度量在判断人脸是否存在。主要方法包括：主成份分析与特征脸、神经网络方法、支持向量机、隐马尔可夫模型、Adaboost算法等。</p>
 <p>其中按照算法的基本原理又可以分为<em>传统的目标检测算法</em>和<em>深度学习的目标检测算法</em>。传统算法的典型代表有：Haar特征+Adaboost算法、Hog特征+Svm算法和DPM算法等；深度学习的目标检测典型代表有：RCNN系列(RCNN、spp-net、fast-rcnn和faster-rcnn等)、YOLO系列(YOLO和YOLO9000)以及SSD等。本文主要讨论Haar特征+Adaboost算法，其原理比较简单。至于其他的算法，可以为想继续研究下去的朋友们提供一个方向。</p>
 <h3 id="Haar特征分类器原理"><a href="#Haar特征分类器原理" class="headerlink" title="Haar特征分类器原理"></a>Haar特征分类器原理</h3><p>本文中介绍的Haar分类器方法，包含了Adaboost算法，稍候会对这一算法做详细介绍。其主要内容可以表示为Haar分类器=Haar-like特征+积分图方法+Adaboost级联。具体来说，可以概述为如下模式：</p>
 <ol>
@@ -270,7 +270,7 @@ var themeMenus = {};
 <li><strong>弱分类器的获取</strong></li>
 </ol>
 <p>弄清楚了什么弱分类器和强分类器的概念，下面就来讨论如何获取第一个弱分类器。前面已经说过了，通过比较待检测图像的矩形特征值来判断其是否是检测目标，这样我们就需要定下一个最佳的阈值来作为检测标准，当待检测图像的特征值大于这个阈值时就认为是检测目标，否则就认为不是检测目标。以24*24的图像为例[3]，其矩形特征(haar)将近有160,000个，对每一个特征都有一个最佳的阈值，通过公式计算其误差，然后再比较这160,000个误差中最小的一个就作为整个图像的最佳阈值。</p>
-<p>具体说来，给定一个训练数据集$T = \{\left( x_{1},y_{1} \right),\left(<br>x_{2},y_{2} \right)\ldots(x_{N},y_{N})\}$，其中实例 $x\in\chi$，而实例空间$\chi\in\mathbb{R}^n$，$y_{i}$属于标记集合{-1,+1}，Adaboost的目的就是从训练数据中学习一系列弱分类器或基本分类器，然后将这些弱分类器组合成一个强分类器。</p>
+<p>具体说来，给定一个训练数据集$T = {\left( x_{1},y_{1} \right),\left(<br>x_{2},y_{2} \right)\ldots(x_{N},y_{N})}$，其中实例 $x\in\chi$，而实例空间$\chi\in\mathbb{R}^n$，$y_{i}$属于标记集合{-1,+1}，Adaboost的目的就是从训练数据中学习一系列弱分类器或基本分类器，然后将这些弱分类器组合成一个强分类器。</p>
 <p>Adaboost训练弱分类器最佳阈值的算法流程如下[4]：</p>
 <ul>
 <li><p>步骤1.<br>首先，初始化训练数据的权值分布。计算每个全部训练样本的某个特征值并将其按大小排序，同时对每一个训练样本最开始时都被赋予相同的权值：1/N。</p>
@@ -284,8 +284,8 @@ var themeMenus = {};
 <p>b.计算Gm(x)在训练数据集上的分类误差率</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/2111a4d27e539831c82e86de3035d1f8.jpg" alt=""></p>
 <p>由上述式子可知，$G_{m}(x)$在训练数据集上的误差率$e_{m}$就是被$G_{m}(x)$误分类样本的权值之和。这里说明一下，误差率按另一种表示法可以表示为：</p>
-<script type="math/tex; mode=display">
-e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}</script><p>式中，$T^{+}$表示该阈值前的全部正样本的权重和；$T^{-}$表示该阈值后的全部负样本的权重和；$S^{+}$表示该阈值前的全部负样本的权重和；$S^{-}$表示该阈值后的全部负样本的权重和。这其实代表了采用该阈值所误分类的样本概率，以括号中的前一项为例，假设我们认为大于该阈值为正样本，小于该阈值为负样本，那么这个公式表示该阈值前正样本和该阈值后负样本的权重和，那么这个误差就能代表这个阈值错误分类的样本的带权和。现在看不懂没关系，后面我会举一个粒子。先继续往下看。</p>
+<p>$$<br>e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}<br>$$</p>
+<p>式中，$T^{+}$表示该阈值前的全部正样本的权重和；$T^{-}$表示该阈值后的全部负样本的权重和；$S^{+}$表示该阈值前的全部负样本的权重和；$S^{-}$表示该阈值后的全部负样本的权重和。这其实代表了采用该阈值所误分类的样本概率，以括号中的前一项为例，假设我们认为大于该阈值为正样本，小于该阈值为负样本，那么这个公式表示该阈值前正样本和该阈值后负样本的权重和，那么这个误差就能代表这个阈值错误分类的样本的带权和。现在看不懂没关系，后面我会举一个粒子。先继续往下看。</p>
 <p>c.计算$G_{m}(x)$的系数，$\alpha_{m}$表示$G_{m}(x)$在最终分类器中的重要程度（目的：得到基本分类器在最终分类器中所占的权重）：</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/92ad9cbe1760c0ba416a23363ff8e704.jpg" alt=""></p>
 <p>由上述式子可知，$e_{m} \leq 1/2$时，$\alpha_{m} \geq<br>0$，且$\alpha_{m}$随着$e_{m}$的减小而增大，意味着分类误差率越小的基本分类器在最终分类器中的作用越大。</p>
@@ -313,9 +313,9 @@ e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}</sc
 <p>拿到这10个数据的训练样本后，根据<em>X</em>和<em>Y</em>的对应关系，要把这10个数据分为两类，一类是“1”，一类是“-1”，根据数据的特点发现：“0 1 2”这3个数据对应的类是“1”，“3 4 5”这3个数据对应的类是“-1”，“6 7 8”这3个数据对应的类是“1”，9是比较孤独的，对应类“-1”。抛开孤独的9不讲，“0 1 2”、“3 4 5”、“6 7 8”这是3类不同的数据，分别对应的类是1、-1、1，直观上推测可知，可以找到对应的数据分界点，比如2.5、5.5、8.5将那几类数据分成两类。当然，这只是主观臆测，下面实际计算下这个具体过程。</p>
 <p><strong>迭代过程1</strong></p>
 <p>对于<em>m=1</em>，在权值分布为<em>D1</em>（10个数据，每个数据的权值皆初始化为0.1）的训练数据上，经过计算可得：</p>
-<p>阈值<em>v</em>取2.5时误差率为0.3（x\<2.5时取1，x\>2.5时取-1，则6 7 8分错，误差率为0.3），</2.5时取1，x\></p>
-<p>阈值<em>v</em>取5.5时误差率最低为0.4（x\<5.5时取1，x\>5.5时取-1，则3 4 5 6 7 8皆分错，误差率0.6大于0.5，不可取。故令x>5.5时取1，x\&lt;5.5时取-1，则0 1 2 9分错，误差率为0.4），</5.5时取1，x\></p>
-<p>阈值<em>v</em>取8.5时误差率为0.3（x\<8.5时取1，x\>8.5时取-1，则3 4 5分错，误差率为0.3）。</8.5时取1，x\></p>
+<p>阈值<em>v</em>取2.5时误差率为0.3（x\&lt;2.5时取1，x>2.5时取-1，则6 7 8分错，误差率为0.3），</p>
+<p>阈值<em>v</em>取5.5时误差率最低为0.4（x\&lt;5.5时取1，x>5.5时取-1，则3 4 5 6 7 8皆分错，误差率0.6大于0.5，不可取。故令x>5.5时取1，x\&lt;5.5时取-1，则0 1 2 9分错，误差率为0.4），</p>
+<p>阈值<em>v</em>取8.5时误差率为0.3（x\&lt;8.5时取1，x>8.5时取-1，则3 4 5分错，误差率为0.3）。</p>
 <p>可以看到，无论阈值<em>v</em>取2.5，还是8.5，总得分错3个样本，故可任取其中任意一个如2.5，弄成第一个基本分类器为：</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/43f0abe5d648c452d80ee2897c4c0eea.jpg" alt=""></p>
 <p>上面说阈值<em>v</em>取2.5时则6 7 8分错，所以误差率为0.3，更加详细的解释是：因为样本集中</p>
@@ -337,8 +337,7 @@ e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}</sc
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/242460ad262b7e8f1307aeefbc0994e7.jpg" alt=""></p>
 <p>值得一提的是，由权值更新的公式可知，每个样本的新权值是变大还是变小，取决于它是被分错还是被分正确。</p>
 <p>即如果某个样本被分错了，则<em>yi \</em>Gm(xi)*为负，负负得正，结果使得整个式子变大（样本权值变大），否则变小。</p>
-<p>第一轮迭代后，最后得到各个数据新的权值分布<em>D2</em>=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)。由此可以看出，因为样本中是数据“6 7 8”被G1(x)分错了，所以它们的权值由之前的0.1增大到0.1666，反之，其它数据皆被分正确，所以它们的权值皆由之前的0.1减小到0.0715。<center>
-分类函数$f1(x)= a1*G1(x) = 0.4236G1(x)$。</center><br>此时，得到的第一个基本分类器sign(f1(x))在训练数据集上有3个误分类点（即6 7 8）。</p>
+<p>第一轮迭代后，最后得到各个数据新的权值分布<em>D2</em>=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)。由此可以看出，因为样本中是数据“6 7 8”被G1(x)分错了，所以它们的权值由之前的0.1增大到0.1666，反之，其它数据皆被分正确，所以它们的权值皆由之前的0.1减小到0.0715。<center><br>分类函数$f1(x)= a1*G1(x) = 0.4236G1(x)$。</center><br>此时，得到的第一个基本分类器sign(f1(x))在训练数据集上有3个误分类点（即6 7 8）。</p>
 <p>从上述第一轮的整个迭代过程可以看出：被误分类样本的权值之和影响误差率，误差率影响基本分类器在最终分类器中所占的权重。</p>
 <p><strong>迭代过程2</strong></p>
 <p>对于<em>m=2</em>，在权值分布为D2=(0.0715,0.0715,0.0715,0.0715,0.0715,0.0715,0.1666,0.1666,0.1666,0.0715)的训练数据上，经过计算可得：</p>
@@ -359,17 +358,16 @@ e_{m} = \min{(S^{+} + \left( T^{-} - S^{-} \right),S^{-} + (T^{+} - S^{+}))}</sc
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/5c7d38ee8517bae30c51c6bb950bf69e.jpg" alt=""></p>
 <p>更新训练数据的权值分布：</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/e9347796bea31218246524ba65d5a22d.jpg" alt=""></p>
-<p><strong>D3</strong>=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)。被分错的样本“3<br>4 5”的权值变大，其它被分对的样本的权值变小。<center> 
-$f2(x)=0.4236G1(x)+0.6496G2(x)$ </center></p>
+<p><strong>D3</strong>=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)。被分错的样本“3<br>4 5”的权值变大，其它被分对的样本的权值变小。<center><br>$f2(x)=0.4236G1(x)+0.6496G2(x)$ </center></p>
 <p>此时，得到的第二个基本分类器sign(f2(x))在训练数据集上有3个误分类点（即3 4 5）。</p>
 <p><strong>迭代过程3</strong></p>
 <p>对于<em>m</em>=3，在权值分布为<em>D</em>3=(0.0455,0.0455,0.0455,0.1667,0.1667,0.01667,0.1060,0.1060,0.1060,0.0455)的训练数据上，经过计算可得：</p>
 <ol>
-<li><p>阈值<em>v</em>取2.5时误差率为0.1060*3（<em>x</em>\<2.5时取1，*x*\>2.5时取-1，则6 7 8分错，误差率为0.1060*3），</2.5时取1，*x*\></p>
+<li><p>阈值<em>v</em>取2.5时误差率为0.1060*3（<em>x</em>\&lt;2.5时取1，<em>x</em>>2.5时取-1，则6 7 8分错，误差率为0.1060*3），</p>
 </li>
 <li><p>阈值<em>v</em>取5.5时误差率最低为0.0455*4（<em>x</em>>5.5时取1，<em>x</em>\&lt;5.5时取-1，则0 1 2 9分错，误差率为0.0455*3+0.0715），</p>
 </li>
-<li><p>阈值<em>v</em>取8.5时误差率为0.1667*3（<em>x</em>\<8.5时取1，*x*\>8.5时取-1，则3 4 5分错，误差率为0.1667*3）。</8.5时取1，*x*\></p>
+<li><p>阈值<em>v</em>取8.5时误差率为0.1667*3（<em>x</em>\&lt;8.5时取1，<em>x</em>>8.5时取-1，则3 4 5分错，误差率为0.1667*3）。</p>
 </li>
 </ol>
 <p>所以阈值<em>v</em>取5.5时误差率最低，故第三个基本分类器为：</p>
@@ -382,7 +380,8 @@ $f2(x)=0.4236G1(x)+0.6496G2(x)$ </center></p>
 <p>更新训练数据的权值分布：</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/720a469b5d63655a1a66495e5c91aa0d.jpg" alt=""></p>
 <p><em>D</em>4=(0.125,0.125,0.125,0.102,0.102,0.102,0.065,0.065,0.065,0.125)。被分错的样本“0 1 2 9”的权值变大，其它被分对的样本的权值变小。</p>
-<script type="math/tex; mode=display">f3(x)=0.4236G1(x)+0.6496G2(x)+0.7514G3(x)</script><p>此时，得到的第三个基本分类器<em>sign(f3(x))</em>在训练数据集上有0个误分类点。至此，整个训练过程结束。</p>
+<p>$$f3(x)=0.4236G1(x)+0.6496G2(x)+0.7514G3(x)$$</p>
+<p>此时，得到的第三个基本分类器<em>sign(f3(x))</em>在训练数据集上有0个误分类点。至此，整个训练过程结束。</p>
 <p>现在，咱们来总结下3轮迭代下来，各个样本权值和误差率的变化，如下所示（其中，样本权值<em>D</em>中加了下划线的表示在上一轮中被分错的样本的新权值）：</p>
 <ol>
 <li><p>训练之前，各个样本的权值被初始化为<em>D1</em>=(0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)；</p>
@@ -396,16 +395,16 @@ $f2(x)=0.4236G1(x)+0.6496G2(x)$ </center></p>
 </ol>
 <p>从上述过程中可以发现，如果某些个样本被分错，它们在下一轮迭代中的权值将被增大，反之，其它被分对的样本在下一轮迭代中的权值将被减小。就这样，分错样本权值增大，分对样本权值变小，而在下一轮迭代中，总是选取让误差率最低的阈值来设计基本分类器，所以误差率<em>e</em>（所有被Gm(x)误分类样本的权值之和）不断降低。</p>
 <p>综上，将上面计算得到的<em>α1、α2、α3</em>各值代入G(x)中，$G(x)=sign[f3(x)]=sign[α1<em>G1(x)+α2</em>G2(x)+α3*G3(x)]$，得到最终的分类器为：</p>
-<script type="math/tex; mode=display">G(x)=sign[f3(x)]=sign[0.4236G1(x)+0.6496G2(x)+0.7514G3(x)]</script><h2 id="Haar特征-Adaboost特征检测"><a href="#Haar特征-Adaboost特征检测" class="headerlink" title="Haar特征+Adaboost特征检测"></a><strong>Haar特征+Adaboost特征检测</strong></h2><p>理论已经说清楚了，下面给出一个基于OpenCV的实例用于石头的目标检测，实验结果表明检测精度还有待提高，可能是正负样本的选择上有所问题，但本文旨在提供学习方法，基本上目标检测的基本流程大致如此。使用Haar+Adaboost算法目标检测分为三个步骤[5]：</p>
+<p>$$G(x)=sign[f3(x)]=sign[0.4236G1(x)+0.6496G2(x)+0.7514G3(x)]$$</p>
+<h2 id="Haar特征-Adaboost特征检测"><a href="#Haar特征-Adaboost特征检测" class="headerlink" title="Haar特征+Adaboost特征检测"></a><strong>Haar特征+Adaboost特征检测</strong></h2><p>理论已经说清楚了，下面给出一个基于OpenCV的实例用于石头的目标检测，实验结果表明检测精度还有待提高，可能是正负样本的选择上有所问题，但本文旨在提供学习方法，基本上目标检测的基本流程大致如此。使用Haar+Adaboost算法目标检测分为三个步骤[5]：</p>
 <p>1、 样本的创建和标记</p>
 <p>2、 训练分类器</p>
 <p>3、 利用训练好的分类器进行目标检测。</p>
 <h3 id="样本的创建和标记"><a href="#样本的创建和标记" class="headerlink" title="样本的创建和标记"></a>样本的创建和标记</h3><p>自己做样本是一个非常痛苦和麻烦的事，最好还是去自己去网上找些公开的数据集，然而向岩石检测这种样本就比较少，所以我还是自己在网上收集了一些图片，包括126张正样本以及501张负样本。如图所示：</p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/c9e8478c2cf843ee8fbe97648d14a401.png" alt=""></p>
 <p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/363152db20f0077337d78e2851f08c6d.png" alt=""><center></center></p>
-<p>正样本&lt;/center&gt;</p>
-<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/42cf1179ebd66e19945bf0602feebd3d.png" alt=""><center>
-负样本</center></p>
+<p>正样本</p>
+<p> <img src="/2018/06/04/基于Haar特征的岩石目标检测/42cf1179ebd66e19945bf0602feebd3d.png" alt=""><center><br>负样本</center></p>
 <p>注意在做训练集的时候要把图片转换成灰度图像，并将其按顺序重命名。这里我用了OpenCV中的函数来实现上述功能：首先在文件夹中新建一个批处理脚本获取该文件夹中所有的图像名称，方法参考<a href="https://jingyan.baidu.com/article/3aed632e3917c870108091d1.html" target="_blank" rel="noopener">如何快速获取文件夹内所有文件名称列表</a>。然后打开VS输入如下代码：</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGENUM 126</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Mat src;</span><br><span class="line">	<span class="built_in">string</span> ImgName;</span><br><span class="line">	<span class="keyword">char</span> OutName[<span class="number">126</span>];  <span class="comment">//图像个数</span></span><br><span class="line">	<span class="function">ifstream <span class="title">fin</span><span class="params">(<span class="string">"handsList.txt"</span>)</span></span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> framenum = <span class="number">0</span>; framenum &lt; IMAGENUM&amp;&amp;getline(fin,ImgName);framenum+=<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"处理："</span> &lt;&lt; ImgName &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		ImgName = <span class="string">"D:\\学习\\研究生相关\\智能喷浆台车\\image\\正样本\\修改后\\"</span> + ImgName;  <span class="comment">//定义图像文件的绝对路径</span></span><br><span class="line">		src = imread(ImgName);   <span class="comment">//读取文件</span></span><br><span class="line"></span><br><span class="line">		<span class="built_in">sprintf</span>(OutName, <span class="string">"D:\\学习\\研究生相关\\智能喷浆台车\\image\\正样本\\修改后\\bmp\\%d.bmp"</span>, framenum);   </span><br><span class="line"></span><br><span class="line">		<span class="comment">//cvtColor(src, src, CV_BGR2GRAY);   //转换成灰度图像</span></span><br><span class="line">		<span class="comment">//resize(src, src, Size(25, 50));   //重新定义图像尺寸</span></span><br><span class="line">		imwrite(OutName, src);   <span class="comment">//重新输出</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其中handsList.txt为你存储的所有图像文件名的文件，放在项目文件夹下，由于里面只存储了文件的名称，你图像文件的绝对路径加到文件名之前就可以了，然后再将其转换成灰度图像再重命名输出就OK了。</p>
@@ -455,8 +454,8 @@ var a = new Donate({
   title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
   btnText: '打赏支持', // 可选参数，打赏按钮文字
   el: document.getElementById('donation_div'),
-  wechatImage: 'http://mail.163.com/js6/s?func=mbox:getMessageData&sid=iBizvLuhONVHpPsaRvhhkRtDCmgYirav&mid=20:1tbiFAA4zlaDy8G+DgABsM&part=3',
-  alipayImage: 'http://mail.163.com/js6/s?func=mbox:getMessageData&sid=iBizvLuhONVHpPsaRvhhkRtDCmgYirav&mid=20:1tbiFAA4zlaDy8G+DgABsM&part=4'
+  wechatImage: 'http://img1.ph.126.net/ltZ_qzp9lus8heKkrVg7iw==/6597384226984847554.jpg',
+  alipayImage: 'http://img2.ph.126.net/lmP2ymrq-Aoe8P4fAWxd3A==/1691664610131577673.jpg'
 });
 </script>
       
