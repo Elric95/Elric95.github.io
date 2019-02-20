@@ -238,8 +238,9 @@ var themeMenus = {};
       
         <p>摘要：人工智能、深度学习、机器视觉等概念如今充斥我们生活的整个社会，小到小区内的车牌自动识别系统，大到火星探测车的实现都离不开深度学习的应用。读研究生之后一直在学习障碍物的目标识别算法，也走了很多弯路，从传统的基于图像特征的检测算法到现在最新的基于深度学习的目标检测算法，学习过程中也遇到了很多困难，所以也想写一篇学习笔记，涵盖从传统的BP神经网络模型到卷积神经网络分类模型再到现在state-of-art的Faster-RCNN,SSD, YOLO v3等目标检测算法的介绍，也算是自己最近时间的一个学习总结。<br> <a id="more"></a></p>
 <h2 id="神经网络简介"><a href="#神经网络简介" class="headerlink" title="神经网络简介"></a>神经网络简介</h2><p>首先，我们要明确图像分割、目标检测以及图像分类是计算机视觉领域的三大主要任务。传统的神经网络算法以及卷积神经网络算法都是针对图像分类而提出的解决方案，目标检测算法我们后面会提到，本篇主要针对神经网络模型进行介绍。</p>
-<h3 id="BP神经网络原理"><a href="#BP神经网络原理" class="headerlink" title="BP神经网络原理"></a>BP神经网络原理</h3><p>动物学家通过对化石的研究发现，早在5亿4千万年前，经历了一次物种大爆炸—-在短短一千万年间有成千上万种新物种产生。而也正是5亿4千万年前，生物首次进化出了视觉系统，是否这是一种巧合呢？也许这是生物学家的事情，但是，视觉在人类的生活当中扮演了不可或缺的角色，有研究表明人类的交谈中有将近70%的信息是通过视觉来获取的。神经网络模型正是计算机视觉的基础，通过神经网络模型，我们赋予计算一种通过图像识别物体信息的能力。许多先进的视觉检测算法本质上都是由BP神经网络模型演化而来的，其都具有BP神经网络模型的一些特征，如激活函数、损失函数以及各种不同的优化方法等。因此，为了入门深度学习和计算机视觉，让我们先从BP神经网络讲起。</p>
+<h3 id="BP神经网络原理"><a href="#BP神经网络原理" class="headerlink" title="BP神经网络原理"></a>BP神经网络原理</h3><p>动物学家通过对化石的研究发现，早在5亿4千万年前，经历了一次物种大爆炸——在短短一千万年间有成千上万种新物种产生。而也正是5亿4千万年前，生物首次进化出了视觉系统，是否这是一种巧合呢？也许这是生物学家的事情，但是，视觉在人类的生活当中扮演了不可或缺的角色，有研究表明人类的交谈中有将近70%的信息是通过视觉来获取的。神经网络模型正是计算机视觉的基础，通过神经网络模型，我们赋予计算一种通过图像识别物体信息的能力。许多先进的视觉检测算法本质上都是由BP神经网络模型演化而来的，其都具有BP神经网络模型的一些特征，如激活函数、损失函数以及各种不同的优化方法等。因此，为了入门深度学习和计算机视觉，让我们先从BP神经网络讲起。</p>
 <h4 id="BP神经网络结构"><a href="#BP神经网络结构" class="headerlink" title="BP神经网络结构"></a>BP神经网络结构</h4><p>BP(back<br>propagation)神经网络又称后向传播神经网络，是1986年由Rumelhart和McClelland为首的科学家提出的概念，是一种按照误差逆向传播算法训练的多层前馈神经网络，在数学上<strong>其本质就是一种用来寻找一组最优参数来拟合测试集中的输入输出数据方法</strong>，并且使其拥有一定的泛化能力。举个例子：我有如下的一组数据集</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -260,6 +261,7 @@ var themeMenus = {};
 </tr>
 </tbody>
 </table>
+</div>
 <p>显然可以看出输出y=2x，对于一个不在数据集中的输入x=0.5，我们根据上面的数据集所得到的式子来进行预测的话，得到的输出就是y=1.0。当然，这是一个最简单的线性回归的例子，神经网络要做的事也一样。</p>
 <p>了解了神经网络的目标，那们我们来看一下神经网络到底是怎么实现这一目标的。先从神经网络的结构说起。</p>
 <p>如下图左所示，这是一个典型的神经网络结构。每个小圆圈代表一个神经元节点，每个神经元节点所做的就是将一组权值和输入数据相乘再加上其对应的偏置值，同时节点输出之前要经过一个激活函数，激活函数的作用之后会详细提到。图示结构包括一个输入层，两个隐藏层以及一个输出层。输入元素的个数为3个<strong>向量</strong>，第一个和第二个隐藏层的节点数都为4个，最后一个为输出层，输出数为1。</p>
@@ -274,8 +276,9 @@ var themeMenus = {};
 <center>图2 神经网络正向传播流程</center>
 
 <p>需要明确的是<strong>输入x是一组向量，它具有一定的维度</strong>，我们知道向量相乘需要满足一定的条件，及x的行数应该等于$\omega$的列数。对从Layer0到Layer1层而言，用矩阵来表示计算过程：</p>
-<p>$$\mathbf{a}^{\left\lbrack \mathbf{1} \right\rbrack} =<br>f(\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack}\mathbf{X<br>+}\mathbf{b}^{\left\lbrack \mathbf{1} \right\rbrack}) \tag{1}$$ </p>
-<p>其中$\mathbf{X} = \begin{bmatrix} \mathbf{x}<em>{\mathbf{1}} \<br>\mathbf{x}</em>{\mathbf{2}} \ \mathbf{x}<em>{\mathbf{3}} \<br>\end{bmatrix}$，$\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack} =<br>\begin{bmatrix} \mathbf{W}</em>{\mathbf{11}}^{\left\lbrack \mathbf{1} \right\rbrack}<br>&amp; \mathbf{W}<em>{\mathbf{12}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}</em>{\mathbf{13}}^{\left\lbrack \mathbf{1} \right\rbrack} \<br>\mathbf{W}<em>{\mathbf{21}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}</em>{\mathbf{22}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}<em>{\mathbf{23}}^{\left\lbrack \mathbf{1} \right\rbrack} \<br>\end{bmatrix}$，$\mathbf{a}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} a</em>{1}^{\left\lbrack 1 \right\rbrack} \<br>a_{2}^{\left\lbrack 1 \right\rbrack} \<br>\end{bmatrix}$，$\mathbf{b}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} b_{1}^{\left\lbrack 1 \right\rbrack} \<br>b_{2}^{\left\lbrack 1 \right\rbrack} \<br>\end{bmatrix}$。通常我们会对输入数据进行扁平化处理，使输入$\mathbf{x}<em>{\mathbf{1}}$是$n<br>\times 1$的向量，那么$\mathbf{W}</em>{\mathbf{11}}^{\left\lbrack \mathbf{1}<br>\right\rbrack}$就应该是$1 \times<br>n$的向量，这样才能保证向量能够相乘。$b_{i}^{\left\lbrack 1<br>\right\rbrack}$是一个标量，其个数等于本层神经元的个数。同样地，我们可以按照这样的方法一直计算到输出层，其实也就是简单的矩阵乘法，只不过在神经层输出之前加了个激活函数而已。<strong>这就是神经网络的前向传播过程。</strong></p>
+<script type="math/tex; mode=display">\mathbf{a}^{\left\lbrack \mathbf{1} \right\rbrack} =
+f(\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack}\mathbf{X
++}\mathbf{b}^{\left\lbrack \mathbf{1} \right\rbrack}) \tag{1}</script><p>其中$\mathbf{X} = \begin{bmatrix} \mathbf{x}_{\mathbf{1}} \\<br>\mathbf{x}_{\mathbf{2}} \\ \mathbf{x}_{\mathbf{3}} \\<br>\end{bmatrix}$，$\mathbf{W}^{\left\lbrack \mathbf{1} \right\rbrack} =<br>\begin{bmatrix} \mathbf{W}_{\mathbf{11}}^{\left\lbrack \mathbf{1} \right\rbrack}<br>&amp; \mathbf{W}_{\mathbf{12}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{13}}^{\left\lbrack \mathbf{1} \right\rbrack} \\<br>\mathbf{W}_{\mathbf{21}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{22}}^{\left\lbrack \mathbf{1} \right\rbrack} &amp;<br>\mathbf{W}_{\mathbf{23}}^{\left\lbrack \mathbf{1} \right\rbrack} \\<br>\end{bmatrix}$，$\mathbf{a}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} a_{1}^{\left\lbrack 1 \right\rbrack} \\<br>a_{2}^{\left\lbrack 1 \right\rbrack} \\<br>\end{bmatrix}$，$\mathbf{b}^{\left\lbrack \mathbf{1}<br>\right\rbrack}\mathbf{=}\begin{bmatrix} b_{1}^{\left\lbrack 1 \right\rbrack} \\<br>b_{2}^{\left\lbrack 1 \right\rbrack} \\<br>\end{bmatrix}$。通常我们会对输入数据进行扁平化处理，使输入$\mathbf{x}_{\mathbf{1}}$是$n<br>\times 1$的向量，那么$\mathbf{W}_{\mathbf{11}}^{\left\lbrack \mathbf{1}<br>\right\rbrack}$就应该是$1 \times<br>n$的向量，这样才能保证向量能够相乘。$b_{i}^{\left\lbrack 1<br>\right\rbrack}$是一个标量，其个数等于本层神经元的个数。同样地，我们可以按照这样的方法一直计算到输出层，其实也就是简单的矩阵乘法，只不过在神经层输出之前加了个激活函数而已。<strong>这就是神经网络的前向传播过程。</strong></p>
 <h4 id="损失函数及优化器"><a href="#损失函数及优化器" class="headerlink" title="损失函数及优化器"></a>损失函数及优化器</h4><p>我们已经弄明白了神经网络的前向传播过程，就是给定一组权值，偏置值矩阵然后按照一定的路径计算得到最后的输出值。但是这一组权值和偏置值要怎么选择才能得到最优的解呢？也就是说怎样才能得到一组权值和偏置值，使其能够很好的拟合训练集数据，并且使其具有一定的泛化能力呢？这就是本节损失函数和优化器要做的事了。</p>
 <h5 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h5><p>首先，我们要评价一个神经网络结构的好坏，就必须要设定一个评价准则，这个评价准则应该能较好地评价神经网络能不能很好地拟合训练集的数据。常见的损失函数有MSE均方误差损失函数、hinge损失函数以及交叉熵损失函数等。</p>
 <p><strong>1.hinge损失函数</strong></p>
@@ -283,41 +286,58 @@ var themeMenus = {};
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/42daefe800efee43889b741da90767fa.png" alt=""></p>
 <center>图3 神经网络的输出</center>
 
-<p>假设这是通过一个神经网络输出的结果，我们选择得分最高的那一类作为网络输出的预测值。给定一个数据集$\left{\left( x_{i},y_{i} \right) \right}<em>{i =1}^{N}$，其中$x</em>{i}$表示图像，$y_{i}$表示图像标签(人工标定的真实分类)。那么整个数据集的损失是各个图像的损失的平均值：</p>
-<p>$$L = \frac{1}{N} \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})} \tag{2}$$</p>
-<p>其中$L_{i}(a,b)$表示损失函数，则SVM(Hinge)损失函数有如下的表现形式：</p>
-<p>$$<br>L_{i} = \sum_{j \neq y_{i}}^{}{max(0,s_{j} - s_{y_{i}} + 1)}<br>$$</p>
-<p>其中$s = f\left( x_{i},W\right)$为神经网络的预测得分，$s_{y_{i}}$为正确分类对应的得分，函数图像如下：</p>
+<p>假设这是通过一个神经网络输出的结果，我们选择得分最高的那一类作为网络输出的预测值。给定一个数据集$\left\{\left( x_{i},y_{i} \right) \right\}_{i =1}^{N}$，其中$x_{i}$表示图像，$y_{i}$表示图像标签(人工标定的真实分类)。那么整个数据集的损失是各个图像的损失的平均值：</p>
+<script type="math/tex; mode=display">L = \frac{1}{N} \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})} \tag{2}</script><p>其中$L_{i}(a,b)$表示损失函数，则SVM(Hinge)损失函数有如下的表现形式：</p>
+<script type="math/tex; mode=display">
+L_{i} = \sum_{j \neq y_{i}}^{}{max(0,s_{j} - s_{y_{i}} + 1)}</script><p>其中$s = f\left( x_{i},W\right)$为神经网络的预测得分，$s_{y_{i}}$为正确分类对应的得分，函数图像如下：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/693ff985c9763947cb3c80b4bdd9225a.png" alt=""></p>
 <p>看上去公式很复杂是不是？让我结合图3来理解该损失函数时如何表现分类正确与否的，以第一幅图像猫的分类结果为例，正确分类的标签猫的得分$s_{y_{1}}= 3.2$：</p>
-<p>$$<br>\begin{split}<br>L_{i} &amp;= \sum_{j \neq y_{i}}^{}max(0,s_{j}-s_{y_{i}} + 1)\<br>&amp;=  \max\left( 0,5.1 - 3.2 + 1 \right) + \max\left( 0, - 1.7 - 3.2 + 1 \right)\<br>&amp;= 2.9<br>\end{split}<br>$$</p>
-<p>再来看看第二幅汽车的图像：<br>$$<br>\begin{split}<br>L_{i} &amp;= \sum_{j \neq y_{i}}^{}max(0,s_{j}-s_{y_{i}} + 1)\<br>&amp;= max\left( 0,1.3 - 4.9 + 1 \right) + \max\left( 0,2.0 - 4.9 + 1 \right)\<br>&amp;= 0<br>\end{split}<br>$$</p>
-<p>同理可以计算第三幅青蛙的损失值为12.9。显然，<strong>当图像分类错误的时候，图像的分类损失不为0，并且分类损失值越大表示预测结果与正确分类之间的差值越大</strong>，这就是我们需要的。再代入式2求出整个数据集的损失为(2.9+0+12.9)/3=5.27。hinge损失还有很多值得学习的地方，这里只对其算法原理做简单介绍。</p>
+<script type="math/tex; mode=display">
+\begin{split}
+L_{i} &= \sum_{j \neq y_{i}}^{}max(0,s_{j}-s_{y_{i}} + 1)\\
+&=  \max\left( 0,5.1 - 3.2 + 1 \right) + \max\left( 0, - 1.7 - 3.2 + 1 \right)\\
+&= 2.9
+\end{split}</script><p>再来看看第二幅汽车的图像：</p>
+<script type="math/tex; mode=display">
+\begin{split}
+L_{i} &= \sum_{j \neq y_{i}}^{}max(0,s_{j}-s_{y_{i}} + 1)\\
+&= max\left( 0,1.3 - 4.9 + 1 \right) + \max\left( 0,2.0 - 4.9 + 1 \right)\\
+&= 0 
+\end{split}</script><p>同理可以计算第三幅青蛙的损失值为12.9。显然，<strong>当图像分类错误的时候，图像的分类损失不为0，并且分类损失值越大表示预测结果与正确分类之间的差值越大</strong>，这就是我们需要的。再代入式2求出整个数据集的损失为(2.9+0+12.9)/3=5.27。hinge损失还有很多值得学习的地方，这里只对其算法原理做简单介绍。</p>
 <p><strong>2.交叉熵损失函数</strong></p>
 <p>可以看到图3的网络输出分数没有界，且存在负数。Softmax分类器就是对输出的分数值做一个指数运算，将其值固定到[0,1]区间内。</p>
-<p>$$<br>P( Y = k | X = x_{i} ) = \frac{e^{s_{k}}}{\sum_{j}^{}e^{s_{j}}}  \qquad\qquad where \qquad s = f(x_{i};W)<br>$$</p>
-<p>为了使分类损失为正数，并且使错误分类的损失尽可能大(而不是最大值为1)，定义交叉熵损失函数为：</p>
-<p>$$<br>L_{i} = - logP\left( Y = y_{i} \middle| X = x_{i} \right) = - log(\frac{e^{s_{k}}}{\sum_{j}^{}e^{s_{j}}})<br>$$</p>
-<p>交叉熵损失的计算过程如下：</p>
+<script type="math/tex; mode=display">
+P( Y = k | X = x_{i} ) = \frac{e^{s_{k}}}{\sum_{j}^{}e^{s_{j}}}  \qquad\qquad where \qquad s = f(x_{i};W)</script><p>为了使分类损失为正数，并且使错误分类的损失尽可能大(而不是最大值为1)，定义交叉熵损失函数为：</p>
+<script type="math/tex; mode=display">
+L_{i} = - logP\left( Y = y_{i} \middle| X = x_{i} \right) = - log(\frac{e^{s_{k}}}{\sum_{j}^{}e^{s_{j}}})</script><p>交叉熵损失的计算过程如下：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/32543e98f1dbe42bd8c0597b3b97c642.png" alt=""></p>
 <p>一幅图看明白hinge loss和cross-entropy<br>loss的区别。现在，如果我们有一组训练集，那么我们能够通过神经网络的前向传播过程$s=f(x;W)$得到分类结果，并且有能够评价分类结果的损失函数。但是，我们要怎么得到一组最优化的权值W呢？这就是优化器所解决的问题。</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/1d06e89115307cde96c4b1d9e0d6c6ed.png" alt=""></p>
 <center>图4 hinge loss和cross-entropy loss的计算过程</center>
 
 <h5 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h5><p>反向传播神经网络(BP神经网络)之所以叫做反向传播神经网络就是因为其在神经网络模型的结构中引入了反馈回路，使得能够自动朝最优化方向更新权值，这也是神经网络模型从理论走向应用方面最重要的一步。</p>
-<p>$$<br>L = \frac{1}{N}\ \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})}<br>$$</p>
-<p>显然，模型的损失是权值W的函数，那么如何才能改变权值的值使得损失函数变小呢？答案就是梯度。梯度是高等数学中的概念，并不是很难理解，其本质是一个向量（矢量），表示某一函数在该点处的方向导数沿着该方向取得最大值，即函数在该点处沿着该方向（此梯度的方向）变化最快，变化率最大（为该梯度的模）。<strong>也就是说我们求出式(2)的梯度，然后再将权值W按照一定的学习率找梯度方向进行调整，就能达到调整权值以减小loss的目的，也就是我们需要求得的参数是</strong>$\mathbf{\nabla}_{\mathbf{W}}\mathbf{L}$。那么梯度又要怎么求呢？</p>
+<script type="math/tex; mode=display">
+L = \frac{1}{N}\ \sum_{i}^{}{L_{i}(f\left( x_{i},W \right),y_{i})}</script><p>显然，模型的损失是权值W的函数，那么如何才能改变权值的值使得损失函数变小呢？答案就是梯度。梯度是高等数学中的概念，并不是很难理解，其本质是一个向量（矢量），表示某一函数在该点处的方向导数沿着该方向取得最大值，即函数在该点处沿着该方向（此梯度的方向）变化最快，变化率最大（为该梯度的模）。<strong>也就是说我们求出式(2)的梯度，然后再将权值W按照一定的学习率找梯度方向进行调整，就能达到调整权值以减小loss的目的，也就是我们需要求得的参数是</strong>$\mathbf{\nabla}_{\mathbf{W}}\mathbf{L}$。那么梯度又要怎么求呢？</p>
 <p>我们知道，在数学上梯度的计算方式为：</p>
-<p>$$<br>\nabla L(x,y,\ldots,z) = (\frac{\partial L}{\partial x},\ \frac{\partial L}{\partial y}\ldots,\frac{\partial L}{\partial z})<br>$$</p>
-<p>应用到神经网络模型上来，还是举类似于图2所示的神经网络结构为例子进行讲解说明，多了一个输出神经元。这里假设里面的字母所代表的数据全部为标量：</p>
+<script type="math/tex; mode=display">
+\nabla L(x,y,\ldots,z) = (\frac{\partial L}{\partial x},\ \frac{\partial L}{\partial y}\ldots,\frac{\partial L}{\partial z})</script><p>应用到神经网络模型上来，还是举类似于图2所示的神经网络结构为例子进行讲解说明，多了一个输出神经元。这里假设里面的字母所代表的数据全部为标量：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/af579759eed89107432df13750c4b9e8.png" alt=""></p>
 <p>若我们想对Laye1层的权值数据进行更新，其输出$a_{1}^{\left\lbrack 2\right\rbrack} = f(w^{\left\lbrack 2 \right\rbrack}a^{\left\lbrack 1<br>\right\rbrack} + b^{\left\lbrack 2\right\rbrack})$，由于只有一个输出，损失函数$L = L(a_{1}^{\left\lbrack 2\right\rbrack},y_{i})$。想求$\partial L/\partial w_{11}^{\left\lbrack 2\right\rbrack}$，有：</p>
-<p>$$<br>\begin{split}<br>\frac{\partial L}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}} &amp;= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial a_{1}^{\left\lbrack 2 \right\rbrack}}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\<br>&amp;= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet \frac{\partial Z}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\<br>&amp;= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet \frac{\partial{(w}<em>{11}^{\left\lbrack 2 \right\rbrack}a</em>{1}^{\left\lbrack 1 \right\rbrack} + w_{12}^{\left\lbrack 2 \right\rbrack}a_{2}^{\left\lbrack 1 \right\rbrack} + b^{\left\lbrack 2 \right\rbrack})\ }{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\<br>&amp;= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet a_{1}^{\left\lbrack 1 \right\rbrack}<br>\end{split}<br>$$</p>
-<p>看到其他blog写的很复杂，又是海塞矩阵又是什么的，其实就是一个很简单的链式求导法则。要求Layer0层的参数也是一样的，通过链式求导法则一直对$\omega$求偏导就可以得到整个损失函数对权值$\omega$和偏置值$b$的梯度了，然后再将权值矩阵按照一定的比率照梯度方向进行变化就是能使得函数的损失下降的最快。举个例子，假设上图中Layer1层的初始权值$\omega^{\left\lbrack<br>2 \right\rbrack} = \lbrack 1,1\rbrack$，输入$a^{\left\lbrack 1 \right\rbrack}= \lbrack 2,2\rbrack$，初始偏置$b^{\left\lbrack 2 \right\rbrack} =0$，经激活函数和softmax分类得到的输出$a_{1}^{\left\lbrack 2 \right\rbrack} =\lbrack0.87,0.13\rbrack$，假设损失函数采用交叉熵损失函数（交叉熵损失函数的导数可以看<a href="https://blog.csdn.net/normol/article/details/84322626" target="_blank" rel="noopener">这里</a>），告诉大家是$(a_{i}^{\left\lbrack\text{th} \right\rbrack} -y_{i})$，yi为标签，正确分类时为1，假设第一个样本为错误分类即为0。激活函数先不讲，在下一节会具体讨论，先假设其偏导为1并假设学习率$\eta= 1$。根据上式有</p>
-<p>$$<br>\begin{split}<br>\nabla_{W^{\left\lbrack 2 \right\rbrack}}L &amp;= \left( \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet a_{1}^{\left\lbrack 1 \right\rbrack},\frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet a_{2}^{\left\lbrack 1 \right\rbrack} \right)\<br>&amp;= \left( \left( 0.87 - 0 \right)<em>2,\left( 0.87 - 0 \right)</em>2 \right)\<br>&amp;= (1.74,1.74)<br>\end{split}<br>$$</p>
-<p>更新权值W：</p>
-<p>$$<br>{W^{\left\lbrack 2 \right\rbrack}}^{‘} = W^{\left\lbrack 2 \right\rbrack} - \nabla_{W^{\left\lbrack 2 \right\rbrack}}L = - \lbrack 0.74,0.74\rbrack<br>$$</p>
-<p>偏置值的更新也是同理，这样更新权值的方法我们叫做梯度下降法。目前基本上所有的优化方法都是基于梯度下降法(GD)的。下面对一些常用的优化方法进行介绍：</p>
+<script type="math/tex; mode=display">
+\begin{split}
+\frac{\partial L}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}} &= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial a_{1}^{\left\lbrack 2 \right\rbrack}}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\\
+&= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet \frac{\partial Z}{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\\
+&= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet \frac{\partial{(w}_{11}^{\left\lbrack 2 \right\rbrack}a_{1}^{\left\lbrack 1 \right\rbrack} + w_{12}^{\left\lbrack 2 \right\rbrack}a_{2}^{\left\lbrack 1 \right\rbrack} + b^{\left\lbrack 2 \right\rbrack})\ }{\partial w_{11}^{\left\lbrack 2 \right\rbrack}}\\
+&= \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet \frac{\partial f\left( Z \right)}{\partial Z} \bullet a_{1}^{\left\lbrack 1 \right\rbrack}
+\end{split}</script><p>看到其他blog写的很复杂，又是海塞矩阵又是什么的，其实就是一个很简单的链式求导法则。要求Layer0层的参数也是一样的，通过链式求导法则一直对$\omega$求偏导就可以得到整个损失函数对权值$\omega$和偏置值$b$的梯度了，然后再将权值矩阵按照一定的比率照梯度方向进行变化就是能使得函数的损失下降的最快。举个例子，假设上图中Layer1层的初始权值$\omega^{\left\lbrack<br>2 \right\rbrack} = \lbrack 1,1\rbrack$，输入$a^{\left\lbrack 1 \right\rbrack}= \lbrack 2,2\rbrack$，初始偏置$b^{\left\lbrack 2 \right\rbrack} =0$，经激活函数和softmax分类得到的输出$a_{1}^{\left\lbrack 2 \right\rbrack} =\lbrack0.87,0.13\rbrack$，假设损失函数采用交叉熵损失函数（交叉熵损失函数的导数可以看<a href="https://blog.csdn.net/normol/article/details/84322626" target="_blank" rel="noopener">这里</a>），告诉大家是$(a_{i}^{\left\lbrack\text{th} \right\rbrack} -y_{i})$，yi为标签，正确分类时为1，假设第一个样本为错误分类即为0。激活函数先不讲，在下一节会具体讨论，先假设其偏导为1并假设学习率$\eta= 1$。根据上式有</p>
+<script type="math/tex; mode=display">
+\begin{split}
+\nabla_{W^{\left\lbrack 2 \right\rbrack}}L &= \left( \frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet a_{1}^{\left\lbrack 1 \right\rbrack},\frac{\partial L}{\partial a_{1}^{\left\lbrack 2 \right\rbrack}} \bullet a_{2}^{\left\lbrack 1 \right\rbrack} \right)\\
+&= \left( \left( 0.87 - 0 \right)*2,\left( 0.87 - 0 \right)*2 \right)\\
+&= (1.74,1.74)
+\end{split}</script><p>更新权值W：</p>
+<script type="math/tex; mode=display">
+{W^{\left\lbrack 2 \right\rbrack}}^{'} = W^{\left\lbrack 2 \right\rbrack} - \nabla_{W^{\left\lbrack 2 \right\rbrack}}L = - \lbrack 0.74,0.74\rbrack</script><p>偏置值的更新也是同理，这样更新权值的方法我们叫做梯度下降法。目前基本上所有的优化方法都是基于梯度下降法(GD)的。下面对一些常用的优化方法进行介绍：</p>
 <p><strong>1.随机梯度下降法(SGD)</strong></p>
 <p>先对一些参数符号给出定义：W—要训练的参数；J(W)—代价函数；$\nabla_{W}J(W)$—代价函数的梯度；$\eta$—学习率。</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/1.png" alt=""></p>
@@ -346,11 +366,11 @@ var themeMenus = {};
 
 <p>有这么多优化方法，那么是不是说后面的优化方法就一定比前面的好呢？是否可以抛弃SGD、Momentum等早些时期的优化算法呢？其实不是的，当我们拿到一个任务时，我们可以先构建其框架，选定其中的一个优化方法，比如Adam，然后当框架构建好了再尝试不同的优化方法来进行对比，选择其中效果最好的一种作为该网络的优化器。</p>
 <h4 id="激活函数的原理及作用"><a href="#激活函数的原理及作用" class="headerlink" title="激活函数的原理及作用"></a>激活函数的原理及作用</h4><p>之前一直在说激活函数，到底激活函数是什么东西？我们为什么要在神经元输出的时候加一个激活函数呢？其实，<strong>激活函数的作用就是为了解决线性不可分问题</strong>。如果我们没有激活函数，通过上节我们介绍的神经网络结构，那么整个神经网络的输出就是一堆的线性组合的结果，也就是说隐藏层没有起到作用，<strong>整个神经网络经过简化之后可以变成就只有一个中间层</strong>。做个简单推导，从图2中可以知道：</p>
-<p>$$<br>a_{1} = W^{\left\lbrack 1 \right\rbrack}X + b^{\left\lbrack 1 \right\rbrack}<br>$$</p>
-<p>$$<br>a_{2} = W^{\left\lbrack 2 \right\rbrack}a_{1} + b^{\left\lbrack 2 \right\rbrack}<br>$$</p>
-<p>那么：</p>
-<p>$$<br>a_{2} = W^{\left\lbrack 2 \right\rbrack}\left( W^{\left\lbrack 1 \right\rbrack}X + b^{\left\lbrack 1 \right\rbrack} \right) + b^{\left\lbrack 2 \right\rbrack} = {(W}^{\left\lbrack 2 \right\rbrack}W^{\left\lbrack 1 \right\rbrack})X + {(W}^{\left\lbrack 2 \right\rbrack}b^{\left\lbrack 1 \right\rbrack} + b^{\left\lbrack 2 \right\rbrack})<br>$$</p>
-<p>令${W = W}^{\left\lbrack 2 \right\rbrack}W^{\left\lbrack 1 \right\rbrack},B ={(W}^{\left\lbrack 2 \right\rbrack}b^{\left\lbrack 1 \right\rbrack} +b^{\left\lbrack 2 \right\rbrack})$，有$a_{2} = WX + B$。</p>
+<script type="math/tex; mode=display">
+a_{1} = W^{\left\lbrack 1 \right\rbrack}X + b^{\left\lbrack 1 \right\rbrack}</script><script type="math/tex; mode=display">
+a_{2} = W^{\left\lbrack 2 \right\rbrack}a_{1} + b^{\left\lbrack 2 \right\rbrack}</script><p>那么：</p>
+<script type="math/tex; mode=display">
+a_{2} = W^{\left\lbrack 2 \right\rbrack}\left( W^{\left\lbrack 1 \right\rbrack}X + b^{\left\lbrack 1 \right\rbrack} \right) + b^{\left\lbrack 2 \right\rbrack} = {(W}^{\left\lbrack 2 \right\rbrack}W^{\left\lbrack 1 \right\rbrack})X + {(W}^{\left\lbrack 2 \right\rbrack}b^{\left\lbrack 1 \right\rbrack} + b^{\left\lbrack 2 \right\rbrack})</script><p>令${W = W}^{\left\lbrack 2 \right\rbrack}W^{\left\lbrack 1 \right\rbrack},B ={(W}^{\left\lbrack 2 \right\rbrack}b^{\left\lbrack 1 \right\rbrack} +b^{\left\lbrack 2 \right\rbrack})$，有$a_{2} = WX + B$。</p>
 <p>上式只能对线性函数进行拟合，然而大多数情况下我们的数据并不是线性的，所以为了解决上述问题，我们引入了激活函数。</p>
 <p>常见的激活函数有Sigmoid、tanh、ReLU、LeakyReLU、Maxout、ELU等。下面来一一进行介绍：</p>
 <p><strong>1.Sigmoid激活函数：</strong></p>
@@ -380,8 +400,12 @@ var themeMenus = {};
 <h3 id="训练神经网络中的常见问题"><a href="#训练神经网络中的常见问题" class="headerlink" title="训练神经网络中的常见问题"></a>训练神经网络中的常见问题</h3><h4 id="梯度消失和梯度爆炸"><a href="#梯度消失和梯度爆炸" class="headerlink" title="梯度消失和梯度爆炸"></a>梯度消失和梯度爆炸</h4><p>梯度消失和梯度爆炸其实是一种情况，<strong>当神经网络深度很深或者激活函数选择不当时就容易出现梯度消失和梯度爆炸的问题</strong>。举个例子，下图是一个四层的BP神经网络：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/bf760bb6d64fb9efbb8d0487853d6ad4.png" alt=""></p>
 <p>根据我们之前说的，如果我们要更新输入层的权值，先求其梯度，有：</p>
-<p>$$<br>\begin{split}<br>\nabla_{W_{1}}L = \frac{\partial L}{\partial W_{1}} &amp;= \frac{\partial L\left( f_{4}\left( W_{4}f_{3}\left( W_{3}f_{2}\left( W_{2}f_{1}\left( W_{1}X \right) \right) \right) \right) \right)}{\partial W_{1}}\<br>&amp;= \frac{\partial L}{\partial f_{4}} \times \frac{\partial f_{4}}{\partial f_{3}}W_{4} \times \frac{\partial f_{3}}{\partial f_{2}}W_{3} \times \frac{\partial f_{2}}{\partial f_{1}}W_{2} \times \frac{\partial f_{1}}{\partial W_{1}}\<br>&amp;= \frac{\partial L}{\partial f_{4}} \times \frac{\partial f_{4}}{\partial f_{3}}W_{4} \times \frac{\partial f_{3}}{\partial f_{2}}W_{3} \times \frac{\partial f_{2}}{\partial f_{1}}W_{2} \times \frac{\partial f_{1}}{\partial Z}x_{i}<br>\end{split}<br>$$</p>
-<p>其中$f_{n}$表示第n-1层经激活函数的输出，$f_{n} = f(w_{n} \times f_{n - 1} +b_{n})$，所以$\frac{\partial f_{n}}{\partial f_{n -<br>1}}$就是激活函数的导数，可以看到，当激活函数的导数小于1时，梯度最后一项$x_{i}$前面的系数就是一个小于1的小数的连乘，相当于是一个指数的增益，最终导致梯度变得很小，也就是<strong>梯度消失</strong>。同样地，当激活函数的导数大于1时，梯度的数值就会呈指数的上升，也就是<strong>梯度爆炸</strong>。</p>
+<script type="math/tex; mode=display">
+\begin{split}
+\nabla_{W_{1}}L = \frac{\partial L}{\partial W_{1}} &= \frac{\partial L\left( f_{4}\left( W_{4}f_{3}\left( W_{3}f_{2}\left( W_{2}f_{1}\left( W_{1}X \right) \right) \right) \right) \right)}{\partial W_{1}}\\
+&= \frac{\partial L}{\partial f_{4}} \times \frac{\partial f_{4}}{\partial f_{3}}W_{4} \times \frac{\partial f_{3}}{\partial f_{2}}W_{3} \times \frac{\partial f_{2}}{\partial f_{1}}W_{2} \times \frac{\partial f_{1}}{\partial W_{1}}\\
+&= \frac{\partial L}{\partial f_{4}} \times \frac{\partial f_{4}}{\partial f_{3}}W_{4} \times \frac{\partial f_{3}}{\partial f_{2}}W_{3} \times \frac{\partial f_{2}}{\partial f_{1}}W_{2} \times \frac{\partial f_{1}}{\partial Z}x_{i}
+\end{split}</script><p>其中$f_{n}$表示第n-1层经激活函数的输出，$f_{n} = f(w_{n} \times f_{n - 1} +b_{n})$，所以$\frac{\partial f_{n}}{\partial f_{n -<br>1}}$就是激活函数的导数，可以看到，当激活函数的导数小于1时，梯度最后一项$x_{i}$前面的系数就是一个小于1的小数的连乘，相当于是一个指数的增益，最终导致梯度变得很小，也就是<strong>梯度消失</strong>。同样地，当激活函数的导数大于1时，梯度的数值就会呈指数的上升，也就是<strong>梯度爆炸</strong>。</p>
 <p>此外，之前我们也提过部分损失函数如Sigmoid和tanh激活函数具有饱和区，这也是产生梯度消失的原因之一。还有，如果<strong>初始化权值很大</strong>，w大到乘以激活函数的导数都大于1，那么连乘后，可能会导致求导的结果很大，<strong>也会形成梯度爆炸</strong>。其实，在实际情况中，<strong>梯度消失要比梯度爆炸更容易出现</strong>。</p>
 <p>知道了产生梯度消失和梯度爆炸的原因之后再简单介绍一下如何避免产生梯度消失和梯度爆炸的方法：①既然梯度消失和激活函数有关，所以应该选择合适的激活函数如ReLU激活函数及其变体来代替Sigmoid激活函数；②减少网络层深度；③使用更合理的网络结构，如Resnet网络，RNN网络等；④合理的初始化权值等。</p>
 <h4 id="过拟合"><a href="#过拟合" class="headerlink" title="过拟合"></a>过拟合</h4><p>我们在进行神经网络训练之前，通常将数据集分为三个部分，<strong>训练集(train)、测试集(test)以及验证集(validation)</strong>。训练集是指用于模型拟合的数据样本。验证集是模型训练过程中单独留出的样本集，它可以用于调整模型的超参数和用于对模型的能力进行初步评估，所谓超参数就是不会随训练过程而改变的参数，如学习率，迭代次数以及层数等。测试集用来评估模最终模型的泛化能力。但不能作为调参、选择特征等算法相关的选择的依据。过拟合是指为了得到与训练集完全匹配的参数而使训练过程变得过度严格。过拟合的具体表现就是最终模型在训练集上效果很好，但是在测试集上效果很差，也就是所说的<strong>模型泛化能力弱</strong>。如下图：显然整个网络的损失是不断下降的，然而，从右图中可以看到，训练集上的精度在不断上升但是在验证集上的精度却上升缓慢，而<strong>我们并不在意模型在训练集上的表现，我们真正在意的是模型能不能很好地去拟合未知的数据</strong>，这就是过拟合的具体表现形式。</p>
@@ -396,27 +420,27 @@ var themeMenus = {};
 <p>这样就对输入数据固定成符合标准正态分布的类型了。一般我们将BN层插入到全连接层或卷积层之后，并在进行非线性变化(激活函数)之前。如下图：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/930295ebeaf889a15c2f7169e42cc319.png" alt=""></p>
 <p>但是在有些情况下，我们并不想将输入数据符合标准正态分布，比如在tanh函数的中间区域是类似一个线性的函数，如果我们全部将输入数据固定到标准正态分布，<strong>也就是将数据变换成分布于tanh激活函数的中间部分，就类似一个线性变换了</strong>。如之前提到的，对神经网络模型而言，深层的线性网络是没有意义的，我们总可以找到一组权值来等价于这一连串的深层网络。为此，我们引入了两个可学习的参数$\gamma,\beta$来调整输出的均值和标准差。</p>
-<p>$$<br>y^{(k)} = \gamma^{(k)}{\hat{x}}^{(k)} + \beta^{(k)}<br>$$</p>
-<p>注意：网络是可以通过学习使得$\gamma^{(k)} = \sqrt{\text{Var}\left\lbrack x^{(k)} \right\rbrack}$，$\beta = E\lbrack x^{(k)}\rbrack$来恢复原始输入的相同的分布的。BN算法的流程如下(下面的公式中m指的是mini-batch size)：</p>
+<script type="math/tex; mode=display">
+y^{(k)} = \gamma^{(k)}{\hat{x}}^{(k)} + \beta^{(k)}</script><p>注意：网络是可以通过学习使得$\gamma^{(k)} = \sqrt{\text{Var}\left\lbrack x^{(k)} \right\rbrack}$，$\beta = E\lbrack x^{(k)}\rbrack$来恢复原始输入的相同的分布的。BN算法的流程如下(下面的公式中m指的是mini-batch size)：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/e64170c169cc637e1c21545713bd1bf7.png" alt=""></p>
 <p>通过对数据的归一化操作，使得输入激活函数的数据大致分布在非饱和区域，能够<strong>极大地提高收敛速度</strong>。添加BN层可以<strong>选择较大的学习率</strong>，实际上每层需要的学习率是不一样的，同一层不同维度的scale往往也需要不同大小的学习率，通常需要使用最小的那个学习率才能保证损失函数有效下降，Batch Normalization将每层、每维的scale保持一致，那么我们就可以直接使用较高的学习率进行优化。此外，<strong>BN层还能够减少超参数的选择</strong>，比如导致overfit的位置往往在数据边界处，如果初始化权重就已经落在数据内部，overfit现象就可以得到一定的缓解，这样就能降低对Dropout以及L2正则权值参数的依赖(后面会提)。总而言之，经过这么简单的变换，带来的好处多得很，这也是为何现在BN这么快流行起来的原因。</p>
 <p><strong>3.添加正则化损失项</strong></p>
 <p>正则化(Regularization)是机器学习中抑制过拟合问题的常用算法，常用的正则化方法是在损失函数(Cost Function)中添加一个系数的L1范数或L2范数项，用来抑制过大的模型参数，从而缓解过拟合现象。产生过拟合的原因有很多，其中一个就是原始数据集的变量太多。</p>
 <p>对于神经网络模型而言，如果我们能够将部分变量的权重w置为0，也就能够限制参数量的个数，也就是<strong>减少了参数量</strong>，这样就能达到防止过拟合的目的(这也是Dropout的核心思想)这个下一小节再讲。这里我们用另一种思路，寻找更宽松的限制条件，<strong>将部分权值w的值设置成很小</strong>：</p>
-<p>$$<br>\sum_{j}^{}{w_{j}^{2} \leq C}<br>$$</p>
-<p>其中$\sum w_{j}^{2}$就是L2范数，应用L2范数的边界条件我们叫做L2正则，若是L1正则，则应该满足$\sum\left| w_{j} \right| &lt;<br>C$。这种思想类似于高等数学中的拉格朗日边界条件，给原来的求最值函数附加一个边界条件，也就是在原来的损失函数上加入一个正则损失项：</p>
-<p>$$<br>L^{‘} = L\left( W;x_{i},y_{i} \right) + \lambda R(W)<br>$$</p>
-<p>下面，我用一张图来说明如何在限定条件下，对原始函数进行最小化的优化，假设有一个二维的权值变量β1,β2：</p>
+<script type="math/tex; mode=display">
+\sum_{j}^{}{w_{j}^{2} \leq C}</script><p>其中$\sum w_{j}^{2}$就是L2范数，应用L2范数的边界条件我们叫做L2正则，若是L1正则，则应该满足$\sum\left| w_{j} \right| &lt;<br>C$。这种思想类似于高等数学中的拉格朗日边界条件，给原来的求最值函数附加一个边界条件，也就是在原来的损失函数上加入一个正则损失项：</p>
+<script type="math/tex; mode=display">
+L^{'} = L\left( W;x_{i},y_{i} \right) + \lambda R(W)</script><p>下面，我用一张图来说明如何在限定条件下，对原始函数进行最小化的优化，假设有一个二维的权值变量β1,β2：</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/6bc37d48b34177fdef4870eabe03fea6.png" alt=""></p>
-<p>如上图所示，左侧代表L1正则化损失，右图代表L2正则化损失。如果是权值是一个二维的数据，L1损失就可以表示为${|w}<em>{1}|+ |w</em>{2}| &lt; C$，L2损失为$w_{1}^{2} + w_{2}^{2} &lt;C$，在图中就表示为一个菱形和圆形。以L2正则为例，红色的圆圈表示原来不加正则项的函数，它的最优解为$\hat{\beta}$，本来按照梯度速降法是要一直沿着红色圈半径减少的方向更新权值的，但是我们加入了正则向之后，<strong>就增加了一个约束条件，即是权值范围一定要固定到绿色的圆圈内</strong>，这样的解就不是原始函数的最优解了，能够在一定程度上减少过拟合现象(过拟合就是对训练集拟合过于完美)，而且可以看到<strong>图中β1的值很小，这样又能起到减少参数变量的作用</strong>，进一步降低过拟合的影响。同时，还应该注意到，对与上图左所示的L1正则函数，他的$\beta1$参数等于0，相当于β1对应的变量在模型训练中完全不起作用，这就是我们所说的<strong>L1正则具有稀疏性</strong>的原因(不展开讲，其实很简单，有兴趣的同学可以自己去了解)。这样，我们就从图像化的角度，分析了L1和L2正则的物理意义，下面我从数学角度给出更加直观的解释。</p>
+<p>如上图所示，左侧代表L1正则化损失，右图代表L2正则化损失。如果是权值是一个二维的数据，L1损失就可以表示为${|w}_{1}|+ |w_{2}| &lt; C$，L2损失为$w_{1}^{2} + w_{2}^{2} &lt;C$，在图中就表示为一个菱形和圆形。以L2正则为例，红色的圆圈表示原来不加正则项的函数，它的最优解为$\hat{\beta}$，本来按照梯度速降法是要一直沿着红色圈半径减少的方向更新权值的，但是我们加入了正则向之后，<strong>就增加了一个约束条件，即是权值范围一定要固定到绿色的圆圈内</strong>，这样的解就不是原始函数的最优解了，能够在一定程度上减少过拟合现象(过拟合就是对训练集拟合过于完美)，而且可以看到<strong>图中β1的值很小，这样又能起到减少参数变量的作用</strong>，进一步降低过拟合的影响。同时，还应该注意到，对与上图左所示的L1正则函数，他的$\beta1$参数等于0，相当于β1对应的变量在模型训练中完全不起作用，这就是我们所说的<strong>L1正则具有稀疏性</strong>的原因(不展开讲，其实很简单，有兴趣的同学可以自己去了解)。这样，我们就从图像化的角度，分析了L1和L2正则的物理意义，下面我从数学角度给出更加直观的解释。</p>
 <p>我们前面已经提到，如果有一组权值，<strong>减小它的值就能起到减少参数变量的作用</strong>，进而降低过拟合的影响(y=wi*x­i)。加入正则化的损失函数为：</p>
-<p>$$<br>C = C_{0} + \frac{\lambda}{2n}\sum\omega^{2}<br>$$</p>
-<p>其中C0代表原始的损失函数，后面那一项就是L2正则化项，λ就是正则项系数，权衡正则项与C0项的比重。另外还有一个系数1/2n主要是为了后面求导的结果方便。求损失函数的梯度：</p>
-<p>$$<br>\frac{\partial C}{\partial w} = \frac{\partial C_{0}}{\partial w} + \frac{\lambda}{n}w<br>$$</p>
-<p>$$<br>\frac{\partial C}{\partial b} = \frac{\partial C_{0}}{\partial b}<br>$$</p>
-<p>可以发现L2正则化项对b的更新没有影响，但是对于w的更新有影响:</p>
-<p>$$<br>{w \rightarrow w - \eta\frac{\partial C_{0}}{\partial w} - \eta\frac{\lambda}{n}w\backslash n}{= \left( 1 - \frac{\text{ηλ}}{n} \right)w - \eta\frac{\partial C_{0}}{\partial w}}<br>$$</p>
-<p>在不使用L2正则化时，求导结果中w前系数为1，现在w前面系数为1−ηλ/n，因为η、λ、n都是正的，所以1−ηλ/n小于1，它的效果是减小w，这也就是<strong>权重衰减</strong>（weight decay）的由来。<strong>当然考虑到后面的导数项，w最终的值可能增大也可能减小</strong>。</p>
+<script type="math/tex; mode=display">
+C = C_{0} + \frac{\lambda}{2n}\sum\omega^{2}</script><p>其中C0代表原始的损失函数，后面那一项就是L2正则化项，λ就是正则项系数，权衡正则项与C0项的比重。另外还有一个系数1/2n主要是为了后面求导的结果方便。求损失函数的梯度：</p>
+<script type="math/tex; mode=display">
+\frac{\partial C}{\partial w} = \frac{\partial C_{0}}{\partial w} + \frac{\lambda}{n}w</script><script type="math/tex; mode=display">
+\frac{\partial C}{\partial b} = \frac{\partial C_{0}}{\partial b}</script><p>可以发现L2正则化项对b的更新没有影响，但是对于w的更新有影响:</p>
+<script type="math/tex; mode=display">
+{w \rightarrow w - \eta\frac{\partial C_{0}}{\partial w} - \eta\frac{\lambda}{n}w\backslash n}{= \left( 1 - \frac{\text{ηλ}}{n} \right)w - \eta\frac{\partial C_{0}}{\partial w}}</script><p>在不使用L2正则化时，求导结果中w前系数为1，现在w前面系数为1−ηλ/n，因为η、λ、n都是正的，所以1−ηλ/n小于1，它的效果是减小w，这也就是<strong>权重衰减</strong>（weight decay）的由来。<strong>当然考虑到后面的导数项，w最终的值可能增大也可能减小</strong>。</p>
 <p><strong>4.Dropout方法</strong></p>
 <p>L1、L2正则化是通过修改代价函数来实现的，而Dropout则是通过修改神经网络本身来实现的，其实我们在进行<strong>构建神经网络模型的时候更多地是采用这种方式</strong>。</p>
 <p><img src="/2019/01/14/经典神经网络的介绍及应用/f2dce0a5ff079f8e2209b67fbdaa47b3.png" alt=""></p>
