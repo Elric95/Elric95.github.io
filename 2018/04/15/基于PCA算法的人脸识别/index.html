@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="Elric&#39;s Blog">
 <meta property="og:description" content="摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/3.png">
-<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/2.png">
-<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/1.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/基于PCA算法的人脸识别/3.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/基于PCA算法的人脸识别/2.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/基于PCA算法的人脸识别/1.png">
 <meta property="og:updated_time" content="2018-12-26T02:51:43.283Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于OpenCV的人脸识别算法">
 <meta name="twitter:description" content="摘要：人脸识别几乎是所有刚入门机器视觉方面的同学最感兴趣的一个方面，当然我也不例外。利用OpenCV，我们可以很方便的就实现人脸识别算法，当然精度有待提高，所以就要求我们必须掌握其原理才能更进一步的提升自己的能力。这里给出利用OpenCV实现人脸识别程序的整个流程，一来巩固自己所学的知识，二来也能帮助刚入门的同学们。本文首先介绍了OpenCV中FaceRecognizer类的理论基础，然后结合具体">
-<meta name="twitter:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/3.png">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/15/基于PCA算法的人脸识别/基于PCA算法的人脸识别/3.png">
   
     <link rel="alternate" href="/atom.xml" title="Elric&#39;s Blog" type="application/atom+xml">
   
@@ -214,7 +214,6 @@ var themeMenus = {};
 <p>解决问题要从易到难，对于PCA主成份分析的理解，我们先从二维数据讲起。有这么一组数据，表示一个班5个同学的语文和数学成绩。</p>
 <center>表1 成绩数据</center>
 
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -251,69 +250,51 @@ var themeMenus = {};
 </tr>
 </tbody>
 </table>
-</div>
 <p>可以看到每个同学的语文成绩都差不多，但是数学成绩却差别很大，如果我们想要找出这个班中优秀的学生，理应是算出两科成绩的平均分然后进行评价。但是，实际上对于这个情况而言，我们只需要看数学成绩就可以了，因为数学是影响这个班成绩的最大因素，这样就将一组二维数据降维成了一组一维数据。</p>
 <p>再抽象一点，下面有一组二维数据点，将其画在笛卡尔坐标系中如下图所示：</p>
-<p>   <img src="/2018/04/15/基于PCA算法的人脸识别/3.png" alt=""></p>
+<p>   <img src="基于PCA算法的人脸识别/3.png" alt=""></p>
 <center>图1 数据样本点</center>
 
 <p>如果我们能找到一条直线，将上面的数据点投影到这条直线上也能很好的区分这几个数据点，那么这个过程就相当于将一组二维数据集降维成一维数据集了。这个问题的关键就是找到一个向量，使得数据点在该向量上的投影的样本点尽可能地分开，那么什么数学量能够衡量一组数据时离散程度呢？答案就是方差！</p>
-<p> <img src="/2018/04/15/基于PCA算法的人脸识别/2.png" alt=""></p>
+<p> <img src="基于PCA算法的人脸识别/2.png" alt=""></p>
 <center>图2 二维数据降维</center>
 
 <p>那么如何计算投影后样本点的方差呢？这里给出方差的数学定义：</p>
-<script type="math/tex; mode=display">
-S = E\left( X - EX \right) = \frac{1}{m}\sum\left( {x'}_{i} - \overset{-}{x'} \right)^{2}</script><p>如果该数据集的中心点位置为原点，即$\overset{-}{x} = 0$，则有:</p>
-<script type="math/tex; mode=display">
-S = \frac{1}{m}\sum{x'}_{i}^{2}</script><p>其中<em>m</em>表示样本点的数量，${x’}_{i}$表示投影后的数据点距中心点距离，这个距离的数学表达式推导如下：</p>
-<p> <img src="/2018/04/15/基于PCA算法的人脸识别/1.png" alt=""></p>
+<p>$$<br>S = E\left( X - EX \right) = \frac{1}{m}\sum\left( {x’}_{i} - \overset{-}{x’} \right)^{2}<br>$$</p>
+<p>如果该数据集的中心点位置为原点，即$\overset{-}{x} = 0$，则有:</p>
+<p>$$<br>S = \frac{1}{m}\sum{x’}_{i}^{2}<br>$$</p>
+<p>其中<em>m</em>表示样本点的数量，${x’}_{i}$表示投影后的数据点距中心点距离，这个距离的数学表达式推导如下：</p>
+<p> <img src="基于PCA算法的人脸识别/1.png" alt=""></p>
 <center>图3 变换基向量投影距离</center>
 
 <p>如上图所示，<em>u</em>表示变换基向量，那么原数据$x_{i}$到其原点的距离为:</p>
-<script type="math/tex; mode=display">
-d = \left| x_{i} \right|cos\theta = {|x}_{i}|*\ \frac{x_{i}^{T}u}{\left| x_{i} \right|*\left| u \right|} = \frac{x_{i}^{T}u}{\left| u \right|}</script><p>若<em>u</em>为单位向量，那么方差也可表示为：</p>
-<script type="math/tex; mode=display">
-S = {\frac{1}{m}\sum{(x}_{i}^{T}u)}^{2} = \frac{1}{m}\sum u^{T}x_{i}x_{i}^{T}u = u^{T}(\frac{1}{m}\sum xx_{i}^{T})u\ \</script><p>设$X = \{ x_{1},x_{2},\ldots,x_{m}\}$，有：</p>
-<script type="math/tex; mode=display">
-S = {\frac{1}{m}u}^{T}XX^{T}\text{u }</script><p>由于样本的个数是固定的，那么二维数据的PCA主成份分析问题就是要最大化$u^{T}XX^{T}u$，显然$XX^{T}$是一个2*2的实对称正定矩阵，而${max(u}^{T}XX^{T}u)$实际上就等于$\text{XX}^{T}$的最大特征值，证明如下：</p>
-<p>设$u = \alpha_{1}\xi_{1} + \alpha_{2}\xi_{2}$，且$\left| \left| u \right|<br>\right|_{2} = 1$，$\xi_{i}$为$XX^{T}$的单位特征向量有</p>
-<script type="math/tex; mode=display">
- \begin{split}
-||X^T u||_2^2 &=& u^T XX^T u=<u,XX^T u>\\
-&=&<α_1 ξ_1+α_2 ξ_2,α_1 XX^T ξ_1+α_2 XX^T ξ_2>\\
-&=&<α_1 ξ_1+α_2 ξ_2,α_1 λ_1 ξ_1+α_2 λ_2 ξ_2>\\
-&=&α_1^2 λ_1+α_2^2 λ_2\\
-&≤&(α_1^2+α_2^2 ) λ_1=λ_1 ||u||_2^2=λ_1
- \end{split}</script><p>好的，对于简单的二维数据，我就可以通过计算$\text{XX}^{T}$矩阵的最大特征值得到其对应的基向量u，这个u就是使得降维后样本间方差最大的方向。总结一下，PCA算法的步骤可以归纳为：</p>
+<p>$$<br>d = \left| x_{i} \right|cos\theta = {|x}<em>{i}|*\ \frac{x</em>{i}^{T}u}{\left| x_{i} \right|*\left| u \right|} = \frac{x_{i}^{T}u}{\left| u \right|}<br>$$</p>
+<p>若<em>u</em>为单位向量，那么方差也可表示为：</p>
+<p>$$<br>S = {\frac{1}{m}\sum{(x}<em>{i}^{T}u)}^{2} = \frac{1}{m}\sum u^{T}x</em>{i}x_{i}^{T}u = u^{T}(\frac{1}{m}\sum xx_{i}^{T})u\ \<br>$$</p>
+<p>设$X = { x_{1},x_{2},\ldots,x_{m}}$，有：<br>$$<br>S = {\frac{1}{m}u}^{T}XX^{T}\text{u }<br>$$<br>由于样本的个数是固定的，那么二维数据的PCA主成份分析问题就是要最大化$u^{T}XX^{T}u$，显然$XX^{T}$是一个2*2的实对称正定矩阵，而${max(u}^{T}XX^{T}u)$实际上就等于$\text{XX}^{T}$的最大特征值，证明如下：</p>
+<p>设$u = \alpha_{1}\xi_{1} + \alpha_{2}\xi_{2}$，且$\left| \left| u \right|<br>\right|<em>{2} = 1$，$\xi</em>{i}$为$XX^{T}$的单位特征向量有<br>$$<br> \begin{split}<br>||X^T u||_2^2 &amp;=&amp; u^T XX^T u=&lt;u,XX^T u&gt;\<br>&amp;=&amp;&lt;α_1 ξ_1+α_2 ξ_2,α_1 XX^T ξ_1+α_2 XX^T ξ_2&gt;\<br>&amp;=&amp;&lt;α_1 ξ_1+α_2 ξ_2,α_1 λ_1 ξ_1+α_2 λ_2 ξ_2&gt;\<br>&amp;=&amp;α_1^2 λ_1+α_2^2 λ_2\<br>&amp;≤&amp;(α_1^2+α_2^2 ) λ_1=λ_1 ||u||_2^2=λ_1<br> \end{split}<br>$$</p>
+<p>好的，对于简单的二维数据，我就可以通过计算$\text{XX}^{T}$矩阵的最大特征值得到其对应的基向量u，这个u就是使得降维后样本间方差最大的方向。总结一下，PCA算法的步骤可以归纳为：</p>
 <p>①求出二维数据样本点x和y的平均值，然后对于所有的样例都减去对应的均值。这样做的目的是要将样本的平均值位于原点，便于后续的计算；</p>
 <p>②求解$\text{XX}^{T}$矩阵的特征值和特征向量；</p>
 <p>③将特征值按照从大到小的顺序排序，选择其中最大的一个，然后将其对应的特征向量作为投影基向量；</p>
 <p>④将样本点投影到选取的特征向量上。那么投影后的数据为：</p>
-<script type="math/tex; mode=display">
-D_{1*m} = {u_{1*2}^{T}X}_{2*m}</script><p>这样就将原始样例的2维特征变成了1维，且在该方向上的投影后的样本点之间的方差最大。</p>
+<p>$$<br>D_{1<em>m} = {u_{1</em>2}^{T}X}_{2*m}<br>$$</p>
+<p>这样就将原始样例的2维特征变成了1维，且在该方向上的投影后的样本点之间的方差最大。</p>
 <ol>
 <li><strong>高维数据降维</strong></li>
 </ol>
 <p>既然已经弄清楚了2维数据的降维，高维数据的相关处理也就不难了。这里先简要介绍一下最大方差理论：在信号处理中认为信号具有较大的方差，噪声具有较小的方差，信噪比就是信号与噪声的方差比，越大越好。因此我们认为，降维后的k维特征是将n维样本转换为k维后，每一维上的样本方差都很大，而且不同基向量之间是线性无关的。对于二维数据，可以用方差来评价其投影后的质量，那么对于高维数据呢？有没有一个数学指标可以评价投影后的数据对原始数据的信息损失量呢？有的，答案就是协方差矩阵。</p>
 <p>协方差矩阵的数学表达形式如下</p>
-<script type="math/tex; mode=display">
-C = \begin{pmatrix}
-\text{cov}(x_{1},x_{1}) & \cdots & cov(x_{1},x_{k}) \\
- \vdots & \ddots & \vdots \\
-cov(x_{k},x_{1}) & \cdots & cov(x_{k},x_{k}) \\
-\end{pmatrix}</script><p>对角线上分别是投影数据在基向量上的方差，非对角线上是其协方差。协方差是衡量多个变量同时变化的变化程度。协方差绝对值越大，两者对彼此的影响越大，反之越小。其中：</p>
-<script type="math/tex; mode=display">
-\text{cov}\left( x_{1},x_{k} \right) = E(\left( x_{1} - Ex_{1} \right)(x_{k} - Ex_{k}))</script><p>设$X = \lbrack x_{1},x_{2},\ldots,x_{k}\rbrack$，$x_{i} = \left\lbrack<br>x_{i1},x_{i2},\ldots,x_{\text{in}} \right\rbrack^{T}<script type="math/tex">，</script>n &gt; 2$有：</p>
-<script type="math/tex; mode=display">
-\text{XX}^{T} = \begin{pmatrix}
-x_{1}^{T}x_{1} & \cdots & x_{1}^{T}x_{k} \\
- \vdots & \ddots & \vdots \\
-x_{k}^{T}x_{1} & \cdots & x_{k}^{T}x_{k} \\
-\end{pmatrix}</script><p>不难发现$\text{cov}\left( x_{i},x_{k} \right) =<br>{\frac{1}{m}*x}_{i}^{T}x_{k}$，所以协方差矩阵也可以写成：</p>
-<script type="math/tex; mode=display">
-C = \frac{1}{m}XX^{T}</script><p>对于二维数据，PCA算法就是找到<strong>一个</strong>基向量使样本点在该方向上的方差最大，对于高维数据则是找到<strong>一组</strong>基向量使样本点在这组基向量上的协方差<strong>尽可能的大</strong>，也就是说等价于将协方差矩阵对角化：即除对角线外的其它元素化为0，并且在对角线上将元素按大小从上到下排列，这样我们就达到了优化目的，即：</p>
-<script type="math/tex; mode=display">
-\frac{1}{m}U^{T}XX^{T}U = \Lambda\</script><p>其中，U为n*k的变换单位基向量(也即投影方向)，X为n*m的原始数据(n\&lt;k)，$\Lambda$为对角阵。</p>
+<p>$$<br>C = \begin{pmatrix}<br>\text{cov}(x_{1},x_{1}) &amp; \cdots &amp; cov(x_{1},x_{k}) \<br> \vdots &amp; \ddots &amp; \vdots \<br>cov(x_{k},x_{1}) &amp; \cdots &amp; cov(x_{k},x_{k}) \<br>\end{pmatrix}<br>$$</p>
+<p>对角线上分别是投影数据在基向量上的方差，非对角线上是其协方差。协方差是衡量多个变量同时变化的变化程度。协方差绝对值越大，两者对彼此的影响越大，反之越小。其中：</p>
+<p>$$<br>\text{cov}\left( x_{1},x_{k} \right) = E(\left( x_{1} - Ex_{1} \right)(x_{k} - Ex_{k}))<br>$$</p>
+<p>设$X = \lbrack x_{1},x_{2},\ldots,x_{k}\rbrack$，$x_{i} = \left\lbrack<br>x_{i1},x_{i2},\ldots,x_{\text{in}} \right\rbrack^{T}$$，$$n &gt; 2$有：</p>
+<p>$$<br>\text{XX}^{T} = \begin{pmatrix}<br>x_{1}^{T}x_{1} &amp; \cdots &amp; x_{1}^{T}x_{k} \<br> \vdots &amp; \ddots &amp; \vdots \<br>x_{k}^{T}x_{1} &amp; \cdots &amp; x_{k}^{T}x_{k} \<br>\end{pmatrix}<br>$$</p>
+<p>不难发现$\text{cov}\left( x_{i},x_{k} \right) =<br>{\frac{1}{m}*x}<em>{i}^{T}x</em>{k}$，所以协方差矩阵也可以写成：</p>
+<p>$$<br>C = \frac{1}{m}XX^{T}<br>$$</p>
+<p>对于二维数据，PCA算法就是找到<strong>一个</strong>基向量使样本点在该方向上的方差最大，对于高维数据则是找到<strong>一组</strong>基向量使样本点在这组基向量上的协方差<strong>尽可能的大</strong>，也就是说等价于将协方差矩阵对角化：即除对角线外的其它元素化为0，并且在对角线上将元素按大小从上到下排列，这样我们就达到了优化目的，即：</p>
+<p>$$<br>\frac{1}{m}U^{T}XX^{T}U = \Lambda\<br>$$</p>
+<p>其中，U为n*k的变换单位基向量(也即投影方向)，X为n*m的原始数据(n\&lt;k)，$\Lambda$为对角阵。</p>
 <p>这也是一个实对称矩阵的对角化问题，即求解$XX^{T}$的特征值和特征向量，然后将特征向量从大到小排列，其对应的特征向量就是要降维的坐标轴。这样就能通过变换消除原有向量X的各分量间的相关性，从而有可能去掉那些带有较少信息的分量以达到降低特征维数的目的。</p>
 <p>好了，总结一下高维数据的PCA算法求解步骤：</p>
 <ol>
@@ -324,8 +305,8 @@ C = \frac{1}{m}XX^{T}</script><p>对于二维数据，PCA算法就是找到<stro
 </ol>
 <p>③将特征值按照从大到小的顺序排序，选择其中最大的k个，然后将其对应的特征向量作为投影基向量；</p>
 <p>④将样本点投影到选取的特征向量上。那么投影后的数据为：</p>
-<script type="math/tex; mode=display">
-D_{k*m} = {U_{k*n}^{T}X}_{n*m}</script><p>这样就将原始样例的n维特征变成了k维，且在这组基向量方向上的投影后的样本点之间的方差最大。</p>
+<p>$$<br>D_{k<em>m} = {U_{k</em>n}^{T}X}_{n*m}<br>$$</p>
+<p>这样就将原始样例的n维特征变成了k维，且在这组基向量方向上的投影后的样本点之间的方差最大。</p>
 <p><strong>1.2 matlab实现PCA算法</strong></p>
 <p>进行PCA算法的过程如下[2]：</p>
 <ol>
@@ -342,11 +323,8 @@ D_{k*m} = {U_{k*n}^{T}X}_{n*m}</script><p>这样就将原始样例的n维特征�
 <figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% training  </span></span><br><span class="line">clear;</span><br><span class="line"></span><br><span class="line">clc;</span><br><span class="line"></span><br><span class="line">train_path=<span class="string">'.\\TrainDatabase\\'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">% phi存储样本，每一列对应一个样本</span></span><br><span class="line"></span><br><span class="line">phi=<span class="built_in">zeros</span>(<span class="number">64</span>\*<span class="number">64</span>,<span class="number">20</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:<span class="number">20</span></span><br><span class="line"></span><br><span class="line">path=strcat(train_path,num2str(<span class="built_in">i</span>),<span class="string">'.jpg'</span>);</span><br><span class="line"></span><br><span class="line">Image=imread(path);</span><br><span class="line"></span><br><span class="line">Image = rgb2gray(Image);<span class="comment">%彩色图像转为灰度图像</span></span><br><span class="line"></span><br><span class="line">Image=imresize(Image,[<span class="number">64</span>,<span class="number">64</span>]); <span class="comment">%样本归一到同一个尺寸</span></span><br><span class="line"></span><br><span class="line">phi(:,<span class="built_in">i</span>)=double(<span class="built_in">reshape</span>(Image,<span class="number">1</span>,[])');</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line">mean_phi=<span class="built_in">mean</span>(phi,<span class="number">2</span>); <span class="comment">%计算机平均脸</span></span><br><span class="line"></span><br><span class="line">mean_face=<span class="built_in">reshape</span>(mean_phi,<span class="number">64</span>,<span class="number">64</span>);</span><br><span class="line"></span><br><span class="line">Image_mean=mat2gray(mean_face);</span><br><span class="line"></span><br><span class="line">imwrite(Image_mean,<span class="string">'meanface.jpg'</span>,<span class="string">'jpg'</span>);</span><br><span class="line"></span><br><span class="line">Train_Number = <span class="built_in">size</span>( phi , <span class="number">2</span> );</span><br><span class="line"></span><br><span class="line"><span class="comment">%样本归一化，使每一维特征的期望为0，因为不同维度的取值范围差异很大，为方便处理，我们使其取值在同一个范围</span></span><br><span class="line"></span><br><span class="line">A = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span> : Train_Number</span><br><span class="line"></span><br><span class="line">temp = double( phi(:,<span class="built_in">i</span>)) - mean_phi;</span><br><span class="line"></span><br><span class="line">A = [ A temp ];</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% C = A\*A'</span></span><br><span class="line">是A的协方差矩阵，然而C的维度太高，直接使用C计算特征值与特征向量太耗时</span><br><span class="line"></span><br><span class="line"><span class="comment">% L= C' ，L的特征值与C的特征值相同 ，</span></span><br><span class="line">而C的特征向量可以通过L的特征向量得到，因此这里使用L</span><br><span class="line"></span><br><span class="line">L = A'\*A;</span><br><span class="line"></span><br><span class="line">[V D] = eig ( L );</span><br><span class="line"></span><br><span class="line">L_eig_vec = [];</span><br><span class="line"></span><br><span class="line">grad = sum( D ,<span class="number">2</span> );</span><br><span class="line"><span class="comment">%D为对角矩阵，每个元素为相应的特征值，为方便后续处理，这里将特征值放到一个列向量</span></span><br><span class="line"></span><br><span class="line">[ sortGrad , index ] = <span class="built_in">sort</span>( grad ,<span class="string">'descend'</span> );<span class="comment">%排序</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">temp = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line">sumValue = sum( grad );</span><br><span class="line"></span><br><span class="line"><span class="comment">%取能量值占所有特征值99%的前K的特征向量</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>( temp/sumValue \&lt;= <span class="number">0.99</span> &amp;&amp; <span class="built_in">i</span> \&lt;= <span class="number">20</span> )</span><br><span class="line"></span><br><span class="line">L_eig_vec = [ L_eig_vec V(:,index(<span class="built_in">i</span>)) ];</span><br><span class="line"></span><br><span class="line">temp = temp+sortGrad(<span class="built_in">i</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="built_in">i</span>+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">UL = A \* L_eig_vec;<span class="comment">%协方差矩阵C的特征向量，也称特征脸，每一维为一个特征脸。</span></span><br><span class="line">UL也是转换矩阵，即通过UL将样本转化到低维空间，对样本进行降维</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>: <span class="built_in">size</span>( UL , <span class="number">2</span> )</span><br><span class="line"></span><br><span class="line">Eigenface=<span class="built_in">reshape</span>(UL(:,<span class="built_in">i</span>),[<span class="number">64</span>,<span class="number">64</span>]);</span><br><span class="line"></span><br><span class="line"><span class="built_in">figure</span>(<span class="built_in">i</span>);</span><br><span class="line"></span><br><span class="line">imshow(mat2gray(Eigenface));</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
 <p>不是说应该计算$\text{AA}^{T}$得到一个4096*4096的矩阵然后计算其特征值从大到小排列吗？为什么代码中计算的$A^{T}A$而不是$\text{AA}^{T}$呢？其实$A^{T}A$所对应的特征向量左乘A就是$AA^{T}$的特征向量，这样就能将原来一个4096*4096的矩阵特征值求解问题简化为一个20*20的矩阵特征值求解问题。</p>
 <p>不妨设$A^{T}A$的特征向量为V，其特征值为D，有：</p>
-<script type="math/tex; mode=display">
-A^T A∙V=V∙D\\
-A⋅A^T A∙V=A⋅VD</script><p>令𝑈=𝐴⋅𝑉</p>
-<script type="math/tex; mode=display">
-\text{AA}^{T}U = UD</script><p>故当我们算出$A^{T}A$的特征向量和特征值后就可以通过左乘A矩阵得到$\text{AA}^{T}$的前20个特征向量和特征值。当然了，也可以利用SVD(矩阵的奇异值分解)来求解$\text{AA}^{T}$的特征向量和特征值。</p>
+<p>$$<br>A^T A∙V=V∙D\<br>A⋅A^T A∙V=A⋅VD<br>$$<br>令𝑈=𝐴⋅𝑉<br>$$<br>\text{AA}^{T}U = UD<br>$$</p>
+<p>故当我们算出$A^{T}A$的特征向量和特征值后就可以通过左乘A矩阵得到$\text{AA}^{T}$的前20个特征向量和特征值。当然了，也可以利用SVD(矩阵的奇异值分解)来求解$\text{AA}^{T}$的特征向量和特征值。</p>
 <p><strong>二、Opencv代码实现人脸识别</strong></p>
 <p>程序功能:能够利用摄像头自主检测人脸，检测到人脸后才进入人脸识别子函数，与识别模板进行比对，通过PCA算法进行人脸识别，若识别为模板人脸，则在视频上显示姓名。</p>
 <p>程序流程：</p>
@@ -572,20 +550,5 @@ var a = new Donate({
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

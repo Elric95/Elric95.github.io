@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+
+  <!-- PACE Progress Bar START -->
+  
+    <script src="https://raw.githubusercontent.com/HubSpot/pace/v1.0.2/pace.min.js"></script>
+    <link rel="stylesheet" href="https://github.com/HubSpot/pace/raw/master/themes/orange/pace-theme-flash.css">
+  
+  
+
+  <!-- PACE Progress Bar START -->
+
+  
+  <title>目标分类网络的介绍及应用 | Elric&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="机器学习深度学习Python">
+  
+  
+  
+  
+  <meta name="description" content="&amp;emsp;&amp;emsp;之前一月份就把BP神经网络的东西给完了，然后就说要写卷积神经网络，但是由于最近家里有点事，再加上自己心情实在难以捉摸，导致这篇文章一直拖到6月份才写出来。希望各位身体健康，万事如意。 摘要：之前介绍了基于前向反馈的BP神经网络，了解了神经网络模型的工作原理，以及损失函数、分类器、优化方法等基本概念。由于BP神经网络具有其局限性，如泛化能力弱，难以处理数据量大的数据。本文旨在">
+<meta name="keywords" content="机器学习,深度学习,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="目标分类网络的介绍及应用">
+<meta property="og:url" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/index.html">
+<meta property="og:site_name" content="Elric&#39;s Blog">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;之前一月份就把BP神经网络的东西给完了，然后就说要写卷积神经网络，但是由于最近家里有点事，再加上自己心情实在难以捉摸，导致这篇文章一直拖到6月份才写出来。希望各位身体健康，万事如意。 摘要：之前介绍了基于前向反馈的BP神经网络，了解了神经网络模型的工作原理，以及损失函数、分类器、优化方法等基本概念。由于BP神经网络具有其局限性，如泛化能力弱，难以处理数据量大的数据。本文旨在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/53bdf2f03d382cc802f89e249b49a269.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/aada06aa34b5a5c30d21d5fb4269ef2f.gif">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/aad8a78e265cb76c3b0ebe17a058b19c.gif">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/af318ccfdb55d3c06bd99ce96cb5c94f.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/322f94b27d02bbb4df0c2de0e3b0e8d2.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/25d25d426c62ab5364c45da7c7021e64.gif">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/94570dd602b62e405c4a9327e842a577.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/d7127f44c1a590715c01aeda2c19880d.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/b1c35178961c20e9f9a18c7523709b18.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/cfc34de4e090d058adf25955a6eb31c0.gif">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/b174741a2ef1a2ed7b77f16c1faeb098.gif">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/a785b6b434548a9738cb8d73b0b348b2.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/c1c27f384748c20e06d2a6cbd62776c2.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/4a87f5302f51cbd2013abb37f447fdd9.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/f002f163d7ece185a530d26a63fdabeb.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/327e642a8cdf608a7bec81104fd2c66d.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/3f51dbe7a24ac3924664743d22cdaeab.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/599721f529852fa8bef122e71785af7a.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/29758c447977ef82c1100eabcd7bf9be.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/a62051990272cdec786fb748331b977a.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/c9a3e01e422c4e6072cd45a4125cf139.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/f201d314cdd5950158ad1478b412901d.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/2e8c28c1e02f8bd84d9914a0f441ab76.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/0592053c34b9edadc8a8aa5355532402.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/173cff2ce4a736503fb7dd2ced32b29d.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/fd0af41bcba193914edcdddedef6bead.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/5977e1c0e44f4039c27e8f5bb8bafaf2.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/7437737d122801f57ac4147dd2465ea4.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/05f06effd8b4227232603b45c361578c.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/20b5f72491d9de006a963efc4459f362.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/d3b917e336a1be6a90d2921007ef1c96.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/63c7765e2038f9ab3d5aa1080b10e4e7.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/2396fd84a17825b36120628acfe4b6e9.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/a0aa8fca5ff264252536f8b93b6f3c9e.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/e8cefb4f38d603dee883e41011c9362b.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/c4db5bfd37d49abee5a9de7c97ef46a6.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/4a50fd36ca84a0d2c269373881efb964.png">
+<meta property="og:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/962b6304a7853ab1a75bb3fb23f549a5.png">
+<meta property="og:updated_time" content="2019-06-24T02:05:56.546Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="目标分类网络的介绍及应用">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;之前一月份就把BP神经网络的东西给完了，然后就说要写卷积神经网络，但是由于最近家里有点事，再加上自己心情实在难以捉摸，导致这篇文章一直拖到6月份才写出来。希望各位身体健康，万事如意。 摘要：之前介绍了基于前向反馈的BP神经网络，了解了神经网络模型的工作原理，以及损失函数、分类器、优化方法等基本概念。由于BP神经网络具有其局限性，如泛化能力弱，难以处理数据量大的数据。本文旨在">
+<meta name="twitter:image" content="http://yoursite.com/2019/06/24/目标分类网络的介绍及应用/目标分类网络的介绍及应用/53bdf2f03d382cc802f89e249b49a269.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Elric&#39;s Blog" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/hiero.css">
+  <link rel="stylesheet" href="/css/glyphs.css">
+  
+    <link rel="stylesheet" href="/css/vdonate.css">
+  
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/my.css">
+  <!-- Google Adsense -->
+  
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-0123456789ABCDEF",
+          enable_page_level_ads: true
+      });
+  </script>
+  
+</head>
+</html>
+<script>
+var themeMenus = {};
+
+  themeMenus["/"] = "首页"; 
+
+  themeMenus["/archives"] = "归档"; 
+
+  themeMenus["/categories"] = "分类"; 
+
+  themeMenus["/tags"] = "标签"; 
+
+  themeMenus["/about"] = "关于"; 
+
+</script>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  <header id="allheader" class="site-header" role="banner">
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home">
+                <img style="margin-bottom: 10px;" width="124px" height="124px" alt="Hike News" src="https://hexo.io/logo.svg">
+              </a>
+            
+          </h1>
+
+          
+            <div class="site-description">喜欢拍丶东西，并不喜欢搞科研(误)</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+            <div class="clearfix sf-menu">
+
+              <ul id="main-nav" class="nmenu sf-js-enabled">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="originBgDiv" style="background: #fff; width: 100%;">
+
+      <div style="max-height:600px; overflow: hidden;  display: flex; display: -webkit-flex; align-items: center;">
+        <img id="originBg" width="100%" alt="" src="">
+      </div>
+
+  </div>
+
+  <script>
+  function setAboutIMG(){
+      var imgUrls = "css/images/pose.jpg,https://source.unsplash.com/collection/954550/1920x1080".split(",");
+      var random = Math.floor((Math.random() * imgUrls.length ));
+      if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+        document.getElementById("originBg").src=imgUrls[random];
+      } else {
+        document.getElementById("originBg").src='/' + imgUrls[random];
+      }
+  }
+  bgDiv=document.getElementById("originBgDiv");
+  if(location.pathname.match('about')){
+    setAboutIMG();
+    bgDiv.style.display='block';
+  }else{
+    bgDiv.style.display='none';
+  }
+  </script>
+
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-目标分类网络的介绍及应用" style="width: 66%; float:left;" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      目标分类网络的介绍及应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	Posted on <a href="/2019/06/24/目标分类网络的介绍及应用/" class="article-date">
+	  <time datetime="2019-06-24T03:10:24.000Z" itemprop="datePublished">六月 24, 2019</time>
+	</a>
+
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>&emsp;&emsp;之前一月份就把BP神经网络的东西给完了，然后就说要写卷积神经网络，但是由于最近家里有点事，再加上自己心情实在难以捉摸，导致这篇文章一直拖到6月份才写出来。希望各位身体健康，万事如意。</p>
+<p>摘要：之前介绍了基于前向反馈的BP神经网络，了解了神经网络模型的工作原理，以及损失函数、分类器、优化方法等基本概念。由于BP神经网络具有其局限性，如泛化能力弱，难以处理数据量大的数据。本文旨在介绍基于卷积神经网络的分类器，目标分类的任务是识别图片中是什么物体，并给出其对应的置信度。卷积神经网络与传统的BP神经网络最大的不同是其采用卷积核来做特征提取，这能极大的减少计算量，从而有效提高运算效率。此外，卷积目标分类网络是我们后面将介绍的目标检测网络的基础，而卷积神经网络的出现才真正将神经网络技术应用于人们生活的方方面面。<br> <a id="more"></a></p>
+<h2 id="卷积神经网络简介"><a href="#卷积神经网络简介" class="headerlink" title="卷积神经网络简介"></a>卷积神经网络简介</h2><p>传统的神经网络算法以及卷积神经网络算法都是针对图像分类而提出的解决方案，目标检测算法我们后面会提到，先从目标分类网络讲起。所谓目标分类，就是对给定一张图片，通过特定的算法得出该图片的类别，常用的方法有利用图像的HoG、SIFT特征结合SVM分类器等算法，传统的BP神经网络算法以及我们现在提到的卷积神经网络算法等。从2007年Alex大神首次将卷积神经网络用于ImageNet分类比赛以来，卷积神经网络就替代了经典的基于图像特征的分类方法，大大提高了图像分类的正确率，2016年的GoogleNet神经网络模型可以在ImageNet数据集上达到6.7%的误分类率，在2017年,38个竞争团队中有29个错误率低于5%，可以说正是卷积神经网络的出现，将人工智能带出了寒冬。</p>
+<h3 id="卷积神经网络原理"><a href="#卷积神经网络原理" class="headerlink" title="卷积神经网络原理"></a>卷积神经网络原理</h3><p>卷积神经网络（Convolution Neural Network,CNN）是近年来应用最为广泛的深度学习的神经网络结构，它与传统的BP神经网络相比，最大的一个显著特征就是能有效的降低网络结构的参数量，同时能够更有效地提取图像特征。早在20世纪60年代，就有学者将卷积模型应用到工业电路的模型预测中，80年代末反向传播的神经网络模型开始变得流行，2006年Hinton和Salakhutdinov将卷积算法应用于深度学习，但是受限于计算机硬件的发展，直到2012年Alex将卷积神经网络用于分类检测，卷积神经网络算法成为了神经网络算法中的主流。</p>
+<h4 id="深度学习中的卷积操作"><a href="#深度学习中的卷积操作" class="headerlink" title="深度学习中的卷积操作"></a>深度学习中的卷积操作</h4><p>在学习卷积神经网络的原理之前，我们先了解什么是卷积。相信上过控制工程的同学们都知道卷积是信号处理的一种手段，应用傅立叶变换我们可以将时域与频域中的信号相互转换，刚入门深度学习的朋友很难将图像处理中的卷积操作和我们信号处理中的卷积操作联系起来，是因为我们在学习信号处理时接触的大多是一维的信号，而我们的图像是包含了二维的信息的。在数学上，对于二维离散的模型，它具有如下的表现形式：</p>
+<p>$$<br>y\left( i,j \right) = \sum_{u = - \infty}^{\infty}{\sum_{v = - \infty}^{\infty}{x\left( u,v \right)h\left( i - u,j - v \right) = x\left( n \right)*h(n)}}<br>$$</p>
+<p>有了上面的式子，我们看看深度学习中的卷积操作是怎么实现的。其实卷积操作非常简单，我们刚接触数字图像处理时所用的高斯滤波、均值滤波、膨胀、腐蚀等操作均可以看作是卷积的应用。要想更深地了解卷积与深度学习之间的联系，可以<a href="https://www.zhihu.com/question/32067344" target="_blank" rel="noopener">看这里</a>。<strong>进行卷积操作我们需要一个卷积核，卷积核就相当于一个滤波器，卷积核的参数有尺寸和权值，卷积核与输入信号做加权叠加得到输出</strong>。假设我们有一副5*5的图像和一个3*3的卷积核，它的权值如图所示：</p>
+<p><img src="目标分类网络的介绍及应用/53bdf2f03d382cc802f89e249b49a269.png" alt=""></p>
+<p>卷积操作的示意如图：</p>
+<p><img src="目标分类网络的介绍及应用/aada06aa34b5a5c30d21d5fb4269ef2f.gif" alt=""></p>
+<p>在图像处理中，所谓卷积就是将图像中对应的位置的像素值和卷积核的对应位置的权值相乘再求和的过程。<strong>需要特别指出的是，单个卷积核也是有通道数的，且其应该与对输入信号的通道数相等，注意这与卷积核的个数是不同的概念，通常我们写程序时只指定卷积核的个数，卷积核的通道数默认与输入数据相匹配</strong>。如我们有一个3通道的RGB图像，那么我们一个3*3卷积核的参数量应该是$3<br>\times 3 \times 3 = 27$个。多通道卷积如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/aad8a78e265cb76c3b0ebe17a058b19c.gif" alt=""></p>
+<p>如果我们将卷积核的中心点视为初始点，那么它四邻域的点可以表示为:</p>
+<p>$$<br>\sum_{u = - 1}^{1}{\sum_{v = - 1}^{1}{F\left( i - u,j - v \right)}}<br>$$</p>
+<p>原始输入图像的像素点可以表示为:$h(i,j)$那么我们之前提到的卷积操作就可以表示为：</p>
+<p>$$<br>y\left( i,j \right) = \sum_{u = - 1}^{1}{\sum_{v = - 1}^{1}{h\left( u,v \right)F\left( i - u,j - v \right) = h\left( i,j \right)*F(i,j)}}<br>$$</p>
+<p>这和我们定义的二维离散的卷积操作的数学表达式相符，这也是为什么我们把上述操作称为卷积的原因。使用卷积操作能够极大地减少数据的运算量。举个例子[1]，如果我们处理Cifar-10数据集，每张图片的大小是32*32*3，其中32*32表示图像的尺寸，*3代表图像的通道数，即为RGB图像。若我们采用全连接层网络（BP神经网络），设置第一层输入层的节点数为500个，那么仅包含一个输入层的全连接网络的参数量为：</p>
+<p>$$<br>32 \times 32 \times 3 \times 500 + 500 = 150万<br>$$</p>
+<p>随着网络结构的加深，数据量则会更大！无疑这样的数据量处理是很难满足处理要求的。而当我们使用卷积神经网络时，比如当我们同样使用500个3*3的卷积核作为第一个输入卷积层，其参数量应为：$3<em>3</em>3*500+ 500 =14000$，数据量大大降低。当然我们一般不会使用这么多卷积核来做特征提取，而是增加卷积网络的深度，使用卷积网络的网络结构可能达到152层甚至更深。全连接网络与卷积神经网络的对比如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/af318ccfdb55d3c06bd99ce96cb5c94f.jpg" alt=""></p>
+<h4 id="卷积神经网络结构"><a href="#卷积神经网络结构" class="headerlink" title="卷积神经网络结构"></a>卷积神经网络结构</h4><p>介绍完深度学习中的卷积操作，接下来正式提出卷积神经网络。一般而言，卷积神经网络主要由下面五个部分组成：</p>
+<ul>
+<li><p><strong>输入层(INPUT LAYER)</strong></p>
+</li>
+<li><p><strong>卷积层(CONVOLUTION LAYER)</strong></p>
+</li>
+<li><p><strong>池化层(POOLING LAYER)</strong></p>
+</li>
+<li><p><strong>全连接层(FULLCONECT LAYER)</strong></p>
+</li>
+<li><p><strong>输出层(OUTPUT LAYER)</strong></p>
+</li>
+</ul>
+<p>结合一个实际的卷积分类神经网络，其结构如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/322f94b27d02bbb4df0c2de0e3b0e8d2.png" alt=""></p>
+<p>一般而言，我们的<strong>输入层</strong>是一个代表图像的三维像素矩阵，即<strong>像素*像素*通道数</strong>。<strong>卷积层</strong>所做的就是我们上述提到卷积操作，用于提取图像特征，一般<strong>卷积层的参数包括卷积核尺寸(size)，卷积核个数(channels)，步长(stride)，填充参数(padding)</strong>等。在卷积操作之后我们通常还要进行类似全连接神经网络中的激活函数的操作，常用的激活函数有Relu，Sigmoid，tanh激活函数等，具体实现方式可以参考我<a href="https://blog.csdn.net/LIT_Elric/article/details/86477639" target="_blank" rel="noopener">上一篇blog</a>。<strong>池化层</strong>对每一个经卷积激活后的数据(activation<br>map)进行操作，能够进一步提取特征并降低参数的数量，最常用的池化策略是<strong>最大池化</strong>(Max Pooling)。<strong>全连接层</strong>即是将经卷积池化的特征连接起来，重新组合成一个n*1的数据，再连接一个普通的神经网络结构，目的是为了方便后续的分类任务。<strong>输出层</strong>采用某一的分类器(通常是softmax分类器)输出种类的概率并给出输出结果。输入层，全连接层以及输出层在之前的文章中已经有过介绍了，这里就不重复介绍了，下面具体看一下卷积层和池化层。</p>
+<h5 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h5><p>卷积层是卷积神经网络中最重要的部分，它的参数直接决定了下一层的输入的数据。下面给出一个例子来讲解单个卷积层输出尺寸的计算。</p>
+<p><img src="目标分类网络的介绍及应用/25d25d426c62ab5364c45da7c7021e64.gif" alt=""></p>
+<p>卷积层的输出数据尺寸主要和下面这几个参数有关：输入尺寸N，卷积核尺寸F，步长stride，填充参数padding。其中步长stride表示每次卷积核移动的间隔距离；填充参数表示给图像周围填充0，由我们之前的例子可以知道，只要我们卷积核尺寸不是1*1，那么输出尺寸必定会小于输入尺寸大小，所以有时候为了保证输入与输出尺寸相同，我们就会添加这个填充参数。输出数据尺寸可以由如下公式确定：</p>
+<p>$$<br>Output = \frac{N + 2*padding - F}{\text{stride}} + 1<br>$$</p>
+<p>若干个卷积层的堆叠就组成了卷积神经网络，每个卷积层的输入通常会经过<strong>卷积，添加偏置，激活函数激活</strong>操作。如下图：</p>
+<p><img src="目标分类网络的介绍及应用/94570dd602b62e405c4a9327e842a577.png" alt=""></p>
+<p>之前提过我们通常忽略卷积核的通道数，而只指明卷积核的个数。上图所示的卷积层的维数实际上分别是5*5(*3)*6，5*5(*6)*10。还有，当不采用padding策略时，可以看到维度的缩减得非常快，每经过一个卷积层都会减少。此外，有时候我们会采用1*1的卷积核来升/降特征的维度，而不改变图片的宽和高。</p>
+<p>卷积层就是卷积神经网络与全连接神经网络最大的区别，它极大地降低了计算量，使得深层次的深度神经网络成为可能。卷积层具有如下特点：</p>
+<ul>
+<li><strong>权值共享</strong></li>
+</ul>
+<p>图片中不同感受野(receptive field)卷积操作所使用的卷积核的数据是相同的，即每一层输出的特征图(feature map)上的像素点在输入图片上映射的区域共用同一个卷积核的参数。正式权值共享这一特点大大减少了网络的参数，这不仅可以降低计算的复杂度，而且还能减少因为连接过多导致的严重过拟合，从而提高了模型的泛化能力。</p>
+<p><img src="目标分类网络的介绍及应用/d7127f44c1a590715c01aeda2c19880d.png" alt=""></p>
+<ul>
+<li><strong>局部感知</strong></li>
+</ul>
+<p>即网络部分连通，每个卷积核只与上一层的部分数据相连，只感知局部，而不是整幅图像。一般认为图像的空间联系是局部的像素联系比较密切，而距离较远的像素相关性较弱，因此，每个卷积核没必要对全局图像进行感知，只要对局部进行感知，然后在更高层将局部的信息综合起来得到全局信息。</p>
+<h5 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h5><p>通常我们的卷积层后面会跟一个池化层，当然也有其他的策略如先经过<strong>局部响应归一化层(LRN)</strong>或<strong>Batch Normalization层</strong>。池化层能够进一步提取特征并继续降低数据量起到降采样的目的。常见的池化操作有最大池化，平均池化以及随机池化等。池化层也采用和卷积层类似的操作，也使用一个滤波器来采样数据，只不过这个池化层里的滤波器没有需要训练权值，它只存储池化策略。如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/b1c35178961c20e9f9a18c7523709b18.png" alt=""></p>
+<p>上图表示了最大池化的过程，我们用一个2*2的核来对数据采样，步长设置为2，每次只取采样数据中的最大值，得到的数据如上图右所示。通过池化这一操作，这样我们即能进一步进行特征提取，还能将4*4的数据量降维成2*2的数据量，更有利于后续的卷积操作。通常进行池化层后数据维度会变为输入的一半，即步长stride一般取2。其他池化策略的操作也是一样的，大家有兴趣自行google或百度。</p>
+<p>到这里，卷积神经网络的基本结构及基本计算方法就已经差不多介绍清楚了，下面我们来谈谈卷积神经网络的训练。</p>
+<h3 id="卷积神经网络反向传输过程"><a href="#卷积神经网络反向传输过程" class="headerlink" title="卷积神经网络反向传输过程"></a>卷积神经网络反向传输过程</h3><p>如下图，我们用一个2*2没有填充参数padding的卷积核来对一个3*3的输入数据进行卷积操作，并设步长为1：</p>
+<p><img src="目标分类网络的介绍及应用/cfc34de4e090d058adf25955a6eb31c0.gif" alt=""></p>
+<p>在前向传输的过程中，我们会缓存变量X和卷积核W以便后续的反向传输计算。记：</p>
+<p>$$<br>h_{11} = W_{11}X_{11} + W_{12}X_{12} + W_{21}X_{21} + W_{22}X_{22}<br>$$</p>
+<p>$$<br>h_{12} = W_{11}X_{12} + W_{12}X_{13} + W_{21}X_{22} + W_{22}X_{23}<br>$$</p>
+<p>$$<br>h_{21} = W_{11}X_{21} + W_{12}X_{22} + W_{21}X_{31} + W_{22}X_{32}<br>$$</p>
+<p>$$<br>h_{22} = W_{11}X_{22} + W_{12}X_{23} + W_{21}X_{32} + W_{22}X_{33}<br>$$</p>
+<p>反向传输即利用梯度下降法求损失函数对变量的梯度，进而不断更新权值的过程，具体的实现步骤可以参考上一篇博文。由于卷积核的每个权值都参与了输出向量$$\left\lbrack<br>h_{11},h_{12},h_{13},h_{14}<br>\right\rbrack^{T}$$的计算，所以任何卷积核权值的改变都会引起输出向量的改变，并且这些改变最终都会累加到损失函数。根据偏微分的基本规则，记$$\partial<br>h_{\text{ij}} = \frac{\partial L}{\partial h_{\text{ij}}},\partial w_{\text{ij}}<br>= \frac{\partial L}{\partial w_{\text{ij}}}$$，有：</p>
+<p>$$<br>\partial W_{11} = X_{11}\partial h_{11} + X_{12}\partial h_{12} + X_{21}\partial h_{21} + X_{22}\partial h_{22}<br>$$</p>
+<p>$$<br>\partial W_{12} = X_{12}\partial h_{11} + X_{13}\partial h_{12} + X_{22}\partial h_{21} + X_{23}\partial h_{22}<br>$$</p>
+<p>$$<br>\partial W_{21} = X_{21}\partial h_{11} + X_{22}\partial h_{12} + X_{31}\partial h_{21} + X_{32}\partial h_{22}<br>$$</p>
+<p>$$<br>\partial W_{22} = X_{22}\partial h_{11} + X_{23}\partial h_{12} + X_{32}\partial h_{21} + X_{33}\partial h_{22}<br>$$</p>
+<p>根据上式，我们只需要计算卷积层的输出的梯度即可以求得卷积核权值的梯度，如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/b174741a2ef1a2ed7b77f16c1faeb098.gif" alt=""></p>
+<p>同理随着卷积神经网络的加深，我们利用链式求导法则求得不同层的梯度，有兴趣的同学可以自己试试推导一下。</p>
+<h3 id="基于卷积神经网络实现数字识别"><a href="#基于卷积神经网络实现数字识别" class="headerlink" title="基于卷积神经网络实现数字识别"></a>基于卷积神经网络实现数字识别</h3><p>设计一个卷积神经网络，实现MNIST手写数据集的识别。网络结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Filters</th>
+<th>Size</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Convolutional</td>
+<td>32</td>
+<td>5*5</td>
+<td>28*28*32</td>
+</tr>
+<tr>
+<td>Maxpool</td>
+<td></td>
+<td>2*2</td>
+<td>14*14*32</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>64</td>
+<td>5*5</td>
+<td>14*14*64</td>
+</tr>
+<tr>
+<td>Maxpool</td>
+<td></td>
+<td>2*2</td>
+<td>7*7*64</td>
+</tr>
+<tr>
+<td>Connected</td>
+<td></td>
+<td>1024</td>
+<td>1024</td>
+</tr>
+<tr>
+<td>Connected</td>
+<td></td>
+<td>10</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</span><br><span class="line"></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">'MNIST_data'</span>,one_hot=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#每个批次的大小</span></span><br><span class="line">batch_size = <span class="number">100</span></span><br><span class="line"><span class="comment">#计算一共有多少个批次</span></span><br><span class="line">n_batch = mnist.train.num_examples // batch_size</span><br><span class="line"></span><br><span class="line"><span class="comment">#参数概要</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">variable_summaries</span><span class="params">(var)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'summaries'</span>):</span><br><span class="line">        mean = tf.reduce_mean(var)</span><br><span class="line">        tf.summary.scalar(<span class="string">'mean'</span>, mean)<span class="comment">#平均值</span></span><br><span class="line">        <span class="keyword">with</span> tf.name_scope(<span class="string">'stddev'</span>):</span><br><span class="line">            stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))</span><br><span class="line">        tf.summary.scalar(<span class="string">'stddev'</span>, stddev)<span class="comment">#标准差</span></span><br><span class="line">        tf.summary.scalar(<span class="string">'max'</span>, tf.reduce_max(var))<span class="comment">#最大值</span></span><br><span class="line">        tf.summary.scalar(<span class="string">'min'</span>, tf.reduce_min(var))<span class="comment">#最小值</span></span><br><span class="line">        tf.summary.histogram(<span class="string">'histogram'</span>, var)<span class="comment">#直方图</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#初始化权值</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">weight_variable</span><span class="params">(shape,name)</span>:</span></span><br><span class="line">    initial = tf.truncated_normal(shape,stddev=<span class="number">0.1</span>)<span class="comment">#生成一个截断的正态分布</span></span><br><span class="line">    <span class="keyword">return</span> tf.Variable(initial,name=name)</span><br><span class="line"></span><br><span class="line"><span class="comment">#初始化偏置</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bias_variable</span><span class="params">(shape,name)</span>:</span></span><br><span class="line">    initial = tf.constant(<span class="number">0.1</span>,shape=shape)</span><br><span class="line">    <span class="keyword">return</span> tf.Variable(initial,name=name)</span><br><span class="line"></span><br><span class="line"><span class="comment">#卷积层</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x,W)</span>:</span></span><br><span class="line">    <span class="comment">#x input tensor of shape `[batch, in_height, in_width, in_channels]`</span></span><br><span class="line">    <span class="comment">#W filter / kernel tensor of shape [filter_height, filter_width, in_channels, out_channels]</span></span><br><span class="line">    <span class="comment">#`strides[0] = strides[3] = 1`. strides[1]代表x方向的步长，strides[2]代表y方向的步长</span></span><br><span class="line">    <span class="comment">#padding: A `string` from: `"SAME", "VALID"`</span></span><br><span class="line">    <span class="keyword">return</span> tf.nn.conv2d(x,W,strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#池化层</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pool_2x2</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="comment">#ksize [1,x,y,1]</span></span><br><span class="line">    <span class="keyword">return</span> tf.nn.max_pool(x,ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#命名空间</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'input'</span>):</span><br><span class="line">    <span class="comment">#定义两个placeholder</span></span><br><span class="line">    x = tf.placeholder(tf.float32,[<span class="keyword">None</span>,<span class="number">784</span>],name=<span class="string">'x-input'</span>)</span><br><span class="line">    y = tf.placeholder(tf.float32,[<span class="keyword">None</span>,<span class="number">10</span>],name=<span class="string">'y-input'</span>)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'x_image'</span>):</span><br><span class="line">        <span class="comment">#改变x的格式转为4D的向量[batch, in_height, in_width, in_channels]`</span></span><br><span class="line">        x_image = tf.reshape(x,[<span class="number">-1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>],name=<span class="string">'x_image'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'Conv1'</span>):</span><br><span class="line">    <span class="comment">#初始化第一个卷积层的权值和偏置</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'W_conv1'</span>):</span><br><span class="line">        W_conv1 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">32</span>],name=<span class="string">'W_conv1'</span>)<span class="comment">#5*5的采样窗口，32个卷积核从1个平面抽取特征</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'b_conv1'</span>):  </span><br><span class="line">        b_conv1 = bias_variable([<span class="number">32</span>],name=<span class="string">'b_conv1'</span>)<span class="comment">#每一个卷积核一个偏置值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#把x_image和权值向量进行卷积，再加上偏置值，然后应用于relu激活函数</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'conv2d_1'</span>):</span><br><span class="line">        conv2d_1 = conv2d(x_image,W_conv1) + b_conv1</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'relu'</span>):</span><br><span class="line">        h_conv1 = tf.nn.relu(conv2d_1)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'h_pool1'</span>):</span><br><span class="line">        h_pool1 = max_pool_2x2(h_conv1)<span class="comment">#进行max-pooling</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'Conv2'</span>):</span><br><span class="line">    <span class="comment">#初始化第二个卷积层的权值和偏置</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'W_conv2'</span>):</span><br><span class="line">        W_conv2 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">64</span>],name=<span class="string">'W_conv2'</span>)<span class="comment">#5*5的采样窗口，64个卷积核从32个平面抽取特征</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'b_conv2'</span>):  </span><br><span class="line">        b_conv2 = bias_variable([<span class="number">64</span>],name=<span class="string">'b_conv2'</span>)<span class="comment">#每一个卷积核一个偏置值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#把h_pool1和权值向量进行卷积，再加上偏置值，然后应用于relu激活函数</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'conv2d_2'</span>):</span><br><span class="line">        conv2d_2 = conv2d(h_pool1,W_conv2) + b_conv2</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'relu'</span>):</span><br><span class="line">        h_conv2 = tf.nn.relu(conv2d_2)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'h_pool2'</span>):</span><br><span class="line">        h_pool2 = max_pool_2x2(h_conv2)<span class="comment">#进行max-pooling</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#28*28的图片第一次卷积后还是28*28，第一次池化后变为14*14</span></span><br><span class="line"><span class="comment">#第二次卷积后为14*14，第二次池化后变为了7*7</span></span><br><span class="line"><span class="comment">#进过上面操作后得到64张7*7的平面</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'fc1'</span>):</span><br><span class="line">    <span class="comment">#初始化第一个全连接层的权值</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'W_fc1'</span>):</span><br><span class="line">        W_fc1 = weight_variable([<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>,<span class="number">1024</span>],name=<span class="string">'W_fc1'</span>)<span class="comment">#上一场有7*7*64个神经元，全连接层有1024个神经元</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'b_fc1'</span>):</span><br><span class="line">        b_fc1 = bias_variable([<span class="number">1024</span>],name=<span class="string">'b_fc1'</span>)<span class="comment">#1024个节点</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#把池化层2的输出扁平化为1维</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'h_pool2_flat'</span>):</span><br><span class="line">        h_pool2_flat = tf.reshape(h_pool2,[<span class="number">-1</span>,<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>],name=<span class="string">'h_pool2_flat'</span>)</span><br><span class="line">    <span class="comment">#求第一个全连接层的输出</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'wx_plus_b1'</span>):</span><br><span class="line">        wx_plus_b1 = tf.matmul(h_pool2_flat,W_fc1) + b_fc1</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'relu'</span>):</span><br><span class="line">        h_fc1 = tf.nn.relu(wx_plus_b1)</span><br><span class="line"></span><br><span class="line">    <span class="comment">#keep_prob用来表示神经元的输出概率</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'keep_prob'</span>):</span><br><span class="line">        keep_prob = tf.placeholder(tf.float32,name=<span class="string">'keep_prob'</span>)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'h_fc1_drop'</span>):</span><br><span class="line">        h_fc1_drop = tf.nn.dropout(h_fc1,keep_prob,name=<span class="string">'h_fc1_drop'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'fc2'</span>):</span><br><span class="line">    <span class="comment">#初始化第二个全连接层</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'W_fc2'</span>):</span><br><span class="line">        W_fc2 = weight_variable([<span class="number">1024</span>,<span class="number">10</span>],name=<span class="string">'W_fc2'</span>)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'b_fc2'</span>):    </span><br><span class="line">        b_fc2 = bias_variable([<span class="number">10</span>],name=<span class="string">'b_fc2'</span>)</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'wx_plus_b2'</span>):</span><br><span class="line">        wx_plus_b2 = tf.matmul(h_fc1_drop,W_fc2) + b_fc2</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'softmax'</span>):</span><br><span class="line">        <span class="comment">#计算输出</span></span><br><span class="line">        prediction = tf.nn.softmax(wx_plus_b2)</span><br><span class="line"></span><br><span class="line"><span class="comment">#交叉熵代价函数</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'cross_entropy'</span>):</span><br><span class="line">    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y,logits=prediction),name=<span class="string">'cross_entropy'</span>)</span><br><span class="line">    tf.summary.scalar(<span class="string">'cross_entropy'</span>,cross_entropy)</span><br><span class="line">    </span><br><span class="line"><span class="comment">#使用AdamOptimizer进行优化</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'train'</span>):</span><br><span class="line">    train_step = tf.train.AdamOptimizer(<span class="number">1e-4</span>).minimize(cross_entropy)</span><br><span class="line"></span><br><span class="line"><span class="comment">#求准确率</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">'accuracy'</span>):</span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'correct_prediction'</span>):</span><br><span class="line">        <span class="comment">#结果存放在一个布尔列表中</span></span><br><span class="line">        correct_prediction = tf.equal(tf.argmax(prediction,<span class="number">1</span>),tf.argmax(y,<span class="number">1</span>))<span class="comment">#argmax返回一维张量中最大的值所在的位置</span></span><br><span class="line">    <span class="keyword">with</span> tf.name_scope(<span class="string">'accuracy'</span>):</span><br><span class="line">        <span class="comment">#求准确率</span></span><br><span class="line">        accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))</span><br><span class="line">        tf.summary.scalar(<span class="string">'accuracy'</span>,accuracy)</span><br><span class="line">        </span><br><span class="line"><span class="comment">#合并所有的summary</span></span><br><span class="line">merged = tf.summary.merge_all()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(tf.global_variables_initializer())</span><br><span class="line">    train_writer = tf.summary.FileWriter(<span class="string">'logs/train'</span>,sess.graph)</span><br><span class="line">    test_writer = tf.summary.FileWriter(<span class="string">'logs/test'</span>,sess.graph)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1001</span>):</span><br><span class="line">        <span class="comment">#训练模型</span></span><br><span class="line">        batch_xs,batch_ys =  mnist.train.next_batch(batch_size)</span><br><span class="line">        sess.run(train_step,feed_dict=&#123;x:batch_xs,y:batch_ys,keep_prob:<span class="number">0.5</span>&#125;)</span><br><span class="line">        <span class="comment">#记录训练集计算的参数</span></span><br><span class="line">        summary = sess.run(merged,feed_dict=&#123;x:batch_xs,y:batch_ys,keep_prob:<span class="number">1.0</span>&#125;)</span><br><span class="line">        train_writer.add_summary(summary,i)</span><br><span class="line">        <span class="comment">#记录测试集计算的参数</span></span><br><span class="line">        batch_xs,batch_ys =  mnist.test.next_batch(batch_size)</span><br><span class="line">        summary = sess.run(merged,feed_dict=&#123;x:batch_xs,y:batch_ys,keep_prob:<span class="number">1.0</span>&#125;)</span><br><span class="line">        test_writer.add_summary(summary,i)</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> i%<span class="number">100</span>==<span class="number">0</span>:</span><br><span class="line">            test_acc = sess.run(accuracy,feed_dict=&#123;x:mnist.test.images,y:mnist.test.labels,keep_prob:<span class="number">1.0</span>&#125;)</span><br><span class="line">            train_acc = sess.run(accuracy,feed_dict=&#123;x:mnist.train.images[:<span class="number">10000</span>],y:mnist.train.labels[:<span class="number">10000</span>],keep_prob:<span class="number">1.0</span>&#125;)</span><br><span class="line">            <span class="keyword">print</span> (<span class="string">"Iter "</span> + str(i) + <span class="string">", Testing Accuracy= "</span> + str(test_acc) + <span class="string">", Training Accuracy= "</span> + str(train_acc))</span><br></pre></td></tr></table></figure>
+<h2 id="目标分类卷积神经网络结构介绍"><a href="#目标分类卷积神经网络结构介绍" class="headerlink" title="目标分类卷积神经网络结构介绍"></a>目标分类卷积神经网络结构介绍</h2><p>随着卷积神经网络的提出，Alex等人首次将其应用到ImageNet比赛中，并斩获2012年ImageNet的冠军。然后越来越多的优秀分类网络结构被提出来，比如vgg16，GoogLeNet，和ResNet等，下面我们来一一介绍其结构及特点。</p>
+<h3 id="AlexNet网络"><a href="#AlexNet网络" class="headerlink" title="AlexNet网络"></a>AlexNet网络</h3><p><a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf" target="_blank" rel="noopener">AlexNet原文在这里</a>。AlexNet是2012年ImageNet竞赛冠军获得者Hinton和他的学生Alex Krizhevsky设计的。在ImageNet大规模视觉挑战赛(ILSVRC)中，AlexNet凭借其独特的卷积神经网络结构以37.5%的top-1错误率和17%的top-5错误率斩获当时比赛的冠军，也是在那年之后，更多的更深的神经网络被提出，开启了深度学习的新时代。AlexNet中含有6千万个参数和大约65万个神经节点，总共有5个卷积层和3个全连接层，最后一层接了一个softmax分类用于输出。除了网络结构的创新外，为了减少网络过拟合的问题，AlexNet还使用了多种策略如dropout和数据增强等。</p>
+<h4 id="AlexNet网络结构"><a href="#AlexNet网络结构" class="headerlink" title="AlexNet网络结构"></a>AlexNet网络结构</h4><p>ImageNet数据集包括1500万带有分类标签的图片，总共大约有22000个类别。ILSVRC使用ImgetNet中1000个类别（每个类别大约1000张图片）作为数据集，AlexNet使用120万张图片作为训练集，5万张验证集图片以及12万张测试集图片。Alex的网络结构如下图，AlexNet是一个8层的深度神经网络，每个卷积神经网络在完成卷积操作后使用relu函数激活，然后在第一和第二的卷积层激活后还跟了一个LRN（局部响应归一化层），然后再在第一、二、五层卷积层后面又增加了最大池化层。</p>
+<p><img src="目标分类网络的介绍及应用/a785b6b434548a9738cb8d73b0b348b2.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Filters</th>
+<th>Size</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td>-</td>
+<td>-</td>
+<td>227*227*3</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>96</td>
+<td>11*11(p=0, s=4)</td>
+<td>55*55*96</td>
+</tr>
+<tr>
+<td>LRN</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Maxpool</td>
+<td>-</td>
+<td>3*3(s=2)</td>
+<td>27*27*96</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>256</td>
+<td>5*5(p=2, s=1)</td>
+<td>27*27*256</td>
+</tr>
+<tr>
+<td>LRN</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Maxpool</td>
+<td>-</td>
+<td>3*3(s=2)</td>
+<td>13*13*256</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>384</td>
+<td>3*3(p=2, s=1)</td>
+<td>13*13*384</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>384</td>
+<td>3*3(p=2, s=1)</td>
+<td>13*13*384</td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td>256</td>
+<td>3*3(p=1, s=1)</td>
+<td>13*13*256</td>
+</tr>
+<tr>
+<td>Maxpool</td>
+<td>-</td>
+<td>3*3(s=2)</td>
+<td>6*6*256</td>
+</tr>
+<tr>
+<td>Connected</td>
+<td>-</td>
+<td>4096</td>
+<td>4096</td>
+</tr>
+<tr>
+<td>Connected</td>
+<td>-</td>
+<td>4096</td>
+<td>4096</td>
+</tr>
+<tr>
+<td>Connected</td>
+<td>-</td>
+<td>1000</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<p>在AlexNet中，作者使用了一些tricks来改善网络的性能，当然在目前看来，很多tricks都已经被用烂了，有些tricks也因为其局限性而被淘汰。下面具体介绍一下这些tricks，各位也可以应用到自己的训练网络中去：</p>
+<ul>
+<li><strong>采用ReLU激活函数</strong></li>
+</ul>
+<p>在我们之前的文章中，介绍了激活函数的作用，常用的sigmoid和tanh激活函数由于随着网络层数的增加会导致梯度消失和梯度更新缓慢等问题，AlexNet中引入了ReLU激活函数$f\left(x \right) =max(0,x)$。使用ReLU激活函数的卷积神经网络要比tanh激活函数的训练速度快好几倍，如下图所示，虚线表示使用tanh函数的卷积网络，实线表示使用ReLU激活函数的卷积网络。显然，ReLU激活函数比tanh激活函数更快收敛。</p>
+<p><img src="目标分类网络的介绍及应用/c1c27f384748c20e06d2a6cbd62776c2.png" alt=""></p>
+<ul>
+<li><strong>使用多GPU进行训练</strong></li>
+</ul>
+<p>Alex等人利用了两块GPU来进行卷积计算，利用GPU强大的并行计算能力，大大地提高了网络训练的速度（可以理解CPU计算是用一辆法拉利来拉货，GPU是用十辆大卡车拉货，动力或许不及法拉利，但一次可以拉更多的货）。由于论文中使用的是GTX580进行训练，而单个GTX580只有3GB显存，所以作者将AlexNet分布在两个GPU上，每个GPU的显存中只存储一半的神经元参数。因为GPU之间通信方便，可以互相访问显存，而不需要通过主机内存，所以同时使用多块GPU也是非常高效的。目前很多实验室的工作站都是用多路Titan来进行深度学习的训练。</p>
+<ul>
+<li><strong>使用局部响应归一化层（Local Response Normalization）</strong></li>
+</ul>
+<p>在使用ReLU作为激活函数时，其输出没有饱和区，因此ReLU激活函数不需要对输入进行归一化变换来防止梯度饱和。但是Alex等人发现，局部响应归一化仍然有助于提高网络的检测精度，所以其在第一层和第二层卷积层后面增添了两个LRN层以增强泛化能力。局部响应归一化的参数如下所示：</p>
+<p><img src="目标分类网络的介绍及应用/2.png" alt=""></p>
+<p>其中，$a_{x,y}^{i}$表示神经元激活，通过在$(x,y)$位置应用核$i$，然后应用ReLU非线性来计算，响应归一化激活$b_{x,y}^{i}$，$N$是卷积核的个数，也就是生成的FeatureMap的个数；$k,\alpha,\beta,n$是超参数，论文中使用的值是$k= 2,n = 5,\alpha = 10^{- 4},\beta =0.75$。输出$b_{x,y}^{i}$和输入$a_{x,y}^{j}$的上标表示的是当前值所在的通道，也即是叠加的方向是沿着通道进行。将要归一化的值$a_{x,y}^{i}$所在附近通道相同位置的值的平方累加起来。但是，下一篇VGGNet论文中实验指出LRN并不能降低错误率,反倒加大了计算量，LRN的应用场合还需要考虑。目前，很多神经网络中采用了Batch Normalization策略来取代了LRN。</p>
+<ul>
+<li><strong>层叠池化（Overlapping Pooling）</strong></li>
+</ul>
+<p>以前的pooling都是核多大，步长就多大，这样池化层的池化核的作用区域不会重叠。而在AlexNet中采用了池化核尺寸和步长不相同的策略，即池化过程中，池化核每次移动的步长小于池化的窗口的长度。比如，AlexNet池化的大小为3*3的正方形，每次移动步长为2，每次移动，这样就会出现重叠，在一定程度上提高了模型的泛化能力，减少过拟合现象。</p>
+<p><img src="目标分类网络的介绍及应用/4a87f5302f51cbd2013abb37f447fdd9.png" alt=""></p>
+<h4 id="减少过拟合方法"><a href="#减少过拟合方法" class="headerlink" title="减少过拟合方法"></a>减少过拟合方法</h4><p>AlexNet含有超过6千万个参数，尽管ImageNet的数据量很大，但还是不足以满足如此多参数的学习而不产生过拟合现象。为了减低过拟合的影响，Alex设计如下两种方法。</p>
+<ul>
+<li><strong>数据增强</strong></li>
+</ul>
+<p>减轻过拟合最简单和最有用的方法就是人为地增加数据集的数据量，Alex通过对原始图片做一些计算量不大的变换来扩增数据集。<br>采用的一种方法是在训练时从尺寸为256*256的原始图片中随机裁剪出大小为224*224的图像来作为网络的输入，并对输入图像再做一次水平翻转又能将数据集扩增一倍，这样数据集的容量就变成了$\left(256 - 224 \right)^{2} \times 2 =2048$倍。在测试时，作者只对输入测试图片裁剪出五张224*224大小的图像(四角+中间)，再对其进行翻转，这样扩增了10倍，最后对这10张patch在softmax层输出相加去平均值输出相加去平均值作为最后的输出结果。另一种方法是改变训练图片的RGB通道，对原训练集做PCA（主成份分析），对每张训练图片加上主成份的倍数，即大小成正比的对应特征值乘以一个随机变量，随机变量通过均值为0，标准差为0.1的高斯分布得到。即：</p>
+<p>$$<br>\left\lbrack I_{\text{xy}}^{R},I_{\text{xy}}^{G},I_{\text{xy}}^{B} \right\rbrack^{T} = \left\lbrack p_{1},p_{2},p_{3} \right\rbrack\left\lbrack \alpha_{1}\lambda_{1},\alpha_{2}\lambda_{2},\alpha_{3}\lambda_{3} \right\rbrack^{T}<br>$$</p>
+<p>$p_{i},\lambda_{i}$分别是RGB像素值$3 \times<br>3$协方差矩阵的第i个特征向量和特征值，$\alpha_{i}$是前面提到的随机变量。对于某个训练图像的所有像素，每个$\alpha_{i}$只获取一次，直到图像进行下一次训练时才重新获取。这个方案近似抓住了自然图像的一个重要特性，即降低了光照和颜色和灯光对结果的影响。这个方案减少了top-1错误率1%以上。</p>
+<ul>
+<li><strong>Dropout</strong></li>
+</ul>
+<p>Dropout方法能够有效地减少过拟合现象，在上一篇博文中已经有过介绍了。它会以0.5的概率对每个隐层神经元的输出设为0。那些“失活的”的神经元不再进行前向传播并且不参与反向传播。因此每次输入时，神经网络会采样一个不同的架构，但所有架构共享权重。dropout技术减少了神经元之间的耦合，在每一次传播的过程中，hidden层的参与传播的神经元不同，整个模型的网络就不相同了，这样就会强迫网络学习更robust的特征，从而提高了模型的鲁棒性。</p>
+<h4 id="训练细节"><a href="#训练细节" class="headerlink" title="训练细节"></a>训练细节</h4><p>作者在训练时使用了小幅度的权值衰减，这样利于模型的训练学习。此外，对于第二、四、五卷积层以及所有的全连接层，初始化偏置值为1，这样有利于给ReLU提供一个正输入，加快训练速度，剩下的层偏置初始化为0。学习率初始化为0.01，随着模型在验证集错误率不提升时，再将学习率降低10倍，整个训练过程降低了3次。</p>
+<h4 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h4><p><a href="https://github.com/stephen-v/tensorflow_alexnet_classify" target="_blank" rel="noopener">实现代码可以见github</a>。</p>
+<h3 id="VGGNet网络"><a href="#VGGNet网络" class="headerlink" title="VGGNet网络"></a>VGGNet网络</h3><p><a href="https://arxiv.org/pdf/1409.1556.pdf" target="_blank" rel="noopener">VGG论文原文在这里</a>。VGG是由Simonyan和Zisserman提出卷积神经网络模型，其名称来源于作者所在的牛津大学视觉几何组(Visual Geometry Group)的缩写。VGG模型和之后提到的GoogleNet模型共同参加了2014年的ImageNet图像分类与定位挑战赛，尽管以0.6%的劣势惜败于GoogleNet，但是其着重于研究网络深度对模型性能的影响，并成功构筑了16-19层深的卷积神经网络，这使得分类错误率大幅下降(相比AlexNet错误率降低了一倍)并增强模型的泛化能力。到目前为止，依然有许多网络使用VGG来提取图像特征。VGGNet也是由卷积层和全连接层组成，可以看成是AlexNet的深化版，并且作者认为只使用3*3的小尺寸卷积核能够显著加深网络的深度。</p>
+<h4 id="VGGNet网络结构"><a href="#VGGNet网络结构" class="headerlink" title="VGGNet网络结构"></a>VGGNet网络结构</h4><p>在训练过程中，首先对输入图片固定到224*224大小，并对其去均值化(所以输入图片减去RGB的平均值)。为了验证不同卷积层深度对模型性能的影响，VGGNet采用块结构(Block)来构建网络，类似AlexNet，VGGNet中总共有5个Block和3个全连接层，每个Block中又含有若干个卷积层和一个池化层。作者总共测试了6种不同的网络结构的性能，深度从11层到19层不等，其中变化的仅仅是Block中卷积层的数量和卷积核尺寸。卷积层中采用<strong>卷积核尺寸均为3*3</strong>(有一种策略使用了1*1大小的卷积核，这样的卷积核不改变输入通道的维度且可以提高模型的学习能力)，五个池化层皆为<strong>最大池化</strong>，并且<strong>池化核为2*2，步长为2</strong>。VGGNet具体网络结构如下所示，其中，convN表示使用N*N的卷积核：</p>
+<p><img src="目标分类网络的介绍及应用/1.png" alt=""></p>
+<p>以16层的VGG16为例，具体的卷积网络结构如下：</p>
+<p><img src="目标分类网络的介绍及应用/f002f163d7ece185a530d26a63fdabeb.png" alt=""></p>
+<p>可以看到在VGGNet中，网络结构还是比较简洁的，就通过堆叠卷积层和池化层，最后再接3个全连接层，卷积层只负责提取特征而不改变输入的尺寸，尺寸降采样则是通过池化层来实现的，每通过一次最大池化层，输入尺寸减半。斯坦福的人工智能公开课上给出了VGG16网络的资源占用情况（没有考虑偏置值），如下：</p>
+<p><img src="目标分类网络的介绍及应用/327e642a8cdf608a7bec81104fd2c66d.png" alt=""></p>
+<p>蓝色的字体表示当前层参数的数量，红色的字体表示计算所需的显存容量。尽管网络层数不断加深，但A到E这六种网络结构的参数量变化却不是很大，这是因为大部分参数在后面的全连接层。VGG16有超过1亿的参数量，其拟合能力很强，但是也正是因为其参数量过多导致训练时间过长，调参难度大，并且VGG16的权重值存储文件大小为500多MB，不利于安装到嵌入式系统中。</p>
+<h4 id="VGGNet特点"><a href="#VGGNet特点" class="headerlink" title="VGGNet特点"></a>VGGNet特点</h4><ul>
+<li><strong>小尺寸卷积核和更深的网络结构</strong></li>
+</ul>
+<p>相比于AlexNet中的5*5甚至11*11的卷积核，VGG使用了多个3*3的小尺寸卷积核卷积层堆叠来实现和大卷积核卷积层相同的感受野，作者在论文中认为使用2个3*3的卷积核相当于使用1个5*5的卷积核。。这样不仅能够减少参数量，由于卷积层输出前会经激活函数激活，因此相当于进行了更多的非线性映射，可以增加网络的学习能力。此外，论文中C结构还使用了1*1的卷积核，这也是为了增加决策函数的非线性而不影响卷积层的感受野。</p>
+<p><img src="目标分类网络的介绍及应用/3f51dbe7a24ac3924664743d22cdaeab.png" alt=""></p>
+<p>可以看到，最顶层的1*1输出是由最底层的5*5的输入提取出来的，经过两个3*3的卷积核，效果与一个5*5的大卷积核类似。在参数数量上，两个3*3的卷积核，有2*3*3=18参数，而一个5*5=25参数，可以看到参数量上也少了很多。</p>
+<ul>
+<li><strong>使用迁移学习来初始化权值</strong></li>
+</ul>
+<p>神经网络的权值初始化是非常重要的，因为由于深度网络中梯度的不稳定性不好的初始值会使学习陷入停滞。为了更好地初始化权值，作者先训练一个深度较浅的网络A，然后再利用训练好的网络A的权值来作为深度较深的网络的初始值。虽然和AlexNet相比，VGGNet的参数更多、深度更深，但是却收敛的更快。原因有两点，一是前面提到的更深的层和更小的卷积核相当于隐式的进行了正则化；二是在训练期间对某些层进行了预初始化。</p>
+<ul>
+<li><strong>多尺度训练和测试</strong></li>
+</ul>
+<p>在训练阶段，网络首先将输入图像进行缩放，使得最短边的尺寸缩放至S(S>=224)，然后再对缩放后的图像进行采样crop至224*224。对于S的大小，论文中讨论了两种方案。第一种是使用固定的值，作者评估了两个S大小的模型，S=256和S=384。对于S=384，先是训练一个S=256的模型，再利用S=256的模型权值初始化S=384的模型权值来训练S=384的模型。第二种使用变长的输入尺寸S，随机在S=[Smin，Smax]中取值进行训练。</p>
+<p>在测试阶段，同样将输入图像进行缩放，使得最短边的尺寸缩放至Q。Q不需要与S相同，然后使用两种不同的方式进行分类：dense evaluation和multi-crop evaluation，这两种方式分别借鉴于Overfeat和GoogleNet。下面分别介绍这两种方式：</p>
+<p><strong>1. dense evaluation</strong></p>
+<p>由于训练网络输入图像是224x224x3，如果后面三个层都是全连接，那么在测试阶段就只能将测试的图像全部都要缩放大小到224x224x3，才能符合后面全连接层的输入数量要求，这样就不便于测试工作的开展。Dense evaluation是将最后三层全连接层改成了卷积层来实现对任意输入图像的测试的。对于训练网络而言，假设最后一层卷积层的输出是m*m的C个通道的feature map，那么在进入全连接层之前，需要将其展开成一个m*m*C的一维向量再与全连接层相连接。在VGG中，它将全连接层看成是一个卷积核大小为m*m，通道数为第一个全连接层神经元个数n1的卷积层，这样得到的输出大小是1*1*n1，效果与全连接层一样。然后对于第二个全连接层，可以看成是大小为1*1，通道数为第二个全连接层神经元个数n2的卷积层；同理第三个全连接层也可做类似改变成卷积层。如下图：</p>
+<p><img src="目标分类网络的介绍及应用/599721f529852fa8bef122e71785af7a.png" alt=""></p>
+<p>将全连接换成卷积后，则可以来处理任意分辨率（在整张图）上计算卷积，这就是无需对原图做重新缩放处理的优势。</p>
+<p><strong>2. multi-crop evaluation</strong></p>
+<p>Multi-crop策略首先将图像缩放到3种不同的尺寸(纵横比不变)，对于得到的每个尺寸图像，取四个顶点加中心五个位置的正方形图像（边长就是最短边的长度。对于纵向图像来说，则取上、中、下三个位置），因此每个尺寸的图像得到3个正方形图像；然后再在每个正方形图像的4个crop顶点和中心位置处crop出224*224大小的图像，因此每个正方形图像得到6个224*224大小的图像；最后，再将所有得到的224*224的图像水平翻转。因此，每个图像可以得到3*5*5*2=150个224*224大小的图像。将这些图像分别输入神经网络进行分类，最后取平均，作为这个图像最终的分类结果。</p>
+<h4 id="VGGNet实验效果"><a href="#VGGNet实验效果" class="headerlink" title="VGGNet实验效果"></a>VGGNet实验效果</h4><p>作者对这六种网络结构进行了评估，具体的可以参考原文，这里只贴出但尺度评估的效果，即取固定的Q；</p>
+<p><img src="目标分类网络的介绍及应用/29758c447977ef82c1100eabcd7bf9be.png" alt=""></p>
+<p>可以看出：</p>
+<p><strong>1、LRN层对网络性能提升不大</strong></p>
+<p>作者通过网络A-LRN发现，AlexNet曾经用到的LRN层（local response normalization，局部响应归一化）并没有带来性能的提升，因此在其它组的网络中均没再出现LRN层。</p>
+<p><strong>2、随着深度增加，分类性能逐渐提高（A、B、C、D、E）</strong></p>
+<p>从11层的A到19层的E，网络深度增加对top1和top5的错误率下降很明显。</p>
+<p><strong>3、多个小卷积核比单个大卷积核性能好（B）</strong></p>
+<p>作者做了实验用B和自己一个不在实验组里的较浅网络比较，较浅网络用conv5*5来代替B的两个conv3*3，结果显示多个小卷积核比单个大卷积核效果要好。</p>
+<h4 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h4><p><a href="https://github.com/machrisaa/tensorflow-vgg" target="_blank" rel="noopener">VGGNet Github实现代码</a></p>
+<h3 id="GoogLeNet-Inception-网络"><a href="#GoogLeNet-Inception-网络" class="headerlink" title="GoogLeNet (Inception)网络"></a>GoogLeNet (Inception)网络</h3><p>GoogLeNet与VGGNet共同参加了2014年的ImageNet挑战赛，并以一定的优势获得冠军。GoogLeNet是由谷歌公司研究出来的深度学习网络结构，其最大的创新就是提出了Inception模块，所以2014年提出的GoogLeNet网络又称为Inception V1，后来谷歌公司又不断对其进行改进，先后又提出了V2、V3以及V4的改进版。Inception V1凭借其独有的Inception结构在控制参数量的同时又扩展了网络的深度，Inception V1网络的深度有22层，但是参数量却只有500万个，大大少于VGGNet的1亿3000万和AlexNet的6000万的参数量。尽管参数量少于其他的网络结构，但是其网络性能却更加优越，在ILSVRC2014挑战赛上取得了-top5错误率6.67%的好成绩。</p>
+<p><a href="https://arxiv.org/pdf/1409.4842.pdf" target="_blank" rel="noopener">Inception V1论文原文在这里</a></p>
+<p><a href="https://arxiv.org/pdf/1502.03167.pdf" target="_blank" rel="noopener">Inception V2论文原文在这里</a></p>
+<p><a href="https://arxiv.org/pdf/1512.00567.pdf" target="_blank" rel="noopener">Inception V3论文原文在这里</a></p>
+<p><a href="https://arxiv.org/pdf/1602.07261.pdf" target="_blank" rel="noopener">Inception V4论文原文在这里</a></p>
+<h4 id="Inception-V1"><a href="#Inception-V1" class="headerlink" title="Inception V1"></a>Inception V1</h4><p>提高网络性能最有用的方法就是增加网络的深度和宽度，所谓深度就是网络的层的数量，所谓宽度就是每层的神经元数量。但是直接增加网络的尺寸却会带来两个主要的缺点：<strong>1.网络参数过多容易产生过拟合现象，为了解决过拟合问题需要大量的数据，而高质量的训练数据获取成本太高；2.极大地增加网络的计算量，如果增大的计算量得不到充分的利用（比如大量的权值趋向于0），那么就会造成计算资源的浪费</strong>。</p>
+<p>论文认为将全连接层占据了网络的大部分参数，很容易产生过拟合现象，所以作者去除了模型最后的全连接层，并将全连接层甚至一般的卷积层转换为<strong>稀疏连接</strong>来解决上述问题。稀疏连接是神经科学中的概念，即神经科学中每个细胞只对一个视觉区域内极小的一部分敏感，而对其他部分则可以视而不见的现象启发。相比于全连接层，卷积操作本身就是一种稀疏的结构。然而，当对非均匀稀疏数据结构计算时，计算效率非常低，需要在底层的计算库做优化，即使算术运算的数量减少了100倍，查找和缓存丢失的代价也会占主导地位。而大量的文献表明，将稀疏矩阵聚类成相对密集的子矩阵是稀疏矩阵乘法计算的一个良好实践方法。Inception结构试图逼近隐含在视觉网络中的稀疏结构，并利用密集、易实现的组件来实现这样的假设（隐含的稀疏结构）。同时论文还指出，尽管Inception这样的架构成功应用于计算机视觉中，但其性能的成功是否归结于网络结构的构成还需要探讨和验证。总之，Inception结构就是一种基于事实的既能利用密集矩阵的高计算性能，又能保证网络结构稀疏性的方法。</p>
+<h5 id="Inception架构细节"><a href="#Inception架构细节" class="headerlink" title="Inception架构细节"></a>Inception架构细节</h5><p>之前网络结构都是layer-by-layer的模式，Inception架构将前一层分解成不同的卷积单元，由于卷积操作的性质，这些单元只与前一层的某些区域有关（在靠近输入图像的层中，相关单元将会集中在图像的局部区域），然后再将这些单元聚类到一起，聚类后形成下一个单位，与上一个卷积层相连接，也就是利用卷积操作将相关性高的区域聚类到一起来逼近最佳局部稀疏结构。论文中将卷积核的尺寸限制在1*1，3*3，5*5是因为使用过大的卷积核会导致聚类的数目变少。此外，当设定卷积步长stride=1时，再将padding分别设置为0，1，2就可以保证上述卷积核的输出与输入层尺寸保持一致，这样便于不同卷积核输出特征的拼接。由于Pooling操作能够增强网络的性能，所以作者在Inception架构中也嵌入了Pooling层。同时，论文中还指出，随着网络层数的增加，层数更高的层提取的特征也越抽象，不同区域之间的相关性也会下降，所以3*3和5*5的卷积核在更深层的时候使用更多。下图展示了Inception架构的初始结构：</p>
+<p><img src="目标分类网络的介绍及应用/a62051990272cdec786fb748331b977a.png" alt=""></p>
+<p>通过将1*1，3*3，5*5卷积层以及3*3最大池化层堆叠在一起，即能增加网络的宽度又能增加网络对尺度的对应性。使用不同尺度的卷积核和池化核能够提取前一层的不同特征信息，降低过拟合，提高模型性能。然而，采用上面的结构有一个问题，并且当pooling单元加入之后这个问题更加明显：由于<strong>Pooling层输出filters的数量等于上一步filters的数量</strong>，在最后叠加的时候会大大地增加filters的数量，随着网络结构的深化，到最后几层的时候filters的数量会越来越多。此外，使用5*5的卷积核依然会有不小的计算量。所以即使这个架构可能包含了最优的稀疏结构，还是会非常没有效率，导致计算没经过几步就崩溃。</p>
+<p>因此，文章引入了1*1的卷积核来进行数据降维。比如，上一层的输出为100*100*128，经过具有256个输出的5*5卷积层之后(stride=1，pad=2)，输出数据为100*100*256。其中，卷积层的参数为128*5*5*256。假如上一层输出先经过具有32个输出的1*1卷积层，再经过具有256个输出的5*5卷积层，那么最终的输出数据仍为为100*100*256，但卷积参数量已经减少为128*1*1*32+32*5*5*256，大约减少了4倍。此外，引入1*1的卷积核还能够增加网络的非线性和网络的深度。改进版的Inception结构如下：</p>
+<p><img src="目标分类网络的介绍及应用/c9a3e01e422c4e6072cd45a4125cf139.png" alt=""></p>
+<p>上图所示的Inception网络结构中，包含了3种不同尺寸的卷积核1个最大池化，增加网络对不同尺度的适应性。其中，1*1卷积核除了进行特征提取外，另一个最重要的作用是对输出通道进行升维或降维。Inception的4个分支最后通过一个聚合操作合并，构建出符合Hebbian原理的稀疏结构。在GoogLeNet中，作者就是通过堆叠这样的Inception结构拓宽加深网络结构，而又不至于参数过多产生过拟合。</p>
+<h5 id="GoogLeNet网络结构"><a href="#GoogLeNet网络结构" class="headerlink" title="GoogLeNet网络结构"></a>GoogLeNet网络结构</h5><p>GoogLeNet共有22层深，在加入Inception架构之前，输入图像经过了3个卷积层和2个最大池化层来进行数据降维，同时在第2个卷积层和第2个最大池化层的输入还加入了一个LRN层。文中总共堆叠了9个Inception架构，在网络最后使用了平均池化层而不是全连接层，这种策略使得TOP1精度提高了0.6%。但是为了方便Finetune，作者还是在池化层后面接了一个全连接层，最后使用Softmax分类器用于分类的输出。需要注意的是，即使网络移除了全连接层，作者仍然使用Dropout技术防止过拟合现象。除了最后一层的输出，GoogleNet中间节点的输出效果也很好，因此作者引出网络中中间某一层的输出作为辅助分类节点，并给定一个较小的权重（占比为0.3）作用于最后的分类结果中，但在inference阶段，辅助分类器不使用。GoogLeNet的网络结构如下：</p>
+<p><img src="目标分类网络的介绍及应用/f201d314cdd5950158ad1478b412901d.png" alt=""></p>
+<p>对于每一层的具体结构及输出尺寸如下，（但我感觉文中给出的参数量计算有点问题，网上搜了一圈也没有答案，有人说是第一层是1*7+7*1的卷积，然后再组合而成的7*7的卷积，其它层的数据量也有点小偏差，大家可以发表下自己的看法）：</p>
+<p><img src="目标分类网络的介绍及应用/2e8c28c1e02f8bd84d9914a0f441ab76.png" alt=""></p>
+<p>上表中的#3*3 reduce和 #5*5 reduce表示在进入3*3卷积层之前的数据通道数，特别的，对于Inception结构，就是指使用1*1卷积核的数量。除了GoogLeNet的主体结构，辅助分类器的结构参数如下：</p>
+<ul>
+<li><p>平均池化层池化核的尺寸为5*5，步长为3，4a的输出为4*4*512，4d的输出为4*4*528</p>
+</li>
+<li><p>总共有128个1*1的卷积核参与卷积计算</p>
+</li>
+<li><p>全连接层共有1024个神经元用于线性激活</p>
+</li>
+<li><p>Dropout率设置为70%</p>
+</li>
+<li><p>使用softmax作为分类器（和主分类一样预测1000个类，但在inference时移除）</p>
+</li>
+</ul>
+<h5 id="GoogLeNet实验效果"><a href="#GoogLeNet实验效果" class="headerlink" title="GoogLeNet实验效果"></a>GoogLeNet实验效果</h5><p>文中分别训练了7个模型，每个模型初始值相同，但模型的采样方法和输入图片的随机序列不同。在测试时，将图片短边resize到4个固定的S值（256，288，320，352），再根据最短边的数值裁剪resize后图像的上中下（或左中右）三个正方形区域，然后将正方形图像的5个区域（左上、右上、左下、右下、中央）和该正方形图像整体（共6张图片）resize到224*224同时再水平翻转一次作为网络输入。这样一张图片能够扩增为4*3*6*2=144张测试图片。将这些图片在softmax层做平均，获得最后的预测结果。</p>
+<p><img src="目标分类网络的介绍及应用/0592053c34b9edadc8a8aa5355532402.png" alt=""></p>
+<h4 id="Inception-V2"><a href="#Inception-V2" class="headerlink" title="Inception V2"></a>Inception V2</h4><p>由于Inception V1在图像分类问题上取得了巨大的成功，GoogLeNet团队继续改进推出了InceptionV2结构。InceptionV2主要有两点创新，第一个是借鉴了VGGNet使用两个3*3的卷积核代替一个5*5的大卷积核，这样能够在不增加过多的计算量的同时提高网络的表达能力；另一个就是引入Batch Normalization来提高训练速度和分类准确率。</p>
+<p>小卷积核的优点之前在VGGNet中提到过了，通过堆叠两个小的卷积核可以达到和大卷积核一样的感受野，并且能够进一步增加网络的非线性，提高网络性能。Batch Normalization方法的优点我们在上一篇博文里面已经详细介绍了，这里就不再进一步展开了。通过引入BN层能够设置较大的学习率，使得网络更快地收敛，同时还能够在一定程度上提高分类准确率。作者认为BN某种意义上起到了正则化的作用，可以有效减少过拟合，进而减少甚至取消Dropout层的使用，简化网络结构。所以作者在InceptionV2结构中使用了<strong>较大的学习率</strong>，<strong>取消了Dropout和LRN层</strong>并减轻了L2正则的影响，减少数据增强过程中对数据的光学畸变(BN训练更快，每个样本被训练的次数更少，因此真实的样本对训练更有帮助)。</p>
+<h4 id="Inception-V3"><a href="#Inception-V3" class="headerlink" title="Inception V3"></a>Inception V3</h4><p>Inception V3进一步推进了Inception V2中小卷积核的思想，将3*3的卷积核拆分成了两个1*3和3*1的卷积核，使得网络结构变得更深。出来卷积核尺寸的改进之外，作者还对Inception网络结构提出了很多改进方案，包括加深网络层数一些通用性准则、优化辅助分类器、优化池化和优化标签等。目前官方提供的源码也是基于Inception V3的。</p>
+<h5 id="大尺寸卷积核分解"><a href="#大尺寸卷积核分解" class="headerlink" title="大尺寸卷积核分解"></a>大尺寸卷积核分解</h5><p>大的卷积核拥有更大的感受野，能够提取更多的局部特征，但同时越大的卷积核意味着更多的参数，更大的计算量。VGGNet中指出，大卷积核完全可以通过堆叠一系列3*3的卷积核来表达，并且不会造成表达能力的缺失甚至还能由于添加非线性激活提高网络性能。Inception V3更进一步，将3*3的卷积核分解成2个更小的卷积核来代替，如下图：</p>
+<p><img src="目标分类网络的介绍及应用/173cff2ce4a736503fb7dd2ced32b29d.png" alt=""></p>
+<p>在实际过程中作者发现在网络的前期使用这种分解效果并不好，只有在feature map尺寸在一定范围内(m*m大小的feature<br>map，建立m在12到20之间)的情况下使用这种分解策略能使模型性能提高。Inception V3总共设计了包含Inception V1中的Inception在内的3种不同Inception结构，分别处理35*35，17*17和8*8的不同输入feature map尺寸。如下图：</p>
+<p><img src="目标分类网络的介绍及应用/fd0af41bcba193914edcdddedef6bead.png" alt=""></p>
+<p><img src="目标分类网络的介绍及应用/5977e1c0e44f4039c27e8f5bb8bafaf2.png" alt=""></p>
+<p><img src="目标分类网络的介绍及应用/7437737d122801f57ac4147dd2465ea4.png" alt=""></p>
+<p><img src="目标分类网络的介绍及应用/05f06effd8b4227232603b45c361578c.png" alt=""></p>
+<h5 id="通用网络结构设计准则"><a href="#通用网络结构设计准则" class="headerlink" title="通用网络结构设计准则"></a>通用网络结构设计准则</h5><p><strong>1.在网络靠前的地方不能过分压缩特征</strong>。一般而言，设计的分类网络结构呈漏斗状，feature map尺寸逐渐减少，维度逐渐增加。所以如果直接在网络第一层就使用一个11*11，stride=5的卷积核是不合适的。由于很多情况下是通过池化层来对特征图进行降采样，这样就会造成一定量的信息丢失，作者设计一种更复杂的池化来解决这个问题。</p>
+<p><strong>2.更多的特征更容易处理局部信息</strong>。高维特征更易区分，每个卷积层的通道数增加对处理局部信息是有好处的，能够加快训练。</p>
+<p><strong>3.可以在更深的较底层上压缩数据而不需要担心丢失很多信息</strong>。比如对于网络后面的feature maps上使用1*1的卷积核进行降维再进行3*3这样大卷积核的卷积计算，这样不但不会影响模型精度，反而还能加快其收敛速度。</p>
+<p><strong>4.平衡网络的宽度和深度</strong>。论文认为一个好的网路结构一定会在深度和宽度上都有增加，过宽或者过深的网络效果都不是很好。</p>
+<h5 id="辅助分类器优化"><a href="#辅助分类器优化" class="headerlink" title="辅助分类器优化"></a>辅助分类器优化</h5><p>通过对比试验，作者发现辅助分类器在训练初期并不能加速收敛，只有当训练快结束时才会略微提高网络精度，所以作者在Inception V3中将Inception V1中的第一个辅助分类器去除了。</p>
+<h5 id="池化层优化"><a href="#池化层优化" class="headerlink" title="池化层优化"></a>池化层优化</h5><p>对于池化层降采样feature map，会不可避免的产生信息丢失，因此为了防止信息过度丢失，传统的优化方法要么是在进行池化之前使用1*1的小卷积核扩增feature map的filters数量，然后再进行池化降维，要么是再进行池化之后再使用1*1的卷积核扩增filters的数量。但这两种方法并不高效，会消耗一定的计算资源。对此，作者提出了他们的池化方法，即分别使用pool与conv来进降维再将这两个部分concatenate起来。至于这种方法的设计思路，论文中只字未提。下图左展示了一般的优化方法，图右展示了Inception V3的优化方法：</p>
+<p><img src="目标分类网络的介绍及应用/20b5f72491d9de006a963efc4459f362.png" alt=""></p>
+<p><img src="目标分类网络的介绍及应用/d3b917e336a1be6a90d2921007ef1c96.png" alt=""></p>
+<h5 id="标签优化"><a href="#标签优化" class="headerlink" title="标签优化"></a>标签优化</h5><p>到目前为止我们学习的标注标签都是one-hot类型向量（即一组由0，1表示的向量），但是作者认为这样的标注方式类似于控制工程中的脉冲信号，有可能会导致过拟合和网络适应性差的问题，其原因是“网络对它预测的东西太自信了”。所以，Inception V3使用Label Smoothing方法对标签进行处理，如下式：</p>
+<p>$$<br>q^{‘}\left( k \middle| x \right) = \left( 1 - \epsilon \right)\delta_{k,y} + \epsilon u(k)<br>$$</p>
+<p>其中$\delta_{k,y}$表示one-hot标签，$u(k)$表示类别的个数的倒数，$\epsilon$是一个超参数。这样可以将one-hot的分布变得稍微平滑一点。Label smooth方法使得Inception V3网络精度提高了0.3%。</p>
+<h5 id="Inception-V3示例源码"><a href="#Inception-V3示例源码" class="headerlink" title="Inception V3示例源码"></a>Inception V3示例源码</h5><p><a href="https://github.com/tensorflow/models/tree/master/research/inception" target="_blank" rel="noopener">Inception V3源代码github网址</a>。</p>
+<h4 id="Inception-V4"><a href="#Inception-V4" class="headerlink" title="Inception V4"></a>Inception V4</h4><p>Inception V4借鉴了ResNet的结构，这里就不再展开讲了，有兴趣的同学可以自行去翻阅原论文。</p>
+<h3 id="ResNet网络"><a href="#ResNet网络" class="headerlink" title="ResNet网络"></a>ResNet网络</h3><p><a href="https://arxiv.org/pdf/1512.03385.pdf" target="_blank" rel="noopener">ResNet原文在这里</a>。2015年，微软亚洲研究院提出ResNet网络，以3.75%的top-5的错误率获得当时的ILSCRC大赛冠军。（值得一提的是ResNet的提出者何凯明大神是清华毕业的，2003年广东省理科状元，绝对的是中国人在AI圈的骄傲。有兴趣的朋友可以去了解下微软亚洲研究院的历史，一个几乎撑起了21世纪中国半个互联网圈的机构。）ResNet进一步分析了网络深度对性能的影响，并以其独特的残差结构（Residual Unit）大大地加深了网络的深度，以152层的网络深度傲视群雄。此外，是用残差网络结构还能够加速网络的训练速度，使网络更快收敛。</p>
+<h4 id="网络深度对性能的影响"><a href="#网络深度对性能的影响" class="headerlink" title="网络深度对性能的影响"></a>网络深度对性能的影响</h4><p>自从2012年AlexNet被提出以来，网络结构的深度就在不断加深，从AlexNet最初的7层到VGG的19层再到GoogLeNet的22层，但是作者在论文中提出是不是通过简单的堆叠网络层就可以提高网络的性能呢？通过大量实验发现显然不是如此，以前我们认为随着网络层深度的增加，参数量就越大，这样造成的问题是容易过拟合。作者在CIFAR-10数据集上对比了20层和56层的常规卷积网络结构上训练集和测试集错误率，发现56层的网络在训练集及测试集上的性能均不如20层的网络，收敛速度更慢了。这就说明了堆叠网络层深度是网络参数变差的原因不全是过拟合，因为<strong>过拟合不会导致训练集的错误率升高</strong>。</p>
+<p><img src="目标分类网络的介绍及应用/63c7765e2038f9ab3d5aa1080b10e4e7.png" alt=""></p>
+<p>所以作者认为，深度增加造成性能下降的原因更多的是因为网络结构自身的原因，如梯度消失、爆炸或者其他的因素。为了增加网络的深度，我们可以提出这样一个要求：<strong>如果一个浅层网络已经达到了最优性能，那么如果再在这个网络上堆叠网络深度，深层网络的性能应该不能比浅层网络的性能差</strong>。为了达到这一要求，作者根据瑞士学者Schmidhuber提出的Highway Network设计了深度残差学习框架（Deep Residual Learning Framework）。Highway Network相当于改变了每一层的激活函数，使得上一层的feature map信息有一定几率直接传入下一层而不经过非线性激活和矩阵乘法，就像信息网络中的高速公路一样，因而得名Highway Network。Residual Unit与Highway Network非常类似，都是解决网络随深度变化而引发的问题，Residual Unit的结构如下图所示：</p>
+<p><img src="目标分类网络的介绍及应用/2396fd84a17825b36120628acfe4b6e9.png" alt=""></p>
+<p>假设不带残差结构的网络对给定的输入X，其输出网络拟合为F(X)。引入残差之后，不带残差结构的原本网络的非线性映射为F(X)=H(X)-X，带残差的输出网络拟合为H(X)=F(X)+X。F(X)+X就是所谓的残差映射（residual mapping），显然残差映射与原本映射的区别就是多了一个输入X。假设这样一个情况，如果之前的浅层网络已经达到了最优性能，那么堆叠的网络层应该就是之前网络层直接<strong>恒等映射</strong>（后面新堆叠的网络层不起作用），即H（X）=X，这样就能保证深层网络的性能不比浅层网络差。但是也许有人会问，即使不引入残差结构，直接使F(X)=X不也能达到同样的效果吗？通过之前堆叠网络层实验发现，在实际应用中，高层的这种线性关系很难学习到，要不然也不会导致深层网络的性能变差了。所以，引入残差的意义在于，<strong>我们认为通过堆叠网络使得原本的非线性映射F(X)优化为0的难度要比F(X)优化到1简单</strong>。具体的证明过程可以看<a href="https://blog.csdn.net/u013709270/article/details/78838875" target="_blank" rel="noopener">这里</a>。</p>
+<h4 id="ResNet网络结构"><a href="#ResNet网络结构" class="headerlink" title="ResNet网络结构"></a>ResNet网络结构</h4><p>之前提到了残差映射H(X)=F(X)+X，这里有一个小点需要补充一下，就是X与F(X)的通道数必须相同才能进行加法操作。当输入它们的通道数目不同时，作者设计了两种方式来补全，一种是直接将X相对于H(X)缺失的通道<strong>直接补零来对其补全</strong>，另一种是<strong>通过1*1的卷积来补全</strong>。为了验证残差结构的有效性，作者设计了3个网络：</p>
+<ul>
+<li><p>VGG-19网路（VGGNet中最深的一种网络结构）；</p>
+</li>
+<li><p>根据VGGNet简单堆叠网络层的网络，总共含有34层；</p>
+</li>
+<li><p>在普通网络结构上添加残差单元的ResNet网络。</p>
+</li>
+</ul>
+<p>从下图中可以看到，作者设计网络时，使用<strong>全局平均池化取代了全连接层</strong>。另外，在卷积层之后也没有采用池化层来进行降采样，而是直接<strong>使用stride=2的卷积层来降采样</strong>。图中虚线表示filters的数量发生了变化，<strong>当feature map的尺寸下降一半时，feature map的通道数变成两倍</strong>，这保证了特征的复杂度。同时，<strong>在每个卷积后和激活函数前使用Batch Normalization方法批标准化，没有使用Dropout策略</strong>。</p>
+<p><img src="目标分类网络的介绍及应用/a0aa8fca5ff264252536f8b93b6f3c9e.png" alt=""></p>
+<p>针对第三种ResNet网络，作者还设计不同的网络层数，具体参数如下图。注意到当网络更深时，其进行的是三层的残差学习，且<strong>隐含层的filters的数量是输出层filters的1/4</strong>。应用其他网络结构上比较常用的ResNet结构有50-layer，101-layer和152-layer。</p>
+<p><img src="目标分类网络的介绍及应用/e8cefb4f38d603dee883e41011c9362b.png" alt=""></p>
+<p>对于不同深度的ResNet网络，作者设计了两个不同的shortcut或skip connections方式，其实主要是连接的尺度上的变化，本质上并没有什么不同。</p>
+<p><img src="目标分类网络的介绍及应用/c4db5bfd37d49abee5a9de7c97ef46a6.png" alt=""></p>
+<h4 id="ResNet实验效果"><a href="#ResNet实验效果" class="headerlink" title="ResNet实验效果"></a>ResNet实验效果</h4><p>下图是ResNet与普通网络加深网络层数不同分类效果的对比，注意对比的两种网络的参数量均是相同的：</p>
+<p><img src="目标分类网络的介绍及应用/4a50fd36ca84a0d2c269373881efb964.png" alt=""></p>
+<p>图中粗线表示验证误差，细线表示训练误差。上图左表示普通的神经网络，当网络层数从18层变成34层，随着迭代次数的增加无论是训练误差还是测试误差都在升高，收敛变慢。其中34层优化困难的原因不是梯度消失造成的，因为作者在网络中引入了很多BN层，并且还验证了反向传播的梯度，发现梯度并未消失。而上图右表示引入残差结构的ResNet网络（使用零填充），随着迭代次数的增加，34层的测试误差和训练误差均低于18层的误差并且收敛更快，这说明网络层数的加深改善了ResNet网络结构的性能，这正是我们需要的。</p>
+<p>在ImageNet数据集中，作者首先将图像的最短边缩放到[256,480]中随机的一个值，并通过裁剪水平翻转将数据集扩增10倍。下图展示了ResNet在ImageNet数据集上与其他分类网络的对比：</p>
+<p><img src="目标分类网络的介绍及应用/962b6304a7853ab1a75bb3fb23f549a5.png" alt=""></p>
+<p>其中ResNet-A表示残差连接使用恒等映射，在维度不同时使用zero-padding策略；ResNet-B表示在维度相同时使用恒等映射，在维度不同时使用1*1卷积投影映射；ResNet-C表示均使用投影映射。通过分析，作者认为使用B最合适，这样既能涉及残差学习又能减少参数量。可以看到，ResNet的性能全面优于其他网络结构，并且随着网络层数的增加，网络性能继续提升。作者还在CIFAR10数据集上对ResNet网络层深度做了进一步测试，当深度到达1202层后，网络分类性能才开始下降，作者认为有可能是因为层数过多导致模型过拟合的原因。总之，ResNet网络的残差结构不仅能够避免网络过深带来的性能下降的问题，还能够加速模型的收敛速度，是一种非常优秀的网络结构。（ResNet提出后2年，ILSCRC大赛就停止举办了，因为ResNet的分类效果已经超越了人类。）</p>
+<h4 id="实现代码-2"><a href="#实现代码-2" class="headerlink" title="实现代码"></a>实现代码</h4><p><a href="https://github.com/xiaohu2015/DeepLearning_tutorials/" target="_blank" rel="noopener">ResNet的github实现代码传送门</a>。</p>
+<p>总算是把分类卷积神经网络写完了，其他还有很多优秀的神经网络结构被提出来，如ZFNet、SqueezeNet、DenseNet等等，其都具有各自的特点，这系列文章权当抛砖引玉，希望各位同学能够自己去深挖这些网络结构的美妙之处。下一节我们将进入目标检测的部分，现在我们学的分类卷积神经网络是目标检测神经网络的基础。目标检测神经网络的思想更加具有创造性，从two-stages的Faster-RCNN到one-stage的YOLO和SSD算法，这些算法都是人工智能科学家们思想的结晶，相信各位能学到更多state-of-art的知识。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1]<a href="https://blog.csdn.net/u011974639/article/details/75363565" target="_blank" rel="noopener">TensorFlow实战：Chapter-3（CNN-1-卷积神经网络简介）</a></p>
+<p><a href="https://blog.csdn.net/fsdfasfawre/article/details/80618871" target="_blank" rel="noopener">[2]卷积神经网络的卷积操作及其梯度</a></p>
+<p>[3] <a href="https://www.freecodecamp.org/news/an-intuitive-guide-to-convolutional-neural-networks-260c2de0a050/" target="_blank" rel="noopener">An intuitive guide to Convolutional Neural Networks</a></p>
+<p>[4]<a href="https://www.cnblogs.com/wangguchangqing/p/10333370.html" target="_blank" rel="noopener">卷积神经网络之AlexNet</a></p>
+<p>[5] <a href="http://deanhan.com/2018/07/26/vgg16/" target="_blank" rel="noopener">VGG16学习笔记</a></p>
+<p>[6]<a href="https://blog.csdn.net/u011974639/article/details/76146822" target="_blank" rel="noopener">TensorFlow实战：Chapter-4（CNN-2-经典卷积神经网络（AlexNet、VGGNet））</a></p>
+<p>[7] <a href="https://www.jianshu.com/p/5412d1dec69d" target="_blank" rel="noopener">VGGNet</a></p>
+<p>[8]<a href="https://blog.csdn.net/u011974639/article/details/76460849" target="_blank" rel="noopener">TensorFlow实战：Chapter-5（CNN-3-经典卷积神经网络（GoogleNet））</a></p>
+<p>[9] <a href="https://www.cnblogs.com/zhangyang520/p/8110874.html" target="_blank" rel="noopener">系统学习深度学习—GoogLeNetv1,v2,v3[Inception V1-V3]</a></p>
+<p>[10]<a href="https://blog.csdn.net/u011974639/article/details/76737547" target="_blank" rel="noopener">TensorFlow实战：Chapter-6（CNN-4-经典卷积神经网络（ResNet）</a><em>）</em></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/学习笔记/">学习笔记</a>, <a class="article-category-link" href="/categories/学习笔记/深度学习/">深度学习</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/深度学习/">深度学习</a></li></ul>
+
+      
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: '如果觉得我的文章对您有用，请随意打赏。您的支持将鼓励我继续创作!', // 可选参数，打赏标题
+  btnText: '打赏支持', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: 'http://img1.ph.126.net/ltZ_qzp9lus8heKkrVg7iw==/6597384226984847554.jpg',
+  alipayImage: 'http://img2.ph.126.net/lmP2ymrq-Aoe8P4fAWxd3A==/1691664610131577673.jpg'
+});
+</script>
+      
+            
+      
+        
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
+
+		       if (typeof LivereTower === 'function') { return; }
+
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/02/20/比宇宙更远的地方-跨越14000公里的南欧之旅/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">[比宇宙更远的地方]跨越14000公里的南欧之旅</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article" style="overflow-y: scroll; max-width: 28%;">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积神经网络简介"><span class="nav-number">1.</span> <span class="nav-text">卷积神经网络简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积神经网络原理"><span class="nav-number">1.1.</span> <span class="nav-text">卷积神经网络原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#深度学习中的卷积操作"><span class="nav-number">1.1.1.</span> <span class="nav-text">深度学习中的卷积操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#卷积神经网络结构"><span class="nav-number">1.1.2.</span> <span class="nav-text">卷积神经网络结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#卷积层"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">卷积层</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#池化层"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">池化层</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积神经网络反向传输过程"><span class="nav-number">1.2.</span> <span class="nav-text">卷积神经网络反向传输过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于卷积神经网络实现数字识别"><span class="nav-number">1.3.</span> <span class="nav-text">基于卷积神经网络实现数字识别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目标分类卷积神经网络结构介绍"><span class="nav-number">2.</span> <span class="nav-text">目标分类卷积神经网络结构介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AlexNet网络"><span class="nav-number">2.1.</span> <span class="nav-text">AlexNet网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AlexNet网络结构"><span class="nav-number">2.1.1.</span> <span class="nav-text">AlexNet网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#减少过拟合方法"><span class="nav-number">2.1.2.</span> <span class="nav-text">减少过拟合方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#训练细节"><span class="nav-number">2.1.3.</span> <span class="nav-text">训练细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现代码"><span class="nav-number">2.1.4.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VGGNet网络"><span class="nav-number">2.2.</span> <span class="nav-text">VGGNet网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VGGNet网络结构"><span class="nav-number">2.2.1.</span> <span class="nav-text">VGGNet网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VGGNet特点"><span class="nav-number">2.2.2.</span> <span class="nav-text">VGGNet特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VGGNet实验效果"><span class="nav-number">2.2.3.</span> <span class="nav-text">VGGNet实验效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现代码-1"><span class="nav-number">2.2.4.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GoogLeNet-Inception-网络"><span class="nav-number">2.3.</span> <span class="nav-text">GoogLeNet (Inception)网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Inception-V1"><span class="nav-number">2.3.1.</span> <span class="nav-text">Inception V1</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Inception架构细节"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">Inception架构细节</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GoogLeNet网络结构"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">GoogLeNet网络结构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GoogLeNet实验效果"><span class="nav-number">2.3.1.3.</span> <span class="nav-text">GoogLeNet实验效果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inception-V2"><span class="nav-number">2.3.2.</span> <span class="nav-text">Inception V2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inception-V3"><span class="nav-number">2.3.3.</span> <span class="nav-text">Inception V3</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#大尺寸卷积核分解"><span class="nav-number">2.3.3.1.</span> <span class="nav-text">大尺寸卷积核分解</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#通用网络结构设计准则"><span class="nav-number">2.3.3.2.</span> <span class="nav-text">通用网络结构设计准则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#辅助分类器优化"><span class="nav-number">2.3.3.3.</span> <span class="nav-text">辅助分类器优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#池化层优化"><span class="nav-number">2.3.3.4.</span> <span class="nav-text">池化层优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#标签优化"><span class="nav-number">2.3.3.5.</span> <span class="nav-text">标签优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Inception-V3示例源码"><span class="nav-number">2.3.3.6.</span> <span class="nav-text">Inception V3示例源码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inception-V4"><span class="nav-number">2.3.4.</span> <span class="nav-text">Inception V4</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResNet网络"><span class="nav-number">2.4.</span> <span class="nav-text">ResNet网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网络深度对性能的影响"><span class="nav-number">2.4.1.</span> <span class="nav-text">网络深度对性能的影响</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ResNet网络结构"><span class="nav-number">2.4.2.</span> <span class="nav-text">ResNet网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ResNet实验效果"><span class="nav-number">2.4.3.</span> <span class="nav-text">ResNet实验效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现代码-2"><span class="nav-number">2.4.4.</span> <span class="nav-text">实现代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2019 Elric&#39;s Blog All Rights Reserved.
+          
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hiero" target="_blank">hiero</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var contentdiv = document.getElementById("content");
+
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+</script>
+
+<!-- Custome JS -->
+<script src="/js/my.js"></script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+
+<script src="/js/scripts.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="https://dnqof95d40fo6.cloudfront.net/atw7f8.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
